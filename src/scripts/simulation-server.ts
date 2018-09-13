@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: main.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th September 2018 2:52:38 pm
+ * @Last modified time: Thursday, 13th September 2018 10:47:44 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company`
  */
@@ -25,6 +25,10 @@ if (require.main === module) {
 }
 
 async function main() {
+  process.on('unhandledRejection', (reason, promise) => {
+    // tslint:disable-next-line:no-console
+    console.log('Unhandled Rejection at:', reason.stack || reason);
+  });
   TestRSASha256Signature.creator.enable();
 
   const signers = [new TestRSASha256Signer()];

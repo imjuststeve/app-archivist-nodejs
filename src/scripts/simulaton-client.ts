@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: client.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th September 2018 5:37:18 pm
+ * @Last modified time: Thursday, 13th September 2018 2:09:05 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -63,7 +63,8 @@ async function doBoundWitnessWithServer(port: number, payload: XyoPayload): Prom
       logger.info(`Connection created`);
       client.write(
         Buffer.from([
-          0x00, 0x00, 0x00, 0x08, // size of payload
+          0x00, 0x00, 0x00, 0x09, // size of payload
+          0x04, // size of catalogue in bytes
           0x00, 0x00, 0x00, 0x01 // my catalogue (BOUND_WITNESS)
         ])
       );
@@ -102,12 +103,12 @@ async function doBoundWitnessWithServer(port: number, payload: XyoPayload): Prom
         if (step === 0) {
           logger.info(`Step 1 of Bound Witness started`);
 
-          const serverChoseItem = bufferToCatalogueItems(data.slice(4, 4 + 4));
+          const serverChoseItem = bufferToCatalogueItems(data.slice(4 + 1, 4 + 1 + 4));
           if (serverChoseItem.length !== 1 && serverChoseItem[0] !== CatalogueItem.BOUND_WITNESS) {
             throw new Error(`Can not parse server catalogue items`);
           }
 
-          const serverBoundWitnessTransfer = data.slice(8);
+          const serverBoundWitnessTransfer = data.slice(9);
           const transfer = XyoBoundWitnessTransfer.creator.createFromPacked(serverBoundWitnessTransfer);
           const outgoing = await boundWitness.incomingData(transfer, true);
           const outgoingBytes = outgoing.unTyped;
