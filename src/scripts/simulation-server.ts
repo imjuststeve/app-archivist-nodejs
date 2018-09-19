@@ -4,48 +4,74 @@
  * @Email:  developer@xyfindables.com
  * @Filename: main.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th September 2018 10:47:44 am
+ * @Last modified time: Wednesday, 19th September 2018 12:00:05 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company`
  */
 
 import {
   XyoNode,
-  TestRSASha256Signer,
-  TestRSASha256Signature,
+  XyoDefaultPackerProvider,
   XyoServerTcpNetwork,
+  XyoNetworkProcedureCatalogue,
   CatalogueItem,
-  XyoBasicHashBaseCreator,
-  XyoRssi,
-  FileSystemStorageProvider
-} from 'xyo-sdk-core';
+  XyoFileSystemStorageProvider,
+  XyoRSASha256SignerProvider,
+  XyoSigner,
+  XyoSha256HashProvider,
+  XyoPeerConnectionProviderFactory,
+  XyoOriginChainNavigator,
+  XyoOriginChainStateManager,
+  XyoBoundWitnessPayloadProviderImpl
+} from '../../../sdk-core-nodejs';
 
 if (require.main === module) {
-  main();
+  main(parseInt(process.argv[2], 10));
 }
 
-async function main() {
-  process.on('unhandledRejection', (reason, promise) => {
-    // tslint:disable-next-line:no-console
-    console.log('Unhandled Rejection at:', reason.stack || reason);
-  });
-  TestRSASha256Signature.creator.enable();
+async function main(port: number) {
+  const packerProvider = new XyoDefaultPackerProvider();
+  const packer = packerProvider.getXyoPacker();
+  const network = new XyoServerTcpNetwork(port);
 
-  const signers = [new TestRSASha256Signer()];
-  const network = new XyoServerTcpNetwork(8088);
-  const storageProvider = new FileSystemStorageProvider('/Users/ryan/dev/projects/sdk-archivist-nodejs/data');
-  const hasher = new XyoBasicHashBaseCreator('sha512', 64, 0x0d);
-
-  const catalogue = {
-    canDo: (catalogueItem: CatalogueItem) => {
+  const catalogue: XyoNetworkProcedureCatalogue = {
+    canDo(catalogueItem: CatalogueItem) {
       return catalogueItem === CatalogueItem.BOUND_WITNESS;
     }
   };
 
-  const archivist = new XyoNode(network, catalogue, signers, storageProvider, hasher);
-  archivist.addHeuristicsProvider('rssi', async () => {
-    return new XyoRssi(10);
-  });
+  const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
+    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-blocks`
+  );
 
+  const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
+    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/next-hash-index`
+  );
+
+  const hashingProvider = new XyoSha256HashProvider();
+  const signerProvider = new XyoRSASha256SignerProvider();
+  const signers: XyoSigner[] = [signerProvider.newInstance()];
+
+  const originChainStateManager = new XyoOriginChainStateManager(0);
+  const originChainNavigator = new XyoOriginChainNavigator(
+    packer,
+    originBlocksStorageProvider,
+    originBlockNextHashStorageProvider,
+    hashingProvider
+  );
+  const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProviderImpl();
+
+  const peerConnectionDelegateFactory = new XyoPeerConnectionProviderFactory(
+    network,
+    catalogue,
+    packer,
+    signers,
+    hashingProvider,
+    originChainStateManager,
+    originChainNavigator,
+    boundWitnessPayloadProvider
+  );
+
+  const archivist = new XyoNode(peerConnectionDelegateFactory.newInstance());
   archivist.start();
 }

@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
-    "xyo-sdk-core": "file:../sdk-core-nodejs",
     "elliptic": "^6.4.1",
     "node-rsa": "^1.0.1"
   },
