@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: main.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 19th September 2018 12:00:05 pm
+ * @Last modified time: Friday, 21st September 2018 9:51:59 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company`
  */
@@ -20,12 +20,23 @@ import {
   XyoSigner,
   XyoSha256HashProvider,
   XyoPeerConnectionProviderFactory,
-  XyoOriginChainNavigator,
-  XyoOriginChainStateManager,
-  XyoBoundWitnessPayloadProviderImpl
+  XyoBoundWitnessPayloadProviderImpl,
+  XyoOriginBlockLocalStorageRepository,
+  XyoOriginChainLocalStorageRepository
 } from '../../../sdk-core-nodejs';
 
+const logger = console;
+
 if (require.main === module) {
+  process.on('unhandledRejection', (error) => {
+    // Will print "unhandledRejection err is not defined"
+    logger.log(`unhandledRejection ${process.argv[2]}`, error.message);
+  });
+
+  process.on('uncaughtException', (error) => {
+    // Will print "unhandledRejection err is not defined"
+    logger.log(`uncaughtException ${process.argv[2]}`, error.message);
+  });
   main(parseInt(process.argv[2], 10));
 }
 
@@ -41,19 +52,26 @@ async function main(port: number) {
   };
 
   const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-blocks`
+    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-blocks`,
+    'hex'
   );
 
   const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/next-hash-index`
+    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/next-hash-index`,
+    'hex'
+  );
+
+  const originChainStorageProvider = new XyoFileSystemStorageProvider(
+    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-chain`,
+    'utf8'
   );
 
   const hashingProvider = new XyoSha256HashProvider();
   const signerProvider = new XyoRSASha256SignerProvider();
   const signers: XyoSigner[] = [signerProvider.newInstance()];
 
-  const originChainStateManager = new XyoOriginChainStateManager(0);
-  const originChainNavigator = new XyoOriginChainNavigator(
+  const originChainStateManager = new XyoOriginChainLocalStorageRepository(originChainStorageProvider, packer);
+  const originChainNavigator = new XyoOriginBlockLocalStorageRepository(
     packer,
     originBlocksStorageProvider,
     originBlockNextHashStorageProvider,
