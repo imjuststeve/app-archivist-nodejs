@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: simulation-client.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 19th September 2018 12:50:30 pm
+ * @Last modified time: Monday, 24th September 2018 11:32:22 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -29,7 +29,7 @@ import {
   XyoPacker,
   XyoSingleTypeArrayInt,
   XyoSha256HashProvider
-} from '../../../sdk-core-nodejs';
+} from '../../../sdk-core-nodejs/dist/lib';
 
 const logger = console;
 

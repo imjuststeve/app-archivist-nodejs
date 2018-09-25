@@ -29,7 +29,10 @@
   },
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
+    "@types/graphql": "^14.0.0",
+    "apollo-server": "^2.1.0",
     "elliptic": "^6.4.1",
+    "graphql": "^14.0.2",
     "node-rsa": "^1.0.1"
   },
   "devDependencies": {

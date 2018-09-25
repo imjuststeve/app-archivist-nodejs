@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: main.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 21st September 2018 9:51:59 am
+ * @Last modified time: Monday, 24th September 2018 11:32:23 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company`
  */
@@ -23,7 +23,7 @@ import {
   XyoBoundWitnessPayloadProviderImpl,
   XyoOriginBlockLocalStorageRepository,
   XyoOriginChainLocalStorageRepository
-} from '../../../sdk-core-nodejs';
+} from '../../../sdk-core-nodejs/dist/lib';
 
 const logger = console;
 
