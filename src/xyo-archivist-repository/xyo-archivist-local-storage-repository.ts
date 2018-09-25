@@ -9,9 +9,8 @@
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoArchivistRepository, XyoOriginBlockResult } from ".";
-import { XyoOriginBlockLocalStorageRepository } from "../../../sdk-core-nodejs/dist/origin-chain/xyo-origin-block-local-storage-repository";
-import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject } from "../../../sdk-core-nodejs";
+import { XyoArchivistRepository } from ".";
+import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository } from "../../../sdk-core-nodejs";
 
 export class XyoArchivistLocalStorageRepository implements XyoArchivistRepository {
 

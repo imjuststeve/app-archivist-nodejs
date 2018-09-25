@@ -9,8 +9,7 @@
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoOriginBlockRepository } from "../../../sdk-core-nodejs/dist/origin-chain/xyo-origin-chain-types";
-import { XyoObject, XyoBoundWitness } from "../../../sdk-core-nodejs";
+import { XyoOriginBlockRepository, XyoObject, XyoBoundWitness } from "../../../sdk-core-nodejs";
 
 export interface XyoArchivistRepository extends XyoOriginBlockRepository {
   getOriginBlocksWithPublicKey(publicKey: XyoObject): Promise<XyoBoundWitness[]>;

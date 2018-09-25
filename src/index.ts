@@ -11,25 +11,30 @@
 
 import { GraphQLServer } from "./graphql-api/server";
 import { XyoArchivistLocalStorageRepository } from "./xyo-archivist-repository/xyo-archivist-local-storage-repository";
-import { XyoOriginBlockLocalStorageRepository, XyoFileSystemStorageProvider, XyoDefaultPackerProvider, XyoSha256HashProvider } from "../../sdk-core-nodejs/dist/lib";
 
-export async function startArchivist(port: number) {
+import {
+  XyoOriginBlockLocalStorageRepository,
+  XyoFileSystemStorageProvider,
+  XyoDefaultPackerProvider,
+  XyoSha256HashProvider
+} from "../../sdk-core-nodejs";
+
+import { GetBlocksResolver } from "./graphql-api/resolvers/get-blocks-resolver";
+import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";
+import path from 'path';
+
+export async function startArchivist(dataDirectory: string) {
   const packerProvider = new XyoDefaultPackerProvider();
   const packer = packerProvider.getXyoPacker();
 
   const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-blocks`,
+    path.join(dataDirectory, `origin-blocks`),
     'hex'
   );
 
   const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/next-hash-index`,
+    path.join(dataDirectory, `next-hash-index`),
     'hex'
-  );
-
-  const originChainStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-chain`,
-    'utf8'
   );
 
   const hashingProvider = new XyoSha256HashProvider();
@@ -41,10 +46,14 @@ export async function startArchivist(port: number) {
     hashingProvider
   );
 
-  const archivistRepo = new XyoArchivistLocalStorageRepository(originChainNavigator, packer);
-  await new GraphQLServer(archivistRepo, packer, hashingProvider).start();
+  const archivistRepository = new XyoArchivistLocalStorageRepository(originChainNavigator, packer);
+
+  await new GraphQLServer(
+    new GraphqlSchemaBuilder().buildSchema(),
+    new GetBlocksResolver(archivistRepository, packer, hashingProvider)
+  ).start();
 }
 
 if (require.main === module) {
-  startArchivist(8088);
+  startArchivist(process.argv[2]);
 }

@@ -1,0 +1,11 @@
+# import XyoObject from "xyo-object.graphql"
+
+type XyoPayload {
+  hash: String!
+  bytes: String!
+  major: Int!
+  minor: Int!
+
+  signedPayload: [XyoObject!],
+  unsignedPayload: [XyoObject!],
+}

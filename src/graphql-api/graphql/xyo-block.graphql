@@ -1,0 +1,13 @@
+# import XyoKeySet from "xyo-keyset.graphql"
+# import XyoSignatureSet from "xyo-signature-set.graphql"
+# import XyoPayload from "xyo-payload.graphql"
+
+type XyoBlock {
+  hash: String!
+  bytes: String!
+  major: Int!
+  minor: Int!
+  publicKeys: [XyoKeySet!]
+  signatures: [XyoSignatureSet!]
+  payloads: [XyoPayload!]
+}

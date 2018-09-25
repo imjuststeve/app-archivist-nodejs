@@ -23,7 +23,9 @@ import {
   XyoBoundWitnessPayloadProviderImpl,
   XyoOriginBlockLocalStorageRepository,
   XyoOriginChainLocalStorageRepository
-} from '../../../sdk-core-nodejs/dist/lib';
+} from '../../../sdk-core-nodejs';
+
+import path from 'path';
 
 const logger = console;
 
@@ -37,10 +39,11 @@ if (require.main === module) {
     // Will print "unhandledRejection err is not defined"
     logger.log(`uncaughtException ${process.argv[2]}`, error.message);
   });
-  main(parseInt(process.argv[2], 10));
+
+  main(process.argv[2], parseInt(process.argv[3], 10));
 }
 
-async function main(port: number) {
+async function main(dataDirectory: string, port: number) {
   const packerProvider = new XyoDefaultPackerProvider();
   const packer = packerProvider.getXyoPacker();
   const network = new XyoServerTcpNetwork(port);
@@ -52,17 +55,17 @@ async function main(port: number) {
   };
 
   const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-blocks`,
+    path.join(dataDirectory, `origin-blocks`),
     'hex'
   );
 
   const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/next-hash-index`,
+    path.join(dataDirectory, `next-hash-index`),
     'hex'
   );
 
   const originChainStorageProvider = new XyoFileSystemStorageProvider(
-    `/Users/ryan/dev/projects/sdk-archivist-nodejs/data/${port}/origin-chain`,
+    path.join(dataDirectory, `origin-chain`),
     'utf8'
   );
 

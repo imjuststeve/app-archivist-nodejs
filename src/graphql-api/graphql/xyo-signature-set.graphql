@@ -1,0 +1,10 @@
+# import XyoObject from "xyo-object.graphql"
+
+type XyoSignatureSet {
+  hash: String!
+  bytes: String!
+  major: Int!
+  minor: Int!
+
+  array: [XyoObject!]
+}
