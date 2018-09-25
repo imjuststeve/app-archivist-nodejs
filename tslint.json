@@ -9,7 +9,7 @@
  * @Copyright: Copyright XY | The Findables Company
  */
 
-{
+ {
   "extends": ["tslint:latest", "tslint-config-airbnb"],
   "rules": {
     "trailing-comma": false,
@@ -22,6 +22,6 @@
     "no-implicit-dependencies": [true, "dev"],
     "interface-name":false,
     "no-bitwise": false,
-    "quotemark":false
+    "quotemark": false
   }
 }

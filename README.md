@@ -7,7 +7,7 @@ An archivist to run on the XYO network
 ### Install dependencies
 
 ```sh
-  npm install
+  yarn install
 ```
 
 ### Run tests
@@ -15,7 +15,7 @@ An archivist to run on the XYO network
 Run all tests:
 
 ```sh
-  npm test
+  yarn test
 ```
 
 Run a set of tests in a particular file:
