@@ -4066,7 +4066,7 @@ xml-name-validator@^3.0.0:
 
 "xyo-sdk-core@https://github.com/XYOracleNetwork/sdk-core-nodejs":
   version "0.1.0"
-  resolved "https://github.com/XYOracleNetwork/sdk-core-nodejs#7cd3caa4d61b47ed97da5ed82714fe7886ae4f3e"
+  resolved "https://github.com/XYOracleNetwork/sdk-core-nodejs#368c699f0b027758a3fe15aed6b9151ae8f8598c"
   dependencies:
     elliptic "^6.4.1"
     node-rsa "^1.0.1"

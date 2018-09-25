@@ -22,6 +22,8 @@ import {
 import { GetBlocksResolver } from "./graphql-api/resolvers/get-blocks-resolver";
 import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";
 import path from 'path';
+import { GetPayloadsFromBlockResolver } from "./graphql-api/resolvers/get-payloads-from-block-resolver";
+import { GetPublicKeysFromBlockResolver } from "./graphql-api/resolvers/get-public-keys-from-block-resolver";
 
 export async function startArchivist(dataDirectory: string) {
   const packerProvider = new XyoDefaultPackerProvider();
@@ -50,7 +52,9 @@ export async function startArchivist(dataDirectory: string) {
 
   await new GraphQLServer(
     new GraphqlSchemaBuilder().buildSchema(),
-    new GetBlocksResolver(archivistRepository, packer, hashingProvider)
+    new GetBlocksResolver(archivistRepository, packer, hashingProvider),
+    new GetPayloadsFromBlockResolver(packer, hashingProvider),
+    new GetPublicKeysFromBlockResolver(packer, hashingProvider)
   ).start();
 }
 
