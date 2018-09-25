@@ -1,4 +1,4 @@
-import { XyoBoundWitness } from "../../../../sdk-core-nodejs";
+import { XyoBoundWitness } from "xyo-sdk-core";
 import { XyoDataResolver } from "..";
 import { XyoBaseDataResolver } from "../xyo-base-data-resolver";
 
