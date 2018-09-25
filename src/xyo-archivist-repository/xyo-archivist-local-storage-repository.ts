@@ -10,7 +10,7 @@
  */
 
 import { XyoArchivistRepository } from ".";
-import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository } from "../../../sdk-core-nodejs";
+import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository } from "xyo-sdk-core";
 
 export class XyoArchivistLocalStorageRepository implements XyoArchivistRepository {
 

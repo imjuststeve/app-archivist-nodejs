@@ -23,7 +23,7 @@ import {
   XyoBoundWitnessPayloadProviderImpl,
   XyoOriginBlockLocalStorageRepository,
   XyoOriginChainLocalStorageRepository
-} from '../../../sdk-core-nodejs';
+} from 'xyo-sdk-core';
 
 import path from 'path';
 

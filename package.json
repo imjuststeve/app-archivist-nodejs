@@ -30,12 +30,14 @@
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
     "@types/graphql": "^14.0.0",
+    "@types/node-rsa": "^0.4.3",
     "apollo-server": "^2.1.0",
     "elliptic": "^6.4.1",
     "graphql": "^14.0.2",
     "graphql-import": "^0.7.1",
     "graphql-tools": "^4.0.0",
-    "node-rsa": "^1.0.1"
+    "node-rsa": "^1.0.1",
+    "xyo-sdk-core": "https://github.com/XYOracleNetwork/sdk-core-nodejs"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",

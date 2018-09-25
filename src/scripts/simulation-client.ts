@@ -29,7 +29,7 @@ import {
   XyoPacker,
   XyoSingleTypeArrayInt,
   XyoSha256HashProvider
-} from '../../../sdk-core-nodejs';
+} from 'xyo-sdk-core';
 
 const logger = console;
 

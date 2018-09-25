@@ -1,4 +1,4 @@
-import { XyoBase, XyoPacker, XyoHashProvider } from "../../../../sdk-core-nodejs";
+import { XyoBase, XyoPacker, XyoHashProvider } from "xyo-sdk-core";
 import { XyoArchivistRepository } from "../../xyo-archivist-repository";
 
 export class GetBlocksResolver extends XyoBase {

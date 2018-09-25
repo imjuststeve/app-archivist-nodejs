@@ -10,7 +10,7 @@
  */
 
 import { ApolloServer, gql, IResolvers } from 'apollo-server';
-import { XyoBase } from '../../../sdk-core-nodejs';
+import { XyoBase } from 'xyo-sdk-core';
 
 export class GraphQLServer extends XyoBase {
   private readonly server: ApolloServer;
