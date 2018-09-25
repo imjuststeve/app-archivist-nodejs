@@ -4064,12 +4064,6 @@ xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
 
-xyo-sdk-core@../sdk-core-nodejs:
-  version "0.1.0"
-  dependencies:
-    elliptic "^6.4.1"
-    node-rsa "^1.0.1"
-
 "xyo-sdk-core@https://github.com/XYOracleNetwork/sdk-core-nodejs":
   version "0.1.0"
   resolved "https://github.com/XYOracleNetwork/sdk-core-nodejs#7cd3caa4d61b47ed97da5ed82714fe7886ae4f3e"

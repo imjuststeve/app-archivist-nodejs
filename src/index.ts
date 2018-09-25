@@ -17,7 +17,7 @@ import {
   XyoFileSystemStorageProvider,
   XyoDefaultPackerProvider,
   XyoSha256HashProvider
-} from "../../sdk-core-nodejs";
+} from "xyo-sdk-core";
 
 import { GetBlocksResolver } from "./graphql-api/resolvers/get-blocks-resolver";
 import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";
