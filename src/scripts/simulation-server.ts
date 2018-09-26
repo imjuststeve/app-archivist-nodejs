@@ -26,6 +26,7 @@ import {
 } from 'xyo-sdk-core';
 
 import path from 'path';
+import { XyoLevelDbStorageProvider } from '../leveldb-storage-provider/level-db-storage-provider';
 
 const logger = console;
 
@@ -54,19 +55,16 @@ async function main(dataDirectory: string, port: number) {
     }
   };
 
-  const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
-    path.join(dataDirectory, `origin-blocks`),
-    'hex'
+  const originBlocksStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `origin-blocks`)
   );
 
-  const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
-    path.join(dataDirectory, `next-hash-index`),
-    'hex'
+  const originBlockNextHashStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `next-hash-index`)
   );
 
-  const originChainStorageProvider = new XyoFileSystemStorageProvider(
-    path.join(dataDirectory, `origin-chain`),
-    'utf8'
+  const originChainStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `origin-chain`)
   );
 
   const hashingProvider = new XyoSha256HashProvider();

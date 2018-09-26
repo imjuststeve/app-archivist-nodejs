@@ -14,7 +14,6 @@ import { XyoArchivistLocalStorageRepository } from "./xyo-archivist-repository/x
 
 import {
   XyoOriginBlockLocalStorageRepository,
-  XyoFileSystemStorageProvider,
   XyoDefaultPackerProvider,
   XyoSha256HashProvider
 } from "xyo-sdk-core";
@@ -24,19 +23,18 @@ import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";
 import path from 'path';
 import { GetPayloadsFromBlockResolver } from "./graphql-api/resolvers/get-payloads-from-block-resolver";
 import { GetPublicKeysFromBlockResolver } from "./graphql-api/resolvers/get-public-keys-from-block-resolver";
+import { XyoLevelDbStorageProvider } from "./leveldb-storage-provider/level-db-storage-provider";
 
 export async function startArchivist(dataDirectory: string) {
   const packerProvider = new XyoDefaultPackerProvider();
   const packer = packerProvider.getXyoPacker();
 
-  const originBlocksStorageProvider = new XyoFileSystemStorageProvider(
-    path.join(dataDirectory, `origin-blocks`),
-    'hex'
+  const originBlocksStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `origin-blocks`)
   );
 
-  const originBlockNextHashStorageProvider = new XyoFileSystemStorageProvider(
-    path.join(dataDirectory, `next-hash-index`),
-    'hex'
+  const originBlockNextHashStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `next-hash-index`)
   );
 
   const hashingProvider = new XyoSha256HashProvider();
