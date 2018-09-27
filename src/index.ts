@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 24th September 2018 10:05:36 am
+ * @Last modified time: Thursday, 27th September 2018 1:29:56 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -57,5 +57,5 @@ export async function startArchivist(dataDirectory: string) {
 }
 
 if (require.main === module) {
-  startArchivist(process.argv[2]);
+  startArchivist('/Users/ryan/dev/projects/sdk-archivist-nodejs/data/9080');
 }
