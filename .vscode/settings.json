@@ -5,6 +5,7 @@
     "Truthy",
     "deserialize",
     "hasher",
+    "leveldb",
     "rssi",
     "ryanxyo",
     "xyfindables"

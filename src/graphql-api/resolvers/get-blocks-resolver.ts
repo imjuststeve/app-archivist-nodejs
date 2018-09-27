@@ -14,8 +14,6 @@ export class GetBlocksResolver extends XyoBaseDataResolver implements XyoDataRes
   }
 
   public async resolve (obj: any, args: any, context: any, info: any): Promise<any> {
-    this.logInfo(obj, args, context, info);
-
     const blocks = await this.archivistRepository.getOriginBlocksWithPublicKey(
       this.xyoPacker.deserialize(Buffer.from(args.publicKeys[0], 'hex'))
     );
