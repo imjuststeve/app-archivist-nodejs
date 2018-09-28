@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 1:48:10 pm
+ * @Last modified time: Thursday, 27th September 2018 4:22:53 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -34,6 +34,7 @@ import { XyoSimpleSentinel } from './xyo-simple-sentinel';
 
 const mkdir = promisify(fs.mkdir);
 const logger = new XyoLogger();
+const stat = promisify(fs.stat);
 
 if (require.main === module) {
   main();
@@ -58,7 +59,13 @@ async function createSentinel(
   signerProvider: XyoSignerProvider
 ) {
   const sentinelDataPath = path.join(dataPath, String('sentinel'));
-  await mkdir(sentinelDataPath, null);
+  try {
+    await stat(sentinelDataPath);
+  } catch (err) {
+    if (err.code && err.code === 'ENOENT') {
+      await mkdir(sentinelDataPath, null);
+    }
+  }
   const xyoSigner = signerProvider.newInstance();
   const originChainStorageProvider = new XyoLevelDbStorageProvider(
     path.join(sentinelDataPath, `origin-chain`)
@@ -129,9 +136,13 @@ async function createSentinel(
     }
   };
 
+  if ((await originChainStateRepository.getSigners()).length === 0) {
+    originChainStateRepository.addSigner(signerProvider.newInstance());
+  }
+
   const sentinel = new XyoSimpleSentinel(
     new SimpleNetworkAddressProvider(ports),
-    [xyoSigner],
+    await originChainStateRepository.getSigners(),
     hashProvider,
     originChainStateRepository,
     originBlockRepository,

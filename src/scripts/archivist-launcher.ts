@@ -4,10 +4,11 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 1:47:30 pm
+ * @Last modified time: Thursday, 27th September 2018 4:22:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
+
 import { promisify } from 'util';
 
 import _ from 'lodash';
@@ -30,8 +31,15 @@ import {
 
 import { XyoArchivist } from './xyo-archivist';
 import { XyoLevelDbStorageProvider } from '../leveldb-storage-provider/level-db-storage-provider';
+import { GraphQLServer } from '../graphql-api/server';
+import { GraphqlSchemaBuilder } from '../graphql-api/graphql-schema-builder';
+import { GetBlocksByPublicKeyResolver } from '../graphql-api/resolvers/get-blocks-by-public-key-resolver';
+import { GetPayloadsFromBlockResolver } from '../graphql-api/resolvers/get-payloads-from-block-resolver';
+import { GetPublicKeysFromBlockResolver } from '../graphql-api/resolvers/get-public-keys-from-block-resolver';
+import { XyoArchivistLocalStorageRepository } from '../xyo-archivist-repository/xyo-archivist-local-storage-repository';
 
 const mkdir = promisify(fs.mkdir);
+const stat = promisify(fs.stat);
 const logger = new XyoLogger();
 
 if (require.main === module) {
@@ -61,8 +69,13 @@ async function createArchivist(
   signerProvider: XyoSignerProvider
 ) {
   const archivistDataPath = path.join(dataPath, String(port));
-  await mkdir(archivistDataPath, null);
-  const xyoSigner = signerProvider.newInstance();
+  try {
+    await stat(archivistDataPath);
+  } catch (err) {
+    if (err.code && err.code === 'ENOENT') {
+      await mkdir(archivistDataPath, null);
+    }
+  }
 
   const originChainStorageProvider = new XyoLevelDbStorageProvider(
     path.join(archivistDataPath, `origin-chain`)
@@ -134,15 +147,29 @@ async function createArchivist(
     }
   };
 
+  if ((await originChainStateRepository.getSigners()).length === 0) {
+    originChainStateRepository.addSigner(signerProvider.newInstance());
+  }
+
   const archivist = new XyoArchivist(
     port,
-    [xyoSigner],
+    await originChainStateRepository.getSigners(),
     hashProvider,
     originChainStateRepository,
     originBlockRepository,
     boundWitnessSuccessListener,
     packer
   );
+
+  const archivistRepository = new XyoArchivistLocalStorageRepository(originBlockRepository, packer);
+
+  const server = new GraphQLServer(
+    new GraphqlSchemaBuilder().buildSchema(),
+    new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashProvider),
+    new GetPayloadsFromBlockResolver(packer, hashProvider),
+    new GetPublicKeysFromBlockResolver(packer, hashProvider),
+    port + 1000
+  ).start();
 
   archivist.start();
 }

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 1:29:56 pm
+ * @Last modified time: Thursday, 27th September 2018 4:17:03 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -18,7 +18,7 @@ import {
   XyoSha256HashProvider
 } from "xyo-sdk-core";
 
-import { GetBlocksResolver } from "./graphql-api/resolvers/get-blocks-resolver";
+import { GetBlocksByPublicKeyResolver } from "./graphql-api/resolvers/get-blocks-by-public-key-resolver";
 import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";
 import path from 'path';
 import { GetPayloadsFromBlockResolver } from "./graphql-api/resolvers/get-payloads-from-block-resolver";
@@ -50,9 +50,10 @@ export async function startArchivist(dataDirectory: string) {
 
   await new GraphQLServer(
     new GraphqlSchemaBuilder().buildSchema(),
-    new GetBlocksResolver(archivistRepository, packer, hashingProvider),
+    new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashingProvider),
     new GetPayloadsFromBlockResolver(packer, hashingProvider),
-    new GetPublicKeysFromBlockResolver(packer, hashingProvider)
+    new GetPublicKeysFromBlockResolver(packer, hashingProvider),
+    4000
   ).start();
 }
 

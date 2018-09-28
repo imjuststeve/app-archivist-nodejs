@@ -1,5 +1,5 @@
 # import XyoBlockCollection from "xyo-block-collection.graphql"
 
 type Query {
-  blocks(publicKeys: [String!]): [XyoBlockCollection]
+  blocksByPublicKey(publicKeys: [String!]): [XyoBlockCollection]
 }

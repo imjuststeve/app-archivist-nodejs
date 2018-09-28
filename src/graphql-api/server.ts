@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 24th September 2018 11:32:21 am
+ * @Last modified time: Thursday, 27th September 2018 4:15:47 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -18,9 +18,10 @@ export class GraphQLServer extends XyoBase {
 
   constructor(
     private readonly schema: string,
-    private readonly getBlocksResolver: XyoDataResolver<any, any, any, any>,
+    private readonly getBlocksByPublicKeyResolver: XyoDataResolver<any, any, any, any>,
     private readonly getPayloadsFromBlockResolver: XyoDataResolver<any, any, any, any>,
-    private readonly getPublicKeysFromBlockResolver: XyoDataResolver<any, any, any, any>
+    private readonly getPublicKeysFromBlockResolver: XyoDataResolver<any, any, any, any>,
+    private readonly port: number
   ) {
     super();
 
@@ -29,7 +30,7 @@ export class GraphQLServer extends XyoBase {
   }
 
   public start (): Promise<void> {
-    return this.server.listen().then(({ url }) => {
+    return this.server.listen({ port: this.port }).then(({ url }) => {
       this.logInfo(`Graphql server ready at ${url}`);
     });
   }
@@ -37,18 +38,18 @@ export class GraphQLServer extends XyoBase {
   private initialize () {
     const resolvers: IResolvers = {
       Query: {
-        blocks: (obj: any, args: any, context: any, info: any) => {
-          return this.getBlocksResolver.resolve(obj, args, context, info);
+        blocksByPublicKey: (obj: any, args: any, context: any, info: any) => {
+          return this.getBlocksByPublicKeyResolver.resolve(obj, args, context, info);
         }
       },
-      XyoBlock: {
-        payloads: (obj: any, args: any, context: any, info: any) => {
-          return this.getPayloadsFromBlockResolver.resolve(obj, args, context, info);
-        },
-        publicKeys: (obj: any, args: any, context: any, info: any) => {
-          this.getPublicKeysFromBlockResolver.resolve(obj, args, context, info);
-        }
-      }
+      // XyoBlock: {
+      //   payloads: (obj: any, args: any, context: any, info: any) => {
+      //     return this.getPayloadsFromBlockResolver.resolve(obj, args, context, info);
+      //   },
+      //   publicKeys: (obj: any, args: any, context: any, info: any) => {
+      //     this.getPublicKeysFromBlockResolver.resolve(obj, args, context, info);
+      //   }
+      // }
     };
 
     const typeDefs = gql(this.schema);

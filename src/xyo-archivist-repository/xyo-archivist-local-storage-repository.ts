@@ -4,39 +4,39 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 24th September 2018 11:51:03 am
+ * @Last modified time: Thursday, 27th September 2018 3:02:53 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { XyoArchivistRepository } from ".";
-import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository } from "xyo-sdk-core";
+import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository, XyoOriginBlockRepository } from "xyo-sdk-core";
 
 export class XyoArchivistLocalStorageRepository implements XyoArchivistRepository {
 
   constructor (
-    private readonly originBlockLocalStorageRepository: XyoOriginBlockLocalStorageRepository,
+    private readonly originBlockRepository: XyoOriginBlockRepository,
     private readonly xyoPacker: XyoPacker) {
   }
 
   public removeOriginBlock(hash: Buffer): Promise<void> {
-    return this.originBlockLocalStorageRepository.removeOriginBlock(hash);
+    return this.originBlockRepository.removeOriginBlock(hash);
   }
 
   public containsOriginBlock(hash: Buffer): Promise<boolean> {
-    return this.originBlockLocalStorageRepository.containsOriginBlock(hash);
+    return this.originBlockRepository.containsOriginBlock(hash);
   }
 
   public getAllOriginBlockHashes(): Promise<Buffer[]> {
-    return this.originBlockLocalStorageRepository.getAllOriginBlockHashes();
+    return this.originBlockRepository.getAllOriginBlockHashes();
   }
 
   public addOriginBlock(hash: XyoHash, originBlock: XyoBoundWitness): Promise<void> {
-    return this.originBlockLocalStorageRepository.addOriginBlock(hash, originBlock);
+    return this.originBlockRepository.addOriginBlock(hash, originBlock);
   }
 
   public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
-    return this.originBlockLocalStorageRepository.getOriginBlockByHash(hash);
+    return this.originBlockRepository.getOriginBlockByHash(hash);
   }
 
   public async getOriginBlocksWithPublicKey(publicKey: XyoObject): Promise<XyoBoundWitness[]> {
