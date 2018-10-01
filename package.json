@@ -6,9 +6,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
-    "build": "yarn build-ts && yarn tslint && cp -r src/bin dist/bin",
+    "build": "yarn build-ts && yarn tslint && cp -r src/bin bin",
     "build-ts": "tsc",
-    "dist": "yarn install && tsc -p tsconfig.build.json && yarn tslint && cp -r src/bin dist/bin",
+    "dist": "yarn install && tsc -p tsconfig.build.json && yarn tslint && cp -r src/bin bin",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "tslint-fix": "tslint -c tslint.json -p tsconfig.json --fix",
     "precommit": "echo \"Build must pass before committing\" && yarn build"
