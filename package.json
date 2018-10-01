@@ -11,7 +11,8 @@
     "dist": "yarn install && tsc -p tsconfig.build.json && yarn tslint",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "tslint-fix": "tslint -c tslint.json -p tsconfig.json --fix",
-    "precommit": "echo \"Build must pass before committing\" && yarn build"
+    "precommit": "echo \"Build must pass before committing\" && yarn build",
+    "install": "yarn build-ts"
   },
   "bin": {
     "xyo-archivist": "dist/scripts/archivist-launcher.js"
