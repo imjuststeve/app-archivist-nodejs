@@ -13,7 +13,10 @@
     "tslint-fix": "tslint -c tslint.json -p tsconfig.json --fix",
     "precommit": "echo \"Build must pass before committing\" && yarn build",
     "install": "yarn build-ts"
-  },  
+  },
+  "bin": {
+    "xyo-archivist": "bin/xyo-archivist"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs.git"
