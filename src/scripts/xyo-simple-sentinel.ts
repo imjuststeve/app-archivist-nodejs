@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 1:02:27 pm
+ * @Last modified time: Friday, 28th September 2018 3:01:44 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -38,31 +38,21 @@ export class XyoSimpleSentinel extends XyoNode {
 
   constructor (
     networkAddressProvider: XyoNetworkAddressProvider,
-    signers: XyoSigner[],
     hashingProvider: XyoHashProvider,
     originChainStateRepository: XyoOriginChainStateRepository,
     originBlocksRepository: XyoOriginBlockRepository,
     boundWitnessSuccessListener: XyoBoundWitnessSuccessListener,
-    packer: XyoPacker
+    packer: XyoPacker,
+    catalogue: XyoNetworkProcedureCatalogue
   ) {
-    const network = new XyoClientTcpNetwork(
-      networkAddressProvider,
-      [CatalogueItem.BOUND_WITNESS, CatalogueItem.GIVE_ORIGIN_CHAIN]
-    );
 
+    const network = new XyoClientTcpNetwork(networkAddressProvider);
     const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProviderImpl();
-
-    const catalogue: XyoNetworkProcedureCatalogue = {
-      canDo(catalogueItem: CatalogueItem) {
-        return catalogueItem === CatalogueItem.BOUND_WITNESS || catalogueItem === CatalogueItem.TAKE_ORIGIN_CHAIN;
-      }
-    };
 
     const peerConnectionDelegate = new XyoPeerConnectionProviderFactory(
       network,
       catalogue,
       packer,
-      signers,
       hashingProvider,
       originChainStateRepository,
       originBlocksRepository,

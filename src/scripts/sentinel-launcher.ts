@@ -4,166 +4,181 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 4:22:53 pm
+ * @Last modified time: Friday, 28th September 2018 5:31:58 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { promisify } from 'util';
-
 import path from 'path';
-import fs from 'fs';
 
 import {
-  XyoLogger,
-  XyoBoundWitness,
   XyoEcSecp256kSignerProvider,
   XyoSha256HashProvider,
   XyoDefaultPackerProvider,
   XyoOriginChainLocalStorageRepository,
   XyoOriginBlockLocalStorageRepository,
   XyoBoundWitnessSuccessListener,
-  XyoNetworkAddressProvider,
   XyoSignerProvider,
   XyoPacker,
-  XyoHashProvider
+  XyoHashProvider,
+  XyoNetworkProcedureCatalogue,
+  XYOStorageProvider,
+  XyoOriginChainStateRepository,
+  XyoOriginBlockRepository,
+  XyoError,
+  XyoNetworkAddressProvider,
+  XyoBase
 } from 'xyo-sdk-core';
 
-import { XyoLevelDbStorageProvider } from '../leveldb-storage-provider/level-db-storage-provider';
 import { XyoSimpleSentinel } from './xyo-simple-sentinel';
+import { createDirectoryIfNotExists } from '../utils/file-system-utils';
+import { XyoSimpleNetworkAddressProvider } from '../utils/xyo-simple-network-address-provider';
+import { getLevelDbStore } from '../utils/leveldb-storage-provider-store';
 
-const mkdir = promisify(fs.mkdir);
-const logger = new XyoLogger();
-const stat = promisify(fs.stat);
+import { XyoSimpleSentinelNetworkProcedureCatalogue } from '../utils/xyo-simple-sentinel-network-procedure-catalogue';
+import { XyoSimpleBoundWitnessSuccessListener } from '../utils/xyo-simple-bound-witness-success-listener';
+
+import program from 'commander';
+
+export class XyoSentinelLauncher extends XyoBase {
+
+  public static async main(argv: string[]) {
+    program
+      .version('0.1.0')
+      .option(
+        '-a, --addresses <n>', 'A comma-separated list of the addresses of other nodes', (val: string) => val.split(',')
+      )
+      .option('-d, --data <s>', 'The directory of the data folder')
+      .parse(argv);
+
+    const dataPath: string = program.data;
+    const addresses: string[] = program.addresses;
+
+    const networkAddresses = addresses.map((address) => {
+      const parts = address.split(':');
+      return {
+        host: parts[0],
+        port: parseInt(parts[1], 10)
+      };
+    });
+
+    const hashProvider = new XyoSha256HashProvider();
+    const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
+    const packer = new XyoDefaultPackerProvider().getXyoPacker();
+    const sentinelLaunch = new XyoSentinelLauncher({
+      packer,
+      hashProvider,
+      dataPath,
+      networkAddresses,
+      signerProvider
+    });
+
+    const sentinel = await sentinelLaunch.start();
+    sentinel.start();
+  }
+
+  public addressProvider: XyoNetworkAddressProvider | undefined;
+  public hashProvider: XyoHashProvider | undefined;
+  public originChainStateRepository: XyoOriginChainStateRepository | undefined;
+  public originBlockRepository: XyoOriginBlockRepository | undefined;
+  public successListener: XyoBoundWitnessSuccessListener | undefined;
+  public packer: XyoPacker | undefined;
+  public networkProcedureCatalogue: XyoNetworkProcedureCatalogue | undefined;
+  public sentinel: XyoSimpleSentinel | undefined;
+
+  constructor(private readonly options: XyoSentinelLauncherOptions) {
+    super();
+  }
+
+  public async start() {
+    const opts = this.options;
+    this.originChainStateRepository = opts.originChainStateRepository;
+    let originBlocksStorageProvider: XYOStorageProvider;
+    let originBlockNextHashStorageProvider: XYOStorageProvider;
+    this.originBlockRepository = opts.originBlockRepository;
+    this.packer = opts.packer || new XyoDefaultPackerProvider().getXyoPacker();
+
+    this.hashProvider = opts.hashProvider || new XyoSha256HashProvider();
+
+    if (opts.dataPath) {
+      await createDirectoryIfNotExists(opts.dataPath);
+      const originChainStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-chain`));
+      this.originChainStateRepository = new XyoOriginChainLocalStorageRepository(
+        originChainStorageProvider,
+        this.packer
+      );
+      originBlocksStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-blocks`));
+      originBlockNextHashStorageProvider = getLevelDbStore(path.join(opts.dataPath, `next-hash-index`));
+      this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
+        this.packer,
+        originBlocksStorageProvider,
+        originBlockNextHashStorageProvider,
+        this.hashProvider
+      );
+    }
+
+    if (opts.originBlocksStorageProvider && opts.originBlockNextHashStorageProvider) {
+      this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
+        this.packer,
+        opts.originBlocksStorageProvider,
+        opts.originBlockNextHashStorageProvider,
+        this.hashProvider
+      );
+    }
+
+    this.successListener = opts.boundWitnessSuccessListener ||
+      new XyoSimpleBoundWitnessSuccessListener(this.packer, this.hashProvider);
+
+    if (!this.originChainStateRepository) {
+      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    if (!this.originBlockRepository) {
+      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    if (opts.signerProvider && (await this.originChainStateRepository.getSigners()).length === 0) {
+      await this.originChainStateRepository.addSigner(opts.signerProvider.newInstance());
+    }
+
+    this.networkProcedureCatalogue = opts.catalogue || new XyoSimpleSentinelNetworkProcedureCatalogue();
+    this.addressProvider = opts.networkAddressProvider;
+
+    if (!this.addressProvider && opts.networkAddresses) {
+      this.addressProvider = new XyoSimpleNetworkAddressProvider(opts.networkAddresses);
+    } else {
+      throw new XyoError(`Could not resolve AddressProvider`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    this.sentinel = new XyoSimpleSentinel(
+      this.addressProvider,
+      this.hashProvider,
+      this.originChainStateRepository,
+      this.originBlockRepository,
+      this.successListener,
+      this.packer,
+      this.networkProcedureCatalogue
+    );
+
+    return this.sentinel;
+  }
+}
 
 if (require.main === module) {
-  main();
+  XyoSentinelLauncher.main(process.argv);
 }
 
-async function main() {
-  const hashProvider = new XyoSha256HashProvider();
-  const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
-  const packer = new XyoDefaultPackerProvider().getXyoPacker();
-  const dataPath = path.resolve('data');
-  logger.info(dataPath);
-  const startingPort = 9080;
-
-  await createSentinel(packer, hashProvider, dataPath, [startingPort], signerProvider);
-}
-
-async function createSentinel(
-  packer: XyoPacker,
-  hashProvider: XyoHashProvider,
-  dataPath: string,
-  ports: number[],
-  signerProvider: XyoSignerProvider
-) {
-  const sentinelDataPath = path.join(dataPath, String('sentinel'));
-  try {
-    await stat(sentinelDataPath);
-  } catch (err) {
-    if (err.code && err.code === 'ENOENT') {
-      await mkdir(sentinelDataPath, null);
-    }
-  }
-  const xyoSigner = signerProvider.newInstance();
-  const originChainStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(sentinelDataPath, `origin-chain`)
-  );
-
-  const originBlocksStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(sentinelDataPath, `origin-blocks`)
-  );
-
-  const originBlockNextHashStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(sentinelDataPath, `next-hash-index`)
-  );
-
-  const originBlockRepository = new XyoOriginBlockLocalStorageRepository(
-    packer,
-    originBlocksStorageProvider,
-    originBlockNextHashStorageProvider,
-    hashProvider
-  );
-
-  const originChainStateRepository = new XyoOriginChainLocalStorageRepository(originChainStorageProvider, packer);
-  const boundWitnessSuccessListener: XyoBoundWitnessSuccessListener = {
-    async onBoundWitnessSuccess(boundWitness: XyoBoundWitness): Promise<void> {
-      logger.info(`Sentinel: Bound Witness Success. Resting 5 sec`);
-
-      const publicKeys = boundWitness.publicKeys.map((publicKeySet) => {
-        return publicKeySet.array.map((publicKey) => {
-          return packer.serialize(publicKey, publicKey.major, publicKey.minor, true).toString('hex');
-        });
-      });
-
-      const signatures = boundWitness.signatures.map((signatureSet) => {
-        return signatureSet.array.map((signature) => {
-          return packer.serialize(signature, signature.major, signature.minor, true).toString('hex');
-        });
-      });
-
-      const signedPayloads = boundWitness.payloads.map((payloads) => {
-        return payloads.signedPayload.array.map((signedPayload) => {
-          return packer.serialize(signedPayload, signedPayload.major, signedPayload.minor, true).toString('hex');
-        });
-      });
-
-      const unsignedPayloads = boundWitness.payloads.map((payloads) => {
-        return payloads.unsignedPayload.array.map((unsignedPayload) => {
-          return packer.serialize(unsignedPayload, unsignedPayload.major, unsignedPayload.minor, true).toString('hex');
-        });
-      });
-
-      const hash = await boundWitness.getHash(hashProvider);
-
-      const digest = JSON.stringify({
-        publicKeys,
-        signatures,
-        signedPayloads,
-        unsignedPayloads,
-        hash: packer.serialize(hash, hash.major, hash.minor, true).toString('hex')
-      }, null, '\t');
-
-      logger.info(digest);
-
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          logger.info(`Sentinel: Coming back up to speed`);
-          resolve();
-        }, 5000);
-      }) as Promise<void>;
-    }
-  };
-
-  if ((await originChainStateRepository.getSigners()).length === 0) {
-    originChainStateRepository.addSigner(signerProvider.newInstance());
-  }
-
-  const sentinel = new XyoSimpleSentinel(
-    new SimpleNetworkAddressProvider(ports),
-    await originChainStateRepository.getSigners(),
-    hashProvider,
-    originChainStateRepository,
-    originBlockRepository,
-    boundWitnessSuccessListener,
-    packer
-  );
-
-  sentinel.start();
-}
-
-class SimpleNetworkAddressProvider implements XyoNetworkAddressProvider {
-  private index = 0;
-
-  constructor(private readonly ports: number[]) {}
-
-  public async next() {
-    const port = this.ports[this.index % this.ports.length];
-    this.index += 1;
-    return {
-      host: 'localhost',
-      port
-    };
-  }
+export interface XyoSentinelLauncherOptions {
+  packer?: XyoPacker;
+  hashProvider?: XyoHashProvider;
+  dataPath?: string;
+  signerProvider?: XyoSignerProvider;
+  catalogue?: XyoNetworkProcedureCatalogue;
+  boundWitnessSuccessListener?: XyoBoundWitnessSuccessListener;
+  originBlockRepository?: XyoOriginBlockRepository;
+  originChainStateRepository?: XyoOriginChainStateRepository;
+  originBlocksStorageProvider?: XYOStorageProvider;
+  originBlockNextHashStorageProvider?: XYOStorageProvider;
+  networkAddresses: Array<{port: number, host: string}>; // tslint:disable-line:prefer-array-literal
+  networkAddressProvider?: XyoNetworkAddressProvider;
 }

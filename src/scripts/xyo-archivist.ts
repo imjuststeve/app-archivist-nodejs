@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 1:02:41 pm
+ * @Last modified time: Friday, 28th September 2018 2:59:00 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -37,7 +37,6 @@ export class XyoArchivist extends XyoNode {
 
   constructor (
     port: number,
-    signers: XyoSigner[],
     hashingProvider: XyoHashProvider,
     originChainStateRepository: XyoOriginChainStateRepository,
     originBlocksRepository: XyoOriginBlockRepository,
@@ -46,9 +45,16 @@ export class XyoArchivist extends XyoNode {
   ) {
     const network = new XyoServerTcpNetwork(port);
     const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProviderImpl();
+
     const catalogue: XyoNetworkProcedureCatalogue = {
       canDo(catalogueItem: CatalogueItem) {
-        return catalogueItem === CatalogueItem.BOUND_WITNESS;
+        return catalogueItem === CatalogueItem.BOUND_WITNESS || catalogueItem === CatalogueItem.GIVE_ORIGIN_CHAIN;
+      },
+      getCurrentCatalogue() {
+        return [
+          CatalogueItem.BOUND_WITNESS,
+          CatalogueItem.GIVE_ORIGIN_CHAIN
+        ];
       }
     };
 
@@ -56,7 +62,6 @@ export class XyoArchivist extends XyoNode {
       network,
       catalogue,
       packer,
-      signers,
       hashingProvider,
       originChainStateRepository,
       originBlocksRepository,

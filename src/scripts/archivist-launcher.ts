@@ -4,16 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 4:22:18 pm
+ * @Last modified time: Friday, 28th September 2018 5:32:36 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { promisify } from 'util';
-
-import _ from 'lodash';
 import path from 'path';
-import fs from 'fs';
 
 import {
   XyoLogger,
@@ -26,150 +22,147 @@ import {
   XyoBoundWitnessSuccessListener,
   XyoSignerProvider,
   XyoPacker,
-  XyoHashProvider
+  XyoHashProvider,
+  XyoBase,
+  XyoOriginChainStateRepository,
+  XyoOriginBlockRepository,
+  XyoError
 } from 'xyo-sdk-core';
 
 import { XyoArchivist } from './xyo-archivist';
-import { XyoLevelDbStorageProvider } from '../leveldb-storage-provider/level-db-storage-provider';
 import { GraphQLServer } from '../graphql-api/server';
 import { GraphqlSchemaBuilder } from '../graphql-api/graphql-schema-builder';
 import { GetBlocksByPublicKeyResolver } from '../graphql-api/resolvers/get-blocks-by-public-key-resolver';
 import { GetPayloadsFromBlockResolver } from '../graphql-api/resolvers/get-payloads-from-block-resolver';
 import { GetPublicKeysFromBlockResolver } from '../graphql-api/resolvers/get-public-keys-from-block-resolver';
 import { XyoArchivistLocalStorageRepository } from '../xyo-archivist-repository/xyo-archivist-local-storage-repository';
+import { createDirectoryIfNotExists } from '../utils/file-system-utils';
 
-const mkdir = promisify(fs.mkdir);
-const stat = promisify(fs.stat);
-const logger = new XyoLogger();
+import program from 'commander';
+import { getLevelDbStore } from '../utils/leveldb-storage-provider-store';
+import { XyoSimpleBoundWitnessSuccessListener } from '../utils/xyo-simple-bound-witness-success-listener';
 
 if (require.main === module) {
-  main();
+  program
+    .version('0.1.0')
+    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt)
+    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt)
+    .option('-d, --data <s>', 'The directory of the data folder')
+    .parse(process.argv);
+
+  main(program.data as string, program.port as number, program.graphql as number | undefined);
 }
 
-async function main() {
+async function main(dataPath: string, port: number, graphqlPort: number | undefined) {
   const hashProvider = new XyoSha256HashProvider();
   const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
   const packer = new XyoDefaultPackerProvider().getXyoPacker();
-  const dataPath = path.resolve('data');
-  logger.info(dataPath);
-  const startingPort = 9080;
+  const archivistLauncher = new XyoArchivistLauncher({
+    port, graphqlPort, packer, hashProvider, dataPath, signerProvider
+  });
 
-  const ports = await Promise.all(_.times(1, async (index) => {
-    const port = startingPort + index;
-    await createArchivist(port, packer, hashProvider, dataPath, signerProvider);
-    return port;
-  }));
+  await archivistLauncher.start();
 }
 
-async function createArchivist(
-  port: number,
-  packer: XyoPacker,
-  hashProvider: XyoHashProvider,
-  dataPath: string,
-  signerProvider: XyoSignerProvider
-) {
-  const archivistDataPath = path.join(dataPath, String(port));
-  try {
-    await stat(archivistDataPath);
-  } catch (err) {
-    if (err.code && err.code === 'ENOENT') {
-      await mkdir(archivistDataPath, null);
-    }
+export class XyoArchivistLauncher extends XyoBase {
+
+  public static main(argv: string[]) {
+    program
+    .version('0.1.0')
+    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt)
+    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt)
+    .option('-d, --data <s>', 'The directory of the data folder')
+    .parse(argv);
+
+    main(program.data as string, program.port as number, program.graphql as number | undefined);
   }
 
-  const originChainStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(archivistDataPath, `origin-chain`)
-  );
+  public originChainStateRepository: XyoOriginChainStateRepository | undefined;
+  public packer: XyoPacker | undefined;
+  public originBlockRepository: XyoOriginBlockRepository | undefined;
+  public hashProvider: XyoHashProvider | undefined;
+  public boundWitnessSuccessListener: XyoBoundWitnessSuccessListener | undefined;
+  public archivist: XyoArchivist | undefined;
 
-  const originBlocksStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(archivistDataPath, `origin-blocks`)
-  );
-
-  const originBlockNextHashStorageProvider = new XyoLevelDbStorageProvider(
-    path.join(archivistDataPath, `next-hash-index`)
-  );
-
-  const originBlockRepository = new XyoOriginBlockLocalStorageRepository(
-    packer,
-    originBlocksStorageProvider,
-    originBlockNextHashStorageProvider,
-    hashProvider
-  );
-
-  const originChainStateRepository = new XyoOriginChainLocalStorageRepository(originChainStorageProvider, packer);
-
-  const boundWitnessSuccessListener: XyoBoundWitnessSuccessListener = {
-    async onBoundWitnessSuccess(boundWitness: XyoBoundWitness): Promise<void> {
-      logger.info(`Port ${port}: Bound Witness Success. Resting 5 sec`);
-
-      const publicKeys = boundWitness.publicKeys.map((publicKeySet) => {
-        return publicKeySet.array.map((publicKey) => {
-          return packer.serialize(publicKey, publicKey.major, publicKey.minor, true).toString('hex');
-        });
-      });
-
-      const signatures = boundWitness.signatures.map((signatureSet) => {
-        return signatureSet.array.map((signature) => {
-          return packer.serialize(signature, signature.major, signature.minor, true).toString('hex');
-        });
-      });
-
-      const signedPayloads = boundWitness.payloads.map((payloads) => {
-        return payloads.signedPayload.array.map((signedPayload) => {
-          return packer.serialize(signedPayload, signedPayload.major, signedPayload.minor, true).toString('hex');
-        });
-      });
-
-      const unsignedPayloads = boundWitness.payloads.map((payloads) => {
-        return payloads.unsignedPayload.array.map((unsignedPayload) => {
-          return packer.serialize(unsignedPayload, unsignedPayload.major, unsignedPayload.minor, true).toString('hex');
-        });
-      });
-
-      const hash = await boundWitness.getHash(hashProvider);
-
-      const digest = JSON.stringify({
-        publicKeys,
-        signatures,
-        signedPayloads,
-        unsignedPayloads,
-        hash: packer.serialize(hash, hash.major, hash.minor, true).toString('hex')
-      }, null, '\t');
-
-      logger.info(digest);
-
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          logger.info(`Port ${port}: Coming back up to speed`);
-          resolve();
-        }, 5000);
-      }) as Promise<void>;
-    }
-  };
-
-  if ((await originChainStateRepository.getSigners()).length === 0) {
-    originChainStateRepository.addSigner(signerProvider.newInstance());
+  constructor(private readonly options: XyoArchivistLaunchOptions) {
+    super();
   }
 
-  const archivist = new XyoArchivist(
-    port,
-    await originChainStateRepository.getSigners(),
-    hashProvider,
-    originChainStateRepository,
-    originBlockRepository,
-    boundWitnessSuccessListener,
-    packer
-  );
+  public async start() {
+    const opts = this.options;
+    this.originChainStateRepository = opts.originChainStateRepository;
+    this.originBlockRepository = opts.originBlockRepository;
+    this.packer = opts.packer || new XyoDefaultPackerProvider().getXyoPacker();
+    this.hashProvider = opts.hashProvider || new XyoSha256HashProvider();
 
-  const archivistRepository = new XyoArchivistLocalStorageRepository(originBlockRepository, packer);
+    if (opts.dataPath) {
+      await createDirectoryIfNotExists(opts.dataPath);
+      const originChainStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-chain`));
+      const originBlocksStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-blocks`));
+      const originBlockNextHashStorageProvider = getLevelDbStore(path.join(opts.dataPath, `next-hash-index`));
 
-  const server = new GraphQLServer(
-    new GraphqlSchemaBuilder().buildSchema(),
-    new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashProvider),
-    new GetPayloadsFromBlockResolver(packer, hashProvider),
-    new GetPublicKeysFromBlockResolver(packer, hashProvider),
-    port + 1000
-  ).start();
+      this.originChainStateRepository = new XyoOriginChainLocalStorageRepository(
+        originChainStorageProvider,
+        this.packer
+      );
 
-  archivist.start();
+      this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
+        this.packer,
+        originBlocksStorageProvider,
+        originBlockNextHashStorageProvider,
+        this.hashProvider
+      );
+    }
+
+    this.boundWitnessSuccessListener = opts.boundWitnessSuccessListener ||
+      new XyoSimpleBoundWitnessSuccessListener(this.packer, this.hashProvider);
+
+    if (!this.originChainStateRepository) {
+      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    if (!this.originBlockRepository) {
+      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    if (opts.signerProvider && (await this.originChainStateRepository.getSigners()).length === 0) {
+      await this.originChainStateRepository.addSigner(opts.signerProvider.newInstance());
+    }
+
+    this.archivist = new XyoArchivist(
+      opts.port,
+      this.hashProvider,
+      this.originChainStateRepository,
+      this.originBlockRepository,
+      this.boundWitnessSuccessListener,
+      this.packer
+    );
+
+    const archivistRepository = new XyoArchivistLocalStorageRepository(this.originBlockRepository, this.packer);
+
+    if (opts.graphqlPort) {
+      new GraphQLServer(
+        new GraphqlSchemaBuilder().buildSchema(),
+        new GetBlocksByPublicKeyResolver(archivistRepository, this.packer, this.hashProvider),
+        new GetPayloadsFromBlockResolver(this.packer, this.hashProvider),
+        new GetPublicKeysFromBlockResolver(this.packer, this.hashProvider),
+        opts.graphqlPort
+      )
+      .start();
+    }
+
+    return this.archivist;
+  }
+}
+
+export interface XyoArchivistLaunchOptions {
+  port: number;
+  graphqlPort?: number;
+  packer?: XyoPacker;
+  hashProvider?: XyoHashProvider;
+  dataPath?: string;
+  signerProvider?: XyoSignerProvider;
+  originChainStateRepository?: XyoOriginChainStateRepository;
+  originBlockRepository?: XyoOriginBlockRepository;
+  boundWitnessSuccessListener?: XyoBoundWitnessSuccessListener;
 }
