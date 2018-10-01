@@ -14,9 +14,6 @@
     "precommit": "echo \"Build must pass before committing\" && yarn build",
     "install": "yarn build-ts"
   },
-  "bin": {
-    "xyo-archivist": "dist/scripts/archivist-launcher.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs.git"
