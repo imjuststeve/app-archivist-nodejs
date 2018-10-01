@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 4:15:47 pm
+ * @Last modified time: Monday, 1st October 2018 3:56:44 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -42,14 +42,14 @@ export class GraphQLServer extends XyoBase {
           return this.getBlocksByPublicKeyResolver.resolve(obj, args, context, info);
         }
       },
-      // XyoBlock: {
-      //   payloads: (obj: any, args: any, context: any, info: any) => {
-      //     return this.getPayloadsFromBlockResolver.resolve(obj, args, context, info);
-      //   },
-      //   publicKeys: (obj: any, args: any, context: any, info: any) => {
-      //     this.getPublicKeysFromBlockResolver.resolve(obj, args, context, info);
-      //   }
-      // }
+      XyoBlock: {
+        payloads: (obj: any, args: any, context: any, info: any) => {
+          return this.getPayloadsFromBlockResolver.resolve(obj, args, context, info);
+        },
+        publicKeys: (obj: any, args: any, context: any, info: any) => {
+          this.getPublicKeysFromBlockResolver.resolve(obj, args, context, info);
+        }
+      }
     };
 
     const typeDefs = gql(this.schema);

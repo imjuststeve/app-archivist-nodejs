@@ -1,6 +1,0 @@
-# import XyoBlock from "xyo-block.graphql"
-
-type XyoBlockCollection {
-  publicKey: String!
-  blocks: [XyoBlock]
-}

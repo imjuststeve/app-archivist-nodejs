@@ -47,6 +47,7 @@
     "levelup": "^3.1.1",
     "lodash": "^4.17.11",
     "node-rsa": "^1.0.1",
+    "xyo-api-originchain-graphql": "https://github.com/XYOracleNetwork/api-originchain-graphql.git#v.0.1.1-beta",
     "xyo-sdk-core": "https://github.com/XYOracleNetwork/sdk-core-nodejs.git#develop"
   },
   "devDependencies": {

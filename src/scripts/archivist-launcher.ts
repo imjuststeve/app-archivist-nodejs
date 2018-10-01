@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 10:24:51 am
+ * @Last modified time: Monday, 1st October 2018 12:23:16 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -120,7 +120,7 @@ export class XyoArchivistLauncher extends XyoBase {
 
     if (opts.graphqlPort) {
       new GraphQLServer(
-        new GraphqlSchemaBuilder().buildSchema(),
+        await new GraphqlSchemaBuilder().buildSchema(),
         new GetBlocksByPublicKeyResolver(archivistRepository, this.packer, this.hashProvider),
         new GetPayloadsFromBlockResolver(this.packer, this.hashProvider),
         new GetPublicKeysFromBlockResolver(this.packer, this.hashProvider),
@@ -152,7 +152,8 @@ async function main(dataPath: string, port: number, graphqlPort: number | undefi
     port, graphqlPort, packer, hashProvider, dataPath, signerProvider
   });
 
-  await archivistLauncher.start();
+  const archivist = await archivistLauncher.start();
+  archivist.start();
 }
 
 export interface XyoArchivistLaunchOptions {

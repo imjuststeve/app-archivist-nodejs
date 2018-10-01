@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 4:17:03 pm
+ * @Last modified time: Monday, 1st October 2018 12:23:06 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -49,7 +49,7 @@ export async function startArchivist(dataDirectory: string) {
   const archivistRepository = new XyoArchivistLocalStorageRepository(originChainNavigator, packer);
 
   await new GraphQLServer(
-    new GraphqlSchemaBuilder().buildSchema(),
+    await new GraphqlSchemaBuilder().buildSchema(),
     new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashingProvider),
     new GetPayloadsFromBlockResolver(packer, hashingProvider),
     new GetPublicKeysFromBlockResolver(packer, hashingProvider),
