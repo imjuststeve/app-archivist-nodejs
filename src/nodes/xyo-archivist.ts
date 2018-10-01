@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 28th September 2018 2:59:00 pm
+ * @Last modified time: Monday, 1st October 2018 9:33:35 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -15,8 +15,6 @@ import {
   XyoServerTcpNetwork,
   CatalogueItem,
   XyoPeerConnectionProviderFactory,
-  XyoDefaultPackerProvider,
-  XyoSigner,
   XyoHashProvider,
   XyoOriginChainStateRepository,
   XyoBoundWitnessPayloadProviderImpl,

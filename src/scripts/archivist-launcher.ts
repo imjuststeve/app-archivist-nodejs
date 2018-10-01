@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 28th September 2018 5:32:36 pm
+ * @Last modified time: Monday, 1st October 2018 9:34:57 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -12,8 +12,6 @@
 import path from 'path';
 
 import {
-  XyoLogger,
-  XyoBoundWitness,
   XyoEcSecp256kSignerProvider,
   XyoSha256HashProvider,
   XyoDefaultPackerProvider,
@@ -29,7 +27,7 @@ import {
   XyoError
 } from 'xyo-sdk-core';
 
-import { XyoArchivist } from './xyo-archivist';
+import { XyoArchivist } from '../nodes/xyo-archivist';
 import { GraphQLServer } from '../graphql-api/server';
 import { GraphqlSchemaBuilder } from '../graphql-api/graphql-schema-builder';
 import { GetBlocksByPublicKeyResolver } from '../graphql-api/resolvers/get-blocks-by-public-key-resolver';
