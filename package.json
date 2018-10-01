@@ -6,12 +6,15 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
-    "build": "yarn build-ts && yarn tslint && cp -r src/bin bin",
+    "build": "yarn build-ts && yarn tslint",
     "build-ts": "tsc",
-    "dist": "yarn install && tsc -p tsconfig.build.json && yarn tslint && cp -r src/bin bin",
+    "dist": "yarn install && tsc -p tsconfig.build.json && yarn tslint",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "tslint-fix": "tslint -c tslint.json -p tsconfig.json --fix",
     "precommit": "echo \"Build must pass before committing\" && yarn build"
+  },
+  "bin": {
+    "xyo-archivist": "dist/scripts/archivist-launcher.js"
   },
   "repository": {
     "type": "git",

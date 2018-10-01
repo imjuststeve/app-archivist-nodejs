@@ -1,10 +1,12 @@
+#!/usr/bin / env; node;
+
 /*
  * @Author: XY | The Findables Company <ryanxyo>
  * @Date:   Thursday, 27th September 2018 1:04:07 pm
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 9:34:33 am
+ * @Last modified time: Monday, 1st October 2018 10:14:58 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */

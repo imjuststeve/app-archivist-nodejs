@@ -1,10 +1,12 @@
+#!/usr/bin/env node
+
 /*
  * @Author: XY | The Findables Company <ryanxyo>
  * @Date:   Wednesday, 26th September 2018 1:51:12 pm
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 9:34:57 am
+ * @Last modified time: Monday, 1st October 2018 10:24:51 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -39,28 +41,6 @@ import { createDirectoryIfNotExists } from '../utils/file-system-utils';
 import program from 'commander';
 import { getLevelDbStore } from '../utils/leveldb-storage-provider-store';
 import { XyoSimpleBoundWitnessSuccessListener } from '../utils/xyo-simple-bound-witness-success-listener';
-
-if (require.main === module) {
-  program
-    .version('0.1.0')
-    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt)
-    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt)
-    .option('-d, --data <s>', 'The directory of the data folder')
-    .parse(process.argv);
-
-  main(program.data as string, program.port as number, program.graphql as number | undefined);
-}
-
-async function main(dataPath: string, port: number, graphqlPort: number | undefined) {
-  const hashProvider = new XyoSha256HashProvider();
-  const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
-  const packer = new XyoDefaultPackerProvider().getXyoPacker();
-  const archivistLauncher = new XyoArchivistLauncher({
-    port, graphqlPort, packer, hashProvider, dataPath, signerProvider
-  });
-
-  await archivistLauncher.start();
-}
 
 export class XyoArchivistLauncher extends XyoBase {
 
@@ -151,6 +131,28 @@ export class XyoArchivistLauncher extends XyoBase {
 
     return this.archivist;
   }
+}
+
+if (require.main === module) {
+  program
+    .version('0.1.0')
+    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt)
+    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt)
+    .option('-d, --data <s>', 'The directory of the data folder')
+    .parse(process.argv);
+
+  main(program.data as string, program.port as number, program.graphql as number | undefined);
+}
+
+async function main(dataPath: string, port: number, graphqlPort: number | undefined) {
+  const hashProvider = new XyoSha256HashProvider();
+  const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
+  const packer = new XyoDefaultPackerProvider().getXyoPacker();
+  const archivistLauncher = new XyoArchivistLauncher({
+    port, graphqlPort, packer, hashProvider, dataPath, signerProvider
+  });
+
+  await archivistLauncher.start();
 }
 
 export interface XyoArchivistLaunchOptions {
