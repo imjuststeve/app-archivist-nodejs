@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/sdk-archivist-nodejs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An archivist implementation on the xyo network",
   "scripts": {
     "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
