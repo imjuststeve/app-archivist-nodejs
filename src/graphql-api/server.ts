@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:01 am
+ * @Last modified time: Tuesday, 2nd October 2018 2:12:41 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -21,6 +21,7 @@ export class GraphQLServer extends XyoBase {
     private readonly getBlocksByPublicKeyResolver: XyoDataResolver<any, any, any, any>,
     private readonly getPayloadsFromBlockResolver: XyoDataResolver<any, any, any, any>,
     private readonly getPublicKeysFromBlockResolver: XyoDataResolver<any, any, any, any>,
+    private readonly getAllBlocks: XyoDataResolver<any, any, any, any>,
     private readonly port: number
   ) {
     super();
@@ -40,7 +41,10 @@ export class GraphQLServer extends XyoBase {
       Query: {
         blocksByPublicKey: (obj: any, args: any, context: any, info: any) => {
           return this.getBlocksByPublicKeyResolver.resolve(obj, args, context, info);
-        }
+        },
+        blocks: (obj: any, args: any, context: any, info: any) => {
+          return this.getAllBlocks.resolve(obj, args, context, info);
+        },
       },
       XyoBlock: {
         payloads: (obj: any, args: any, context: any, info: any) => {

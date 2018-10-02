@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:11 am
+ * @Last modified time: Tuesday, 2nd October 2018 2:22:11 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -24,6 +24,7 @@ import path from 'path';
 import { GetPayloadsFromBlockResolver } from "./graphql-api/resolvers/get-payloads-from-block-resolver";
 import { GetPublicKeysFromBlockResolver } from "./graphql-api/resolvers/get-public-keys-from-block-resolver";
 import { XyoLevelDbStorageProvider } from "./leveldb-storage-provider/level-db-storage-provider";
+import { GetAllBlocks } from "./graphql-api/resolvers/get-all-blocks-resolver";
 
 export async function startArchivist(dataDirectory: string) {
   const packerProvider = new XyoDefaultPackerProvider();
@@ -53,6 +54,7 @@ export async function startArchivist(dataDirectory: string) {
     new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashingProvider),
     new GetPayloadsFromBlockResolver(packer, hashingProvider),
     new GetPublicKeysFromBlockResolver(packer, hashingProvider),
+    new GetAllBlocks(archivistRepository, packer, hashingProvider),
     4000
   ).start();
 }

@@ -7,7 +7,8 @@ export class GraphqlSchemaBuilder extends XyoBase {
     const schema = await getSchema() as XyoOriginGraphqlNodeV1;
     return `
       type Query {
-        blocksByPublicKey(publicKeys: [String!]): [XyoBlockCollection]
+        blocksByPublicKey(publicKeys: [String!]): [XyoBlockCollection],
+        blocks(limit: Int!, offset: Int!): [XyoBlock]
       }
 
       ${schema.types['xyo-block-collection.graphql']}

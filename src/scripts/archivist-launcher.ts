@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:55:08 am
+ * @Last modified time: Tuesday, 2nd October 2018 2:22:46 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -41,6 +41,7 @@ import { createDirectoryIfNotExists } from '../utils/file-system-utils';
 import program from 'commander';
 import { getLevelDbStore } from '../utils/leveldb-storage-provider-store';
 import { XyoSimpleBoundWitnessSuccessListener } from '../utils/xyo-simple-bound-witness-success-listener';
+import { GetAllBlocks } from '../graphql-api/resolvers/get-all-blocks-resolver';
 
 export class XyoArchivistLauncher extends XyoBase {
 
@@ -124,6 +125,7 @@ export class XyoArchivistLauncher extends XyoBase {
         new GetBlocksByPublicKeyResolver(archivistRepository, this.packer, this.hashProvider),
         new GetPayloadsFromBlockResolver(this.packer, this.hashProvider),
         new GetPublicKeysFromBlockResolver(this.packer, this.hashProvider),
+        new GetAllBlocks(archivistRepository, this.packer, this.hashProvider),
         opts.graphqlPort
       )
       .start();
