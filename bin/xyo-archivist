@@ -2,5 +2,4 @@
 
 // tslint:disable
 var XyoArchivistLauncher = require('../dist/scripts/archivist-launcher.js').XyoArchivistLauncher;
-console.log(process.argv);
 XyoArchivistLauncher.main(process.argv);
