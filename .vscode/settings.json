@@ -7,6 +7,9 @@
     "deserialize",
     "hasher",
     "leveldb",
+    "leveldown",
+    "originchain",
+    "promisify",
     "rssi",
     "ryanxyo",
     "xyfindables"

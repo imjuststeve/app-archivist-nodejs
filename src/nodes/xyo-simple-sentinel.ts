@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:25 am
+ * @Last modified time: Tuesday, 2nd October 2018 11:19:08 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -12,11 +12,7 @@
 import {
   XyoNode,
   XyoOriginBlockRepository,
-  XyoServerTcpNetwork,
-  CatalogueItem,
   XyoPeerConnectionProviderFactory,
-  XyoDefaultPackerProvider,
-  XyoSigner,
   XyoHashProvider,
   XyoOriginChainStateRepository,
   XyoBoundWitnessPayloadProviderImpl,
