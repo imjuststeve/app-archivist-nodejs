@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 12:23:16 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:55:08 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -27,7 +27,7 @@ import {
   XyoOriginChainStateRepository,
   XyoOriginBlockRepository,
   XyoError
-} from 'xyo-sdk-core';
+} from '@xyo-network/sdk-core-nodejs';
 
 import { XyoArchivist } from '../nodes/xyo-archivist';
 import { GraphQLServer } from '../graphql-api/server';

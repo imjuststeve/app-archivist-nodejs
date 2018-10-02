@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 12:23:06 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:11 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -16,7 +16,7 @@ import {
   XyoOriginBlockLocalStorageRepository,
   XyoDefaultPackerProvider,
   XyoSha256HashProvider
-} from "xyo-sdk-core";
+} from "@xyo-network/sdk-core-nodejs";
 
 import { GetBlocksByPublicKeyResolver } from "./graphql-api/resolvers/get-blocks-by-public-key-resolver";
 import { GraphqlSchemaBuilder } from "./graphql-api/graphql-schema-builder";

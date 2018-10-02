@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: bound-witness-json-visualizer.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 28th September 2018 1:35:50 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:30 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoPacker, XyoBoundWitness, XyoHashProvider, XyoBase } from "xyo-sdk-core";
+import { XyoPacker, XyoBoundWitness, XyoHashProvider, XyoBase } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoBoundWitnessJsonVisualizer extends XyoBase {
   constructor (

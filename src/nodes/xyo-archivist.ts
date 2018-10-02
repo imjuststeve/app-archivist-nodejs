@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 9:33:35 am
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:20 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -22,7 +22,7 @@ import {
   XyoNetworkProcedureCatalogue,
   XyoPeerConnectionDelegate,
   XyoBoundWitnessSuccessListener
-} from "xyo-sdk-core";
+} from "@xyo-network/sdk-core-nodejs";
 
 export class XyoArchivist extends XyoNode {
 

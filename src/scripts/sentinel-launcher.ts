@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 10:14:58 am
+ * @Last modified time: Tuesday, 2nd October 2018 10:57:49 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -30,7 +30,7 @@ import {
   XyoError,
   XyoNetworkAddressProvider,
   XyoBase
-} from 'xyo-sdk-core';
+} from '@xyo-network/sdk-core-nodejs';
 
 import { XyoSimpleSentinel } from '../nodes/xyo-simple-sentinel';
 import { createDirectoryIfNotExists } from '../utils/file-system-utils';

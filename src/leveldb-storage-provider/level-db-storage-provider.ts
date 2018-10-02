@@ -1,4 +1,4 @@
-import { XYOStorageProvider, XyoError, XyoStorageProviderPriority } from "xyo-sdk-core";
+import { XYOStorageProvider, XyoError, XyoStorageProviderPriority } from "@xyo-network/sdk-core-nodejs";
 
 import levelup, { LevelUp } from 'levelup';
 import leveldown, { LevelDown } from 'leveldown';

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 28th September 2018 3:01:44 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:25 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -26,7 +26,7 @@ import {
   XyoBoundWitnessSuccessListener,
   XyoClientTcpNetwork,
   XyoNetworkAddressProvider
-} from "xyo-sdk-core";
+} from "@xyo-network/sdk-core-nodejs";
 
 export class XyoSimpleSentinel extends XyoNode {
   private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProviderImpl;

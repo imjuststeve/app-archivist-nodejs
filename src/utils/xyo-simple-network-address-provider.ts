@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-network-address-provider.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 28th September 2018 2:07:41 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:42 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoNetworkAddressProvider } from "xyo-sdk-core";
+import { XyoNetworkAddressProvider } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoSimpleNetworkAddressProvider implements XyoNetworkAddressProvider {
   private index = 0;

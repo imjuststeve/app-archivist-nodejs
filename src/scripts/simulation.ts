@@ -4,14 +4,22 @@
  * @Email:  developer@xyfindables.com
  * @Filename: simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 9:33:47 am
+ * @Last modified time: Tuesday, 2nd October 2018 10:54:35 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { XyoSentinelLauncher } from "./sentinel-launcher";
 import { XyoArchivistLauncher } from "./archivist-launcher";
-import { XyoDefaultPackerProvider, XyoSha256HashProvider, XyoEcSecp256kSignerProvider, XyoPacker, XyoHashProvider, XyoSignerProvider, XyoLogger } from "xyo-sdk-core";
+import {
+  XyoDefaultPackerProvider,
+  XyoSha256HashProvider,
+  XyoEcSecp256kSignerProvider,
+  XyoPacker,
+  XyoHashProvider,
+  XyoSignerProvider,
+  XyoLogger
+} from "@xyo-network/sdk-core-nodejs";
 import path from 'path';
 import { XyoArchivist } from "../nodes/xyo-archivist";
 

@@ -1,7 +1,5 @@
-import { importSchema } from 'graphql-import';
-import path from 'path';
-import { getSchema, XyoOriginGraphqlNodeV1 } from 'xyo-api-originchain-graphql';
-import { XyoBase } from 'xyo-sdk-core';
+import { getSchema, XyoOriginGraphqlNodeV1 } from '@xyo-network/api-originchain-graphql';
+import { XyoBase } from '@xyo-network/sdk-core-nodejs';
 
 export class GraphqlSchemaBuilder extends XyoBase {
 

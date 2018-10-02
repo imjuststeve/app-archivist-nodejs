@@ -4,13 +4,13 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 1st October 2018 3:56:44 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:01 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { ApolloServer, gql, IResolvers } from 'apollo-server';
-import { XyoBase } from 'xyo-sdk-core';
+import { XyoBase } from '@xyo-network/sdk-core-nodejs';
 import { XyoDataResolver } from '.';
 
 export class GraphQLServer extends XyoBase {

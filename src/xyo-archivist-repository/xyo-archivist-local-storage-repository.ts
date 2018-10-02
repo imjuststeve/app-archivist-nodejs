@@ -4,13 +4,13 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 27th September 2018 3:02:53 pm
+ * @Last modified time: Tuesday, 2nd October 2018 10:59:58 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { XyoArchivistRepository } from ".";
-import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository, XyoOriginBlockRepository } from "xyo-sdk-core";
+import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository, XyoOriginBlockRepository } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoArchivistLocalStorageRepository implements XyoArchivistRepository {
 
