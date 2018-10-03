@@ -67,7 +67,7 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
         bytes,
         major,
         minor,
-        array: await Promise.all(publicKeySet.array.map(async (publicKey) => {
+        array: await Promise.all(publicKeySet.array.map((publicKey) => {
           return this.getHashBytesMajorMinor(publicKey);
         }))
       };

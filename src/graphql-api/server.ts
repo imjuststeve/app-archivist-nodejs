@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 2:12:41 pm
+ * @Last modified time: Wednesday, 3rd October 2018 2:26:52 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -45,14 +45,6 @@ export class GraphQLServer extends XyoBase {
         blocks: (obj: any, args: any, context: any, info: any) => {
           return this.getAllBlocks.resolve(obj, args, context, info);
         },
-      },
-      XyoBlock: {
-        payloads: (obj: any, args: any, context: any, info: any) => {
-          return this.getPayloadsFromBlockResolver.resolve(obj, args, context, info);
-        },
-        publicKeys: (obj: any, args: any, context: any, info: any) => {
-          this.getPublicKeysFromBlockResolver.resolve(obj, args, context, info);
-        }
       }
     };
 

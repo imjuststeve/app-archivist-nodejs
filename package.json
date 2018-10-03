@@ -40,7 +40,7 @@
     "levelup": "^3.1.1",
     "lodash": "^4.17.11",
     "node-rsa": "^1.0.1",
-    "@xyo-network/api-originchain-graphql": "^0.1.1",
+    "@xyo-network/api-originchain-graphql": "^0.1.2",
     "@xyo-network/sdk-core-nodejs": "^0.1.0"
   },
   "devDependencies": {
