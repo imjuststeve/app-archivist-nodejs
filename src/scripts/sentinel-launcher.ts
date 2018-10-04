@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 3rd October 2018 6:28:55 pm
+ * @Last modified time: Thursday, 4th October 2018 10:50:33 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -126,9 +126,6 @@ export class XyoSentinelLauncher extends XyoBase {
       );
     }
 
-    this.successListener = opts.boundWitnessSuccessListener ||
-      new XyoSimpleBoundWitnessSuccessListener(this.packer, this.hashProvider);
-
     if (!this.originChainStateRepository) {
       throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
     }
@@ -149,6 +146,14 @@ export class XyoSentinelLauncher extends XyoBase {
     } else {
       throw new XyoError(`Could not resolve AddressProvider`, XyoError.errorType.ERR_INVALID_PARAMETERS);
     }
+
+    this.successListener = opts.boundWitnessSuccessListener ||
+      new XyoSimpleBoundWitnessSuccessListener(
+        this.packer,
+        this.hashProvider,
+        this.originChainStateRepository,
+        opts.signerProvider
+      );
 
     this.sentinel = new XyoSimpleSentinel(
       this.addressProvider,
