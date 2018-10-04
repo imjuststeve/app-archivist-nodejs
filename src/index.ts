@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 2:22:11 pm
+ * @Last modified time: Wednesday, 3rd October 2018 6:28:19 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -43,8 +43,7 @@ export async function startArchivist(dataDirectory: string) {
   const originChainNavigator = new XyoOriginBlockLocalStorageRepository(
     packer,
     originBlocksStorageProvider,
-    originBlockNextHashStorageProvider,
-    hashingProvider
+    originBlockNextHashStorageProvider
   );
 
   const archivistRepository = new XyoArchivistLocalStorageRepository(originChainNavigator, packer);

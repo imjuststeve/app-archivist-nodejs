@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:54:35 am
+ * @Last modified time: Wednesday, 3rd October 2018 4:49:30 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,7 +14,7 @@ import { XyoArchivistLauncher } from "./archivist-launcher";
 import {
   XyoDefaultPackerProvider,
   XyoSha256HashProvider,
-  XyoEcSecp256kSignerProvider,
+  XyoEcdsaSecp256k1Sha256SignerProvider,
   XyoPacker,
   XyoHashProvider,
   XyoSignerProvider,
@@ -32,7 +32,7 @@ async function simulate(rootDataPath: string) {
   const sentinelPorts = [9000, 9001, 9002, 9003];
   const packer = new XyoDefaultPackerProvider().getXyoPacker();
   const hashProvider = new XyoSha256HashProvider();
-  const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
+  const signerProvider = new XyoEcdsaSecp256k1Sha256SignerProvider(hashProvider);
 
   await sentinelPorts.reduce(async (promiseChain, sentinelPort) => {
     await promiseChain;

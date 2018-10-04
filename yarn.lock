@@ -217,9 +217,9 @@
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@xyo-network/api-originchain-graphql/-/api-originchain-graphql-0.1.2.tgz#5aae09cf28e94345697b37a07e98759d4bbf52f0"
 
-"@xyo-network/sdk-core-nodejs@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/sdk-core-nodejs/-/sdk-core-nodejs-0.1.0.tgz#3362ba8c4f806e3aacdd9a008c7c3de44c30e8c7"
+"@xyo-network/sdk-core-nodejs@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/sdk-core-nodejs/-/sdk-core-nodejs-0.1.1.tgz#e3ebb0e416e22b53edf0d1f5328c3fd98e720660"
   dependencies:
     elliptic "^6.4.1"
     node-rsa "^1.0.1"

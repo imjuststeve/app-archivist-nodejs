@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 2:22:46 pm
+ * @Last modified time: Wednesday, 3rd October 2018 6:28:54 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,7 +14,7 @@
 import path from 'path';
 
 import {
-  XyoEcSecp256kSignerProvider,
+  XyoEcdsaSecp256k1Sha256SignerProvider,
   XyoSha256HashProvider,
   XyoDefaultPackerProvider,
   XyoOriginChainLocalStorageRepository,
@@ -88,8 +88,7 @@ export class XyoArchivistLauncher extends XyoBase {
       this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
         this.packer,
         originBlocksStorageProvider,
-        originBlockNextHashStorageProvider,
-        this.hashProvider
+        originBlockNextHashStorageProvider
       );
     }
 
@@ -148,7 +147,7 @@ if (require.main === module) {
 
 async function main(dataPath: string, port: number, graphqlPort: number | undefined) {
   const hashProvider = new XyoSha256HashProvider();
-  const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
+  const signerProvider = new XyoEcdsaSecp256k1Sha256SignerProvider(hashProvider);
   const packer = new XyoDefaultPackerProvider().getXyoPacker();
   const archivistLauncher = new XyoArchivistLauncher({
     port, graphqlPort, packer, hashProvider, dataPath, signerProvider

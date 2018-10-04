@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:57:49 am
+ * @Last modified time: Wednesday, 3rd October 2018 6:28:55 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,7 +14,7 @@
 import path from 'path';
 
 import {
-  XyoEcSecp256kSignerProvider,
+  XyoEcdsaSecp256k1Sha256SignerProvider,
   XyoSha256HashProvider,
   XyoDefaultPackerProvider,
   XyoOriginChainLocalStorageRepository,
@@ -65,7 +65,7 @@ export class XyoSentinelLauncher extends XyoBase {
     });
 
     const hashProvider = new XyoSha256HashProvider();
-    const signerProvider = new XyoEcSecp256kSignerProvider(hashProvider, 0x06, 0x01, 0x05, 0x01);
+    const signerProvider = new XyoEcdsaSecp256k1Sha256SignerProvider(hashProvider);
     const packer = new XyoDefaultPackerProvider().getXyoPacker();
     const sentinelLaunch = new XyoSentinelLauncher({
       packer,
@@ -114,8 +114,7 @@ export class XyoSentinelLauncher extends XyoBase {
       this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
         this.packer,
         originBlocksStorageProvider,
-        originBlockNextHashStorageProvider,
-        this.hashProvider
+        originBlockNextHashStorageProvider
       );
     }
 
@@ -123,8 +122,7 @@ export class XyoSentinelLauncher extends XyoBase {
       this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
         this.packer,
         opts.originBlocksStorageProvider,
-        opts.originBlockNextHashStorageProvider,
-        this.hashProvider
+        opts.originBlockNextHashStorageProvider
       );
     }
 
