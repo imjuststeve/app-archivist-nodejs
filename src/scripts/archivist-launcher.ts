@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 4th October 2018 10:48:35 am
+ * @Last modified time: Thursday, 4th October 2018 5:03:25 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -26,7 +26,8 @@ import {
   XyoBase,
   XyoOriginChainStateRepository,
   XyoOriginBlockRepository,
-  XyoError
+  XyoError,
+  XYOStorageProvider
 } from '@xyo-network/sdk-core-nodejs';
 
 import { XyoArchivist } from '../nodes/xyo-archivist';
@@ -75,6 +76,7 @@ export class XyoArchivistLauncher extends XyoBase {
   public hashProvider: XyoHashProvider | undefined;
   public boundWitnessSuccessListener: XyoBoundWitnessSuccessListener | undefined;
   public archivist: XyoArchivist | undefined;
+  public originBlockPublicKeyStorageProvider: XYOStorageProvider | undefined;
 
   constructor(private readonly options: XyoArchivistLaunchOptions) {
     super();
@@ -84,6 +86,7 @@ export class XyoArchivistLauncher extends XyoBase {
     const opts = this.options;
     this.originChainStateRepository = opts.originChainStateRepository;
     this.originBlockRepository = opts.originBlockRepository;
+    this.originBlockPublicKeyStorageProvider = opts.originBlockPublicKeyStorageProvider;
     this.packer = opts.packer || new XyoDefaultPackerProvider().getXyoPacker();
     this.hashProvider = opts.hashProvider || new XyoSha256HashProvider();
 
@@ -92,6 +95,7 @@ export class XyoArchivistLauncher extends XyoBase {
       const originChainStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-chain`));
       const originBlocksStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-blocks`));
       const originBlockNextHashStorageProvider = getLevelDbStore(path.join(opts.dataPath, `next-hash-index`));
+      this.originBlockPublicKeyStorageProvider = getLevelDbStore(path.join(opts.dataPath, 'public-key-index'));
 
       this.originChainStateRepository = new XyoOriginChainLocalStorageRepository(
         originChainStorageProvider,
@@ -111,6 +115,10 @@ export class XyoArchivistLauncher extends XyoBase {
 
     if (!this.originBlockRepository) {
       throw new XyoError(`Could not resolve OriginBlockRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+    }
+
+    if (!this.originBlockPublicKeyStorageProvider) {
+      throw new XyoError(`Could not resolve OriginBlockPublicKeyStorage`, XyoError.errorType.ERR_INVALID_PARAMETERS);
     }
 
     if (opts.signerProvider) {
@@ -152,16 +160,20 @@ export class XyoArchivistLauncher extends XyoBase {
       opts.signerProvider
     );
 
+    const archivistRepository = new XyoArchivistLocalStorageRepository(
+      this.originBlockRepository,
+      this.packer,
+      this.originBlockPublicKeyStorageProvider
+    );
+
     this.archivist = new XyoArchivist(
       opts.port,
       this.hashProvider,
       this.originChainStateRepository,
-      this.originBlockRepository,
+      archivistRepository,
       this.boundWitnessSuccessListener,
       this.packer
     );
-
-    const archivistRepository = new XyoArchivistLocalStorageRepository(this.originBlockRepository, this.packer);
 
     if (opts.graphqlPort) {
       new GraphQLServer(
@@ -193,4 +205,5 @@ export interface XyoArchivistLaunchOptions {
   originChainStateRepository?: XyoOriginChainStateRepository;
   originBlockRepository?: XyoOriginBlockRepository;
   boundWitnessSuccessListener?: XyoBoundWitnessSuccessListener;
+  originBlockPublicKeyStorageProvider?: XYOStorageProvider;
 }

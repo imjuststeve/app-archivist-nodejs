@@ -18,7 +18,8 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
       const innerBlocks = await this.getBlockCollectionForPublicKey(publicKey);
       return {
         publicKey,
-        blocks: innerBlocks
+        publicKeySet: innerBlocks.keySet,
+        blocks: innerBlocks.blocks
       };
     }));
 
@@ -26,11 +27,11 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
   }
 
   private async getBlockCollectionForPublicKey(publicKey: string) {
-    const blocks = await this.archivistRepository.getOriginBlocksWithPublicKey(
+    const blocksByPublicKeySet = await this.archivistRepository.getOriginBlocksByPublicKey(
       this.xyoPacker.deserialize(Buffer.from(publicKey, 'hex'))
     );
 
-    return Promise.all(blocks.map(async (block) => {
+    const serializedBoundWitnesses = await Promise.all(blocksByPublicKeySet.boundWitnesses.map(async (block) => {
       const { hash, bytes, major, minor } = await this.getHashBytesMajorMinor(block);
 
       return {
@@ -43,6 +44,12 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
         signatures: await this.getSignatures(block)
       };
     }));
+    return {
+      blocks: serializedBoundWitnesses,
+      keySet: blocksByPublicKeySet.publicKeys.map((publicKeyItem) => {
+        return this.xyoPacker.serialize(publicKeyItem, publicKeyItem.major, publicKeyItem.minor, true).toString('hex');
+      })
+    };
   }
 
   private async getPayloads(block: XyoBoundWitness) {

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:53 am
+ * @Last modified time: Friday, 5th October 2018 10:49:47 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -12,9 +12,14 @@
 import { XyoOriginBlockRepository, XyoObject, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
 
 export interface XyoArchivistRepository extends XyoOriginBlockRepository {
-  getOriginBlocksWithPublicKey(publicKey: XyoObject): Promise<XyoBoundWitness[]>;
+  getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
 }
 
 export interface XyoOriginBlockResult {
   publicKeys: XyoObject[];
+}
+
+export interface XyoOriginBlocksByPublicKeyResult {
+  publicKeys: XyoObject[];
+  boundWitnesses: XyoBoundWitness[];
 }

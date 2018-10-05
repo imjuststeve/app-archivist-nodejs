@@ -4,19 +4,39 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:58 am
+ * @Last modified time: Friday, 5th October 2018 11:06:21 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoArchivistRepository } from ".";
-import { XyoHash, XyoBoundWitness, XyoPacker, XyoObject, XyoOriginBlockLocalStorageRepository, XyoOriginBlockRepository } from "@xyo-network/sdk-core-nodejs";
+import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult } from ".";
+import {
+  XyoHash,
+  XyoBoundWitness,
+  XyoPacker,
+  XyoObject,
+  XyoOriginBlockRepository,
+  XYOStorageProvider,
+  XyoPreviousHash,
+  XyoNextPublicKey,
+  XyoKeySet,
+  XyoStorageProviderPriority,
+  XyoBase
+} from "@xyo-network/sdk-core-nodejs";
 
-export class XyoArchivistLocalStorageRepository implements XyoArchivistRepository {
+import _ from 'lodash';
+
+export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoArchivistRepository {
+
+  private usePublicKeysIndexStorageProvider: boolean = true;
+  private onPublicKeysIndexMissUseScan: boolean = true;
 
   constructor (
     private readonly originBlockRepository: XyoOriginBlockRepository,
-    private readonly xyoPacker: XyoPacker) {
+    private readonly xyoPacker: XyoPacker,
+    private readonly publicKeysIndexStorageProvider: XYOStorageProvider
+  ) {
+    super();
   }
 
   public removeOriginBlock(hash: Buffer): Promise<void> {
@@ -31,15 +51,221 @@ export class XyoArchivistLocalStorageRepository implements XyoArchivistRepositor
     return this.originBlockRepository.getAllOriginBlockHashes();
   }
 
-  public addOriginBlock(hash: XyoHash, originBlock: XyoBoundWitness): Promise<void> {
-    return this.originBlockRepository.addOriginBlock(hash, originBlock);
+  public async addOriginBlock(hash: XyoHash, originBlock: XyoBoundWitness): Promise<void> {
+    this.logInfo(`Adding origin block`);
+    await this.originBlockRepository.addOriginBlock(hash, originBlock);
+    if (!this.usePublicKeysIndexStorageProvider) {
+      return;
+    }
+
+    await Promise.all(originBlock.publicKeys.map(async (publicKeySet, positionalIndex) => {
+      let previousBlock: XyoBoundWitness | undefined;
+      const previousHash = originBlock
+        .payloads[positionalIndex]
+        .signedPayload.array.find(
+          (signedPayloadItem) => {
+            return signedPayloadItem.id.equals(Buffer.from([XyoPreviousHash.major, XyoPreviousHash.minor]));
+          }
+      ) as XyoPreviousHash | undefined;
+
+      if (previousHash) {
+        const hashBuffer = this.xyoPacker.serialize(
+          previousHash.hash,
+          previousHash.hash.major,
+          previousHash.hash.minor,
+          true
+        );
+
+        previousBlock = await this.getOriginBlockByHash(hashBuffer);
+      }
+
+      const indexPublicKeys = await Promise.all(publicKeySet.array.map(async (publicKey) => {
+        const key = this.xyoPacker.serialize(publicKey, publicKey.major, publicKey.minor, true);
+        let indexItem = await this.getPublicKeyIndexItem(publicKey);
+
+        if (!indexItem) {
+          indexItem = {
+            hashes: [],
+            parentPublicKeyIndex: null,
+            otherPublicKeys: []
+          };
+
+          if (previousBlock) {
+            let previousBlockPublicKeySet: XyoKeySet | undefined;
+            let previousBlockPositionalIndex = -1;
+            for (const payload of previousBlock.payloads) {
+              previousBlockPositionalIndex += 1;
+              for (const signedPayloadItem of payload.signedPayload.array) {
+                if (signedPayloadItem.id.equals(Buffer.from([XyoNextPublicKey.major, XyoNextPublicKey.minor]))) {
+                  const previousBlockPublicKey = (signedPayloadItem as XyoNextPublicKey).publicKey;
+                  const serializedPreviousBlockPublicKey = this.xyoPacker.serialize(
+                    previousBlockPublicKey,
+                    previousBlockPublicKey.major,
+                    previousBlockPublicKey.minor,
+                    true
+                  );
+
+                  if (serializedPreviousBlockPublicKey.equals(key)) {
+                    previousBlockPublicKeySet = previousBlock.publicKeys[previousBlockPositionalIndex];
+                    break;
+                  }
+                }
+              }
+              if (previousBlockPublicKeySet) {
+                break;
+              }
+            }
+
+            if (previousBlockPublicKeySet) {
+              const previousIndexItem = await previousBlockPublicKeySet.array.reduce(
+                async (promiseChain, previousBlockPublicKey) => {
+                  let resultKey = previousBlockPublicKey;
+                  const foundValue = await promiseChain;
+                  if (foundValue) {
+                    return foundValue;
+                  }
+
+                  let result = await this.getPublicKeyIndexItem(previousBlockPublicKey);
+                  if (result) {
+                    if (result.parentPublicKeyIndex) {
+                      const parentPublicIndexKey = this.xyoPacker.deserialize(
+                        Buffer.from(result.parentPublicKeyIndex, 'hex')
+                      );
+                      const parentResult = await this.getPublicKeyIndexItem(parentPublicIndexKey);
+                      result = parentResult || result;
+                      resultKey = parentResult ? parentPublicIndexKey : resultKey;
+                    }
+
+                    return {
+                      index: result,
+                      key: resultKey
+                    };
+                  }
+                }, Promise.resolve(undefined) as Promise<{index: XyoPublicKeyIndexItem, key: XyoObject} | undefined>
+              );
+
+              if (previousIndexItem) {
+                indexItem.parentPublicKeyIndex = previousIndexItem.index.parentPublicKeyIndex ||
+                  this.xyoPacker.serialize(
+                    previousIndexItem.key,
+                    previousIndexItem.key.major,
+                    previousIndexItem.key.minor,
+                    true
+                  ).toString('hex');
+
+                previousIndexItem.index.otherPublicKeys.push(key.toString('hex'));
+
+                await this.updatePublicKeyIndex(previousIndexItem.key, previousIndexItem.index);
+              }
+            }
+          }
+        }
+
+        const serializedHash = this.xyoPacker.serialize(hash, hash.major, hash.minor, true).toString('hex');
+        indexItem.hashes.push(serializedHash);
+        await this.updatePublicKeyIndex(publicKey, indexItem);
+      }));
+
+      return indexPublicKeys;
+    }));
+
+    this.logInfo(`Finished adding origin block`);
   }
 
   public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
     return this.originBlockRepository.getOriginBlockByHash(hash);
   }
 
-  public async getOriginBlocksWithPublicKey(publicKey: XyoObject): Promise<XyoBoundWitness[]> {
+  public async getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult> {
+    if (!this.usePublicKeysIndexStorageProvider) {
+      const scanResult = await this.getOriginBlocksByPublicKeyByScan(publicKey);
+      return {
+        publicKeys: [publicKey],
+        boundWitnesses: scanResult
+      };
+    }
+
+    const indexItem = await this.getPublicKeyIndexItem(publicKey);
+    if (!indexItem) {
+      if (this.onPublicKeysIndexMissUseScan) {
+        const result = await this.getOriginBlocksByPublicKeyByScan(publicKey);
+        return {
+          publicKeys: [publicKey],
+          boundWitnesses: result
+        };
+      }
+
+      return { publicKeys: [publicKey], boundWitnesses: [] };
+    }
+
+    // Add all hashes to hashmap
+    const hashMap: {[s: string]: boolean} = {};
+
+    // Add all other public keys to publicKeyMap
+    const publicKeyMap: {[s: string]: boolean} = {};
+    publicKeyMap[this.xyoPacker.serialize(publicKey, publicKey.major, publicKey.minor, true).toString('hex')] = true;
+
+    await this.gatherHashesFromPublicKeyTree(indexItem, hashMap, publicKeyMap);
+
+    const getOriginBlocksPromises = _.chain(hashMap)
+      .keys()
+      .map(async (hashKey) => {
+        const hash = Buffer.from(hashKey, 'hex');
+        const originBlock = await this.getOriginBlockByHash(hash);
+        return originBlock;
+      })
+      .value();
+
+    const originBlocks = await Promise.all(getOriginBlocksPromises);
+    const filteredOriginBlocks = _.chain(originBlocks).filter().value() as XyoBoundWitness[]; // remove undefined
+    const publicKeySet = _.chain(publicKeyMap)
+      .reduce((publicKeyCollection, val, publicKeyItem) => {
+        publicKeyCollection.push(this.xyoPacker.deserialize(Buffer.from(publicKeyItem, 'hex')));
+        return publicKeyCollection;
+      }, [] as XyoObject[])
+      .value();
+
+    return {
+      publicKeys: publicKeySet,
+      boundWitnesses: filteredOriginBlocks
+    };
+  }
+
+  private async gatherHashesFromPublicKeyTree(
+    indexItem: XyoPublicKeyIndexItem,
+    hashMap: {[s: string]: boolean},
+    publicKeyMap: {[s: string]: boolean} = {}
+  ) {
+
+    indexItem.hashes.reduce((hashAggregator, hash) => {
+      hashAggregator[hash] = true;
+      return hashAggregator;
+    }, hashMap);
+
+    const publicKeysToTraverse = ([] as string[]).concat(indexItem.otherPublicKeys);
+    if (indexItem.parentPublicKeyIndex) {
+      publicKeysToTraverse.push(indexItem.parentPublicKeyIndex);
+    }
+
+    const downstreamPublicKeys = publicKeysToTraverse.reduce((publicKeyCollection, otherPublicKey) => {
+      if (publicKeyMap[otherPublicKey] === undefined) {
+        publicKeyMap[otherPublicKey] = true;  // set to false because it hasn't been looked up yet
+        publicKeyCollection.push(otherPublicKey);
+      }
+
+      return publicKeyCollection;
+    }, [] as string[]);
+
+    await Promise.all(downstreamPublicKeys.map(async (downstreamPublicKey) => {
+      const downstreamPublicKeyObject = this.xyoPacker.deserialize(Buffer.from(downstreamPublicKey, 'hex'));
+      const downstreamIndexItem = await this.getPublicKeyIndexItem(downstreamPublicKeyObject);
+      if (downstreamIndexItem) {
+        await this.gatherHashesFromPublicKeyTree(downstreamIndexItem, hashMap, publicKeyMap);
+      }
+    }));
+  }
+
+  private async getOriginBlocksByPublicKeyByScan(publicKey: XyoObject) {
     const allOriginBlockHashes = await this.getAllOriginBlockHashes();
     const originBlocks = await Promise.all(allOriginBlockHashes.map((hash) => {
       return this.getOriginBlockByHash(hash);
@@ -64,4 +290,40 @@ export class XyoArchivistLocalStorageRepository implements XyoArchivistRepositor
 
     return filteredOriginBlocks as XyoBoundWitness[];
   }
+
+  private async getPublicKeyIndexItem(publicKey: XyoObject): Promise<XyoPublicKeyIndexItem | undefined> {
+    const key = this.xyoPacker.serialize(publicKey, publicKey.major, publicKey.minor, true);
+    const hasKey = await this.publicKeysIndexStorageProvider.containsKey(key);
+
+    if (hasKey) {
+      const value = await this.publicKeysIndexStorageProvider.read(key, 60000);
+      if (value) {
+        const strValue = value.toString();
+        return JSON.parse(strValue) as XyoPublicKeyIndexItem;
+      }
+    }
+
+    return undefined;
+  }
+
+  private async updatePublicKeyIndex(publicKey: XyoObject, indexItem: XyoPublicKeyIndexItem) {
+    const key = this.xyoPacker.serialize(
+      publicKey,
+      publicKey.major,
+      publicKey.minor,
+      true
+    );
+    const jsonValue = JSON.stringify(indexItem);
+    const value = Buffer.from(jsonValue);
+
+    this.logInfo(`Updating public key index for key `, key.toString('hex'), jsonValue);
+
+    await this.publicKeysIndexStorageProvider.write(key, value, XyoStorageProviderPriority.PRIORITY_MED, true, 60000);
+  }
+}
+
+interface XyoPublicKeyIndexItem {
+  hashes: string[];
+  parentPublicKeyIndex: string | null;
+  otherPublicKeys: string[];
 }

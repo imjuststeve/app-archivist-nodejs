@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 3rd October 2018 6:28:19 pm
+ * @Last modified time: Thursday, 4th October 2018 4:50:53 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -38,6 +38,10 @@ export async function startArchivist(dataDirectory: string) {
     path.join(dataDirectory, `next-hash-index`)
   );
 
+  const originBlockPublicKeyStorageProvider = new XyoLevelDbStorageProvider(
+    path.join(dataDirectory, `public-key-index`)
+  );
+
   const hashingProvider = new XyoSha256HashProvider();
 
   const originChainNavigator = new XyoOriginBlockLocalStorageRepository(
@@ -46,7 +50,11 @@ export async function startArchivist(dataDirectory: string) {
     originBlockNextHashStorageProvider
   );
 
-  const archivistRepository = new XyoArchivistLocalStorageRepository(originChainNavigator, packer);
+  const archivistRepository = new XyoArchivistLocalStorageRepository(
+    originChainNavigator,
+    packer,
+    originBlockPublicKeyStorageProvider
+  );
 
   await new GraphQLServer(
     await new GraphqlSchemaBuilder().buildSchema(),
