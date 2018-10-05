@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:20 am
+ * @Last modified time: Friday, 5th October 2018 12:05:39 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -65,7 +65,23 @@ export class XyoArchivist extends XyoNode {
       originBlocksRepository,
       boundWitnessPayloadProvider,
       boundWitnessSuccessListener,
-      true
+      true,
+      {
+        resolveCategory: (catalogueItems: CatalogueItem[]): CatalogueItem | undefined => {
+          if (!catalogueItems || catalogueItems.length < 1) {
+            return undefined;
+          }
+          const wantsToGiveOriginChain = Boolean(catalogueItems.find(item => item === CatalogueItem.GIVE_ORIGIN_CHAIN));
+          if (wantsToGiveOriginChain) {
+            return CatalogueItem.TAKE_ORIGIN_CHAIN;
+          }
+
+          if (catalogueItems && catalogueItems.length) {
+            return catalogueItems[catalogueItems.length - 1];
+          }
+          return undefined;
+        }
+      }
     ).newInstance();
 
     super(peerConnectionDelegate);
