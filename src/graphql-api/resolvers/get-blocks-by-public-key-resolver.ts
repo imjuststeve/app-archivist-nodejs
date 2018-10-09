@@ -47,7 +47,7 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
     return {
       blocks: serializedBoundWitnesses,
       keySet: blocksByPublicKeySet.publicKeys.map((publicKeyItem) => {
-        return this.xyoPacker.serialize(publicKeyItem, publicKeyItem.major, publicKeyItem.minor, true).toString('hex');
+        return this.xyoPacker.serialize(publicKeyItem, true).toString('hex');
       })
     };
   }

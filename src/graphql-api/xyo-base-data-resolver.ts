@@ -6,11 +6,11 @@ export abstract class XyoBaseDataResolver extends XyoBase {
   }
 
   protected async getHashBytesMajorMinor(xyoObject: XyoObject) {
-    const bytes = this.xyoPacker.serialize(xyoObject, xyoObject.major, xyoObject.minor, true);
+    const bytes = this.xyoPacker.serialize(xyoObject, true);
     const hash = await this.hashProvider.createHash(bytes);
 
     return {
-      hash: this.xyoPacker.serialize(hash, hash.major, hash.minor, true).toString('hex'),
+      hash: this.xyoPacker.serialize(hash, true).toString('hex'),
       bytes: bytes.toString('hex'),
       major: xyoObject.major,
       minor: xyoObject.minor

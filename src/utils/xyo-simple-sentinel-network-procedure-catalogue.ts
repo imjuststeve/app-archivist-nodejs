@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel-network-procedure-catalogue.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 10:59:48 am
+ * @Last modified time: Monday, 8th October 2018 5:17:31 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,10 +14,10 @@ import { XyoNetworkProcedureCatalogue, CatalogueItem } from "@xyo-network/sdk-co
 export class XyoSimpleSentinelNetworkProcedureCatalogue implements XyoNetworkProcedureCatalogue {
 
   public canDo(catalogueItem: CatalogueItem) {
-    return catalogueItem === CatalogueItem.BOUND_WITNESS || catalogueItem === CatalogueItem.TAKE_ORIGIN_CHAIN;
+    return catalogueItem === CatalogueItem.BOUND_WITNESS;
   }
 
   public getCurrentCatalogue() {
-    return [CatalogueItem.BOUND_WITNESS, CatalogueItem.GIVE_ORIGIN_CHAIN];
+    return [CatalogueItem.BOUND_WITNESS];
   }
 }

@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 4th October 2018 5:03:25 pm
+ * @Last modified time: Monday, 8th October 2018 5:03:56 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -133,22 +133,12 @@ export class XyoArchivistLauncher extends XyoBase {
 
     const publicKeys = (await this.originChainStateRepository.getSigners())
       .map((signer) => {
-        return this.packer!.serialize(
-          signer.publicKey,
-          signer.publicKey.major,
-          signer.publicKey.minor,
-          true
-        ).toString('hex');
+        return this.packer!.serialize(signer.publicKey, true).toString('hex');
       }).join(', ');
 
     const nextPublicKey = (await this.originChainStateRepository.getNextPublicKey());
     const nextPublicKeyString = nextPublicKey ?
-      this.packer!.serialize(
-        nextPublicKey.publicKey,
-        nextPublicKey.publicKey.major,
-        nextPublicKey.publicKey.minor,
-        true
-      ).toString('hex') :
+      this.packer!.serialize(nextPublicKey.publicKey, true).toString('hex') :
       'undefined';
 
     this.logInfo(`Start archivist with public keys ${publicKeys} and next public key ${nextPublicKeyString}`);

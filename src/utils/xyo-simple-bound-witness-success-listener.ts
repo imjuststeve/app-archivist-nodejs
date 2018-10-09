@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-bound-witness-success-listener.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 4th October 2018 12:57:05 pm
+ * @Last modified time: Monday, 8th October 2018 5:02:56 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -27,12 +27,7 @@ export class XyoSimpleBoundWitnessSuccessListener extends XyoBase implements Xyo
     await new XyoBoundWitnessJsonVisualizer(this.packer, this.hashProvider, 'summary').visualize(boundWitness);
     if (this.signerProvider) {
       const nextSigner = this.signerProvider.newInstance();
-      const pubKey = this.packer.serialize(
-        nextSigner.publicKey,
-        nextSigner.publicKey.major,
-        nextSigner.publicKey.minor,
-        true
-      ).toString('hex');
+      const pubKey = this.packer.serialize(nextSigner.publicKey, true).toString('hex');
       this.logInfo(`Rotating public key to ${pubKey}`);
       await this.originChainStateRepository.addSigner(nextSigner);
       await this.originChainStateRepository.removeOldestSigner();
