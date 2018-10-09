@@ -1,4 +1,4 @@
-import { XYOStorageProvider, XyoError, XyoStorageProviderPriority } from "@xyo-network/sdk-core-nodejs";
+import { XYOStorageProvider, XyoError, XyoStoragePriority } from "@xyo-network/sdk-core-nodejs";
 
 import levelup, { LevelUp } from 'levelup';
 import leveldown, { LevelDown } from 'leveldown';
@@ -14,7 +14,7 @@ export class XyoLevelDbStorageProvider implements XYOStorageProvider {
   public async write(
     key: Buffer,
     value: Buffer,
-    priority: XyoStorageProviderPriority,
+    priority: XyoStoragePriority,
     cache: boolean,
     timeout: number
   ): Promise<XyoError | undefined> {

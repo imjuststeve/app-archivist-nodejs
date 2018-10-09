@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 11:19:08 am
+ * @Last modified time: Tuesday, 9th October 2018 3:45:43 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -18,7 +18,7 @@ import {
   XyoBoundWitnessPayloadProviderImpl,
   XyoPacker,
   XyoNetworkProcedureCatalogue,
-  XyoPeerConnectionDelegate,
+  XyoPeerConnectionDelegateInterface,
   XyoBoundWitnessSuccessListener,
   XyoClientTcpNetwork,
   XyoNetworkAddressProvider
@@ -29,7 +29,7 @@ export class XyoSimpleSentinel extends XyoNode {
   private readonly packer: XyoPacker;
   private readonly catalogue: XyoNetworkProcedureCatalogue;
   private readonly network: XyoClientTcpNetwork;
-  private readonly delegate: XyoPeerConnectionDelegate;
+  private readonly delegate: XyoPeerConnectionDelegateInterface;
   private readonly boundWitnessSuccessListener: XyoBoundWitnessSuccessListener;
 
   constructor (

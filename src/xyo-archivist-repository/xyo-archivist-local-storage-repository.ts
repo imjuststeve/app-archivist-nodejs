@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 9th October 2018 9:41:03 am
+ * @Last modified time: Tuesday, 9th October 2018 3:43:58 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -20,7 +20,7 @@ import {
   XyoPreviousHash,
   XyoNextPublicKey,
   XyoKeySet,
-  XyoStorageProviderPriority,
+  XyoStoragePriority,
   XyoBase,
   XyoPublicKey
 } from "@xyo-network/sdk-core-nodejs";
@@ -301,7 +301,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
     this.logInfo(`Updating public key index for key `, key.toString('hex'), jsonValue);
 
-    await this.publicKeysIndexStorageProvider.write(key, value, XyoStorageProviderPriority.PRIORITY_MED, true, 60000);
+    await this.publicKeysIndexStorageProvider.write(key, value, XyoStoragePriority.PRIORITY_MED, true, 60000);
   }
 }
 
