@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 4th October 2018 10:50:33 am
+ * @Last modified time: Tuesday, 9th October 2018 4:54:59 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -29,7 +29,8 @@ import {
   XyoOriginBlockRepository,
   XyoError,
   XyoNetworkAddressProvider,
-  XyoBase
+  XyoBase,
+  XyoLogger
 } from '@xyo-network/sdk-core-nodejs';
 
 import { XyoSimpleSentinel } from '../nodes/xyo-simple-sentinel';
@@ -45,6 +46,17 @@ import program from 'commander';
 export class XyoSentinelLauncher extends XyoBase {
 
   public static async main(argv: string[]) {
+    const logger = new XyoLogger();
+    process.on('uncaughtException', (exception) => {
+      logger.error(`There was an uncaught exception ${exception}. Will exit`);
+      process.exit(-1);
+    });
+
+    process.on('unhandledRejection', (exception) => {
+      logger.error(`There was an unhandled rejection ${exception}. Will exit`);
+      process.exit(-1);
+    });
+
     program
       .version('0.1.0')
       .option(
