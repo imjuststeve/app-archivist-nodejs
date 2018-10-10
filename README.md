@@ -10,7 +10,7 @@ An archivist to run on the XYO network
 
 ### Master
 
-[![CircleCI](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master.svg?style=svg)](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master)
+[![CircleCI](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master.svg?style=svg&circle-token=bacbe80a579adde22b3fb593d41b0fc0556f2f3d)](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master)
 [![BCH compliance](https://bettercodehub.com/edge/badge/XYOracleNetwork/sdk-archivist-nodejs?branch=master)](https://bettercodehub.com/results/XYOracleNetwork/sdk-archivist-nodejs)
 [![Build Status](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs.svg?branch=master)](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs)
 
