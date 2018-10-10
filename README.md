@@ -1,6 +1,22 @@
-# sdk-archivist-nodejs
+[logo]: https://www.xy.company/img/home/logo_xy.png
+
+![logo]
+
+# ARCHIVIST SDK (sdk-archivist-nodejs)
 
 An archivist to run on the XYO network
+
+## Branches
+
+### Master
+
+[![CircleCI](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master.svg?style=svg)](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master)
+[![BCH compliance](https://bettercodehub.com/edge/badge/XYOracleNetwork/sdk-archivist-nodejs?branch=master)](https://bettercodehub.com/results/XYOracleNetwork/sdk-archivist-nodejs)
+[![Build Status](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs.svg?branch=master)](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs)
+
+### Develop
+
+Needs to be Added
 
 ## Getting started
 
@@ -45,3 +61,12 @@ i.e.
 ```sh
   git commit --no-verify -m "COMMIT MSG"
 ```
+
+## License
+
+Only for internal XY Company use at this time
+
+## Credits
+
+Made with ❤️
+by [XYO](https://xyo.network)
