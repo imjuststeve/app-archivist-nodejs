@@ -8,9 +8,10 @@
     "build-ci": "tsc",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "precommit": "echo \"Build must pass before committing\" && yarn build-ci && yarn tslint",
-    "prepare" : "yarn build",
-    "prepublishOnly" : "yarn test && yarn tslint",
-    "preversion" : "yarn tslint"    
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn test && yarn tslint",
+    "preversion": "yarn tslint",
+    "start": "bin/xyo-archivist -p 11000 -g 11001 -d ./archivistdata"
   },
   "bin": {
     "xyo-archivist": "bin/xyo-archivist"
@@ -48,7 +49,7 @@
     "@types/graphql": "^14.0.0",
     "@types/leveldown": "^4.0.0",
     "@types/levelup": "^3.1.0",
-    "@types/node-rsa": "^0.4.3",    
+    "@types/node-rsa": "^0.4.3",
     "@types/jest": "^23.3.1",
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.7.1",
