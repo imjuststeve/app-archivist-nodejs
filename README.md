@@ -12,7 +12,7 @@ An archivist to run on the XYO network
 
 [![CircleCI](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master.svg?style=svg&circle-token=bacbe80a579adde22b3fb593d41b0fc0556f2f3d)](https://circleci.com/gh/XYOracleNetwork/sdk-archivist-nodejs/tree/master)
 [![BCH compliance](https://bettercodehub.com/edge/badge/XYOracleNetwork/sdk-archivist-nodejs?branch=master)](https://bettercodehub.com/results/XYOracleNetwork/sdk-archivist-nodejs)
-[![Build Status](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs.svg?branch=master)](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs)
+[![Build Status](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs.svg?branch=master)](https://travis-ci.com/XYOracleNetwork/sdk-archivist-nodejs) [![Greenkeeper badge](https://badges.greenkeeper.io/XYOracleNetwork/sdk-archivist-nodejs.svg)](https://greenkeeper.io/)
 
 ### Develop
 
