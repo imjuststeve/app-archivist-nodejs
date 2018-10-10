@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 8th October 2018 5:03:56 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:25:28 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -19,15 +19,15 @@ import {
   XyoDefaultPackerProvider,
   XyoOriginChainLocalStorageRepository,
   XyoOriginBlockLocalStorageRepository,
-  XyoBoundWitnessSuccessListener,
-  XyoSignerProvider,
+  IXyoBoundWitnessSuccessListener,
+  IXyoSignerProvider,
   XyoPacker,
-  XyoHashProvider,
+  IXyoHashProvider,
   XyoBase,
-  XyoOriginChainStateRepository,
-  XyoOriginBlockRepository,
+  IXyoOriginChainStateRepository,
+  IXyoOriginBlockRepository,
   XyoError,
-  XYOStorageProvider
+  IXyoStorageProvider
 } from '@xyo-network/sdk-core-nodejs';
 
 import { XyoArchivist } from '../nodes/xyo-archivist';
@@ -70,13 +70,13 @@ export class XyoArchivistLauncher extends XyoBase {
     archivist.start();
   }
 
-  public originChainStateRepository: XyoOriginChainStateRepository | undefined;
+  public originChainStateRepository: IXyoOriginChainStateRepository | undefined;
   public packer: XyoPacker | undefined;
-  public originBlockRepository: XyoOriginBlockRepository | undefined;
-  public hashProvider: XyoHashProvider | undefined;
-  public boundWitnessSuccessListener: XyoBoundWitnessSuccessListener | undefined;
+  public originBlockRepository: IXyoOriginBlockRepository | undefined;
+  public hashProvider: IXyoHashProvider | undefined;
+  public boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener | undefined;
   public archivist: XyoArchivist | undefined;
-  public originBlockPublicKeyStorageProvider: XYOStorageProvider | undefined;
+  public originBlockPublicKeyStorageProvider: IXyoStorageProvider | undefined;
 
   constructor(private readonly options: XyoArchivistLaunchOptions) {
     super();
@@ -189,11 +189,11 @@ export interface XyoArchivistLaunchOptions {
   port: number;
   graphqlPort?: number;
   packer?: XyoPacker;
-  hashProvider?: XyoHashProvider;
+  hashProvider?: IXyoHashProvider;
   dataPath?: string;
-  signerProvider?: XyoSignerProvider;
-  originChainStateRepository?: XyoOriginChainStateRepository;
-  originBlockRepository?: XyoOriginBlockRepository;
-  boundWitnessSuccessListener?: XyoBoundWitnessSuccessListener;
-  originBlockPublicKeyStorageProvider?: XYOStorageProvider;
+  signerProvider?: IXyoSignerProvider;
+  originChainStateRepository?: IXyoOriginChainStateRepository;
+  originBlockRepository?: IXyoOriginBlockRepository;
+  boundWitnessSuccessListener?: IXyoBoundWitnessSuccessListener;
+  originBlockPublicKeyStorageProvider?: IXyoStorageProvider;
 }

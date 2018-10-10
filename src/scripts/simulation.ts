@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 3rd October 2018 4:49:30 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:18:12 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -16,8 +16,8 @@ import {
   XyoSha256HashProvider,
   XyoEcdsaSecp256k1Sha256SignerProvider,
   XyoPacker,
-  XyoHashProvider,
-  XyoSignerProvider,
+  IXyoHashProvider,
+  IXyoSignerProvider,
   XyoLogger
 } from "@xyo-network/sdk-core-nodejs";
 import path from 'path';
@@ -101,9 +101,9 @@ const archivistsByPort: {[s: string]: XyoArchivist} = {};
 async function getOrCreateArchivist(
   port: number,
   packer: XyoPacker,
-  hashProvider: XyoHashProvider,
+  hashProvider: IXyoHashProvider,
   innerSentinelDataPath: string,
-  signerProvider: XyoSignerProvider
+  signerProvider: IXyoSignerProvider
 ) {
   const existingArchivist = archivistsByPort[port];
   if (existingArchivist) {

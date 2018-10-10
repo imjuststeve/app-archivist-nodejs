@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 9th October 2018 3:43:58 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:25:48 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -15,14 +15,14 @@ import {
   XyoBoundWitness,
   XyoPacker,
   XyoObject,
-  XyoOriginBlockRepository,
-  XYOStorageProvider,
+  IXyoOriginBlockRepository,
+  IXyoStorageProvider,
   XyoPreviousHash,
   XyoNextPublicKey,
   XyoKeySet,
   XyoStoragePriority,
   XyoBase,
-  XyoPublicKey
+  IXyoPublicKey
 } from "@xyo-network/sdk-core-nodejs";
 
 import _ from 'lodash';
@@ -33,9 +33,9 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   private onPublicKeysIndexMissUseScan: boolean = true;
 
   constructor (
-    private readonly originBlockRepository: XyoOriginBlockRepository,
+    private readonly originBlockRepository: IXyoOriginBlockRepository,
     private readonly xyoPacker: XyoPacker,
-    private readonly publicKeysIndexStorageProvider: XYOStorageProvider
+    private readonly publicKeysIndexStorageProvider: IXyoStorageProvider
   ) {
     super();
   }
@@ -121,7 +121,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
                     if (result.parentPublicKeyIndex) {
                       const parentPublicIndexKey = this.xyoPacker.deserialize(
                         Buffer.from(result.parentPublicKeyIndex, 'hex')
-                      ) as XyoPublicKey;
+                      ) as IXyoPublicKey;
                       const parentResult = await this.getPublicKeyIndexItem(parentPublicIndexKey);
                       result = parentResult || result;
                       resultKey = parentResult ? parentPublicIndexKey : resultKey;
@@ -132,7 +132,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
                       key: resultKey
                     };
                   }
-                }, Promise.resolve(undefined) as Promise<{index: XyoPublicKeyIndexItem, key: XyoPublicKey} | undefined>
+                }, Promise.resolve(undefined) as Promise<{index: XyoPublicKeyIndexItem, key: IXyoPublicKey} | undefined>
               );
 
               if (previousIndexItem) {
@@ -162,7 +162,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     return this.originBlockRepository.getOriginBlockByHash(hash);
   }
 
-  public async getOriginBlocksByPublicKey(publicKey: XyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
+  public async getOriginBlocksByPublicKey(publicKey: IXyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
     if (!this.usePublicKeysIndexStorageProvider) {
       const scanResult = await this.getOriginBlocksByPublicKeyByScan(publicKey);
       return {
@@ -245,7 +245,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     await Promise.all(downstreamPublicKeys.map(async (downstreamPublicKey) => {
       const downstreamPublicKeyObject = this.xyoPacker.deserialize(
         Buffer.from(downstreamPublicKey, 'hex')
-      ) as XyoPublicKey;
+      ) as IXyoPublicKey;
       const downstreamIndexItem = await this.getPublicKeyIndexItem(downstreamPublicKeyObject);
       if (downstreamIndexItem) {
         await this.gatherHashesFromPublicKeyTree(downstreamIndexItem, hashMap, publicKeyMap);
@@ -279,7 +279,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     return filteredOriginBlocks as XyoBoundWitness[];
   }
 
-  private async getPublicKeyIndexItem(publicKey: XyoPublicKey): Promise<XyoPublicKeyIndexItem | undefined> {
+  private async getPublicKeyIndexItem(publicKey: IXyoPublicKey): Promise<XyoPublicKeyIndexItem | undefined> {
     const key = this.xyoPacker.serialize(publicKey, true);
     const hasKey = await this.publicKeysIndexStorageProvider.containsKey(key);
 
@@ -294,7 +294,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     return undefined;
   }
 
-  private async updatePublicKeyIndex(publicKey: XyoPublicKey, indexItem: XyoPublicKeyIndexItem) {
+  private async updatePublicKeyIndex(publicKey: IXyoPublicKey, indexItem: XyoPublicKeyIndexItem) {
     const key = this.xyoPacker.serialize(publicKey, true);
     const jsonValue = JSON.stringify(indexItem);
     const value = Buffer.from(jsonValue);

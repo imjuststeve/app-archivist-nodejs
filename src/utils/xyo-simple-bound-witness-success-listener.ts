@@ -4,21 +4,21 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-bound-witness-success-listener.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 8th October 2018 5:02:56 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:16:45 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoBase, XyoBoundWitnessSuccessListener, XyoBoundWitness, XyoPacker, XyoHashProvider, XyoOriginChainStateRepository, XyoSignerProvider } from "@xyo-network/sdk-core-nodejs";
+import { XyoBase, IXyoBoundWitnessSuccessListener, XyoBoundWitness, XyoPacker, IXyoHashProvider, IXyoOriginChainStateRepository, IXyoSignerProvider } from "@xyo-network/sdk-core-nodejs";
 import { XyoBoundWitnessJsonVisualizer } from "./xyo-bound-witness-json-visualizer";
 
-export class XyoSimpleBoundWitnessSuccessListener extends XyoBase implements XyoBoundWitnessSuccessListener {
+export class XyoSimpleBoundWitnessSuccessListener extends XyoBase implements IXyoBoundWitnessSuccessListener {
 
   constructor (
     private readonly packer: XyoPacker,
-    private readonly hashProvider: XyoHashProvider,
-    private readonly originChainStateRepository: XyoOriginChainStateRepository,
-    private readonly signerProvider?: XyoSignerProvider
+    private readonly hashProvider: IXyoHashProvider,
+    private readonly originChainStateRepository: IXyoOriginChainStateRepository,
+    private readonly signerProvider?: IXyoSignerProvider
   ) {
     super();
   }

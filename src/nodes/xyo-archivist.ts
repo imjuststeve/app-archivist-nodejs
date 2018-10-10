@@ -4,47 +4,47 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 9th October 2018 3:46:08 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:20:33 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import {
   XyoNode,
-  XyoOriginBlockRepository,
+  IXyoOriginBlockRepository,
   XyoServerTcpNetwork,
   CatalogueItem,
   XyoPeerConnectionProviderFactory,
-  XyoHashProvider,
-  XyoOriginChainStateRepository,
-  XyoBoundWitnessPayloadProviderImpl,
+  IXyoHashProvider,
+  IXyoOriginChainStateRepository,
+  XyoBoundWitnessPayloadProvider,
   XyoPacker,
-  XyoNetworkProcedureCatalogue,
-  XyoPeerConnectionDelegateInterface,
-  XyoBoundWitnessSuccessListener
+  IXyoNetworkProcedureCatalogue,
+  IXyoPeerConnectionDelegateInterface,
+  IXyoBoundWitnessSuccessListener
 } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoArchivist extends XyoNode {
 
-  private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProviderImpl;
+  private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProvider;
   private readonly packer: XyoPacker;
-  private readonly catalogue: XyoNetworkProcedureCatalogue;
+  private readonly catalogue: IXyoNetworkProcedureCatalogue;
   private readonly network: XyoServerTcpNetwork;
-  private readonly delegate: XyoPeerConnectionDelegateInterface;
-  private readonly boundWitnessSuccessListener: XyoBoundWitnessSuccessListener;
+  private readonly delegate: IXyoPeerConnectionDelegateInterface;
+  private readonly boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener;
 
   constructor (
     port: number,
-    hashingProvider: XyoHashProvider,
-    originChainStateRepository: XyoOriginChainStateRepository,
-    originBlocksRepository: XyoOriginBlockRepository,
-    boundWitnessSuccessListener: XyoBoundWitnessSuccessListener,
+    hashingProvider: IXyoHashProvider,
+    originChainStateRepository: IXyoOriginChainStateRepository,
+    originBlocksRepository: IXyoOriginBlockRepository,
+    boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener,
     packer: XyoPacker
   ) {
     const network = new XyoServerTcpNetwork(port);
-    const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProviderImpl();
+    const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProvider();
 
-    const catalogue: XyoNetworkProcedureCatalogue = {
+    const catalogue: IXyoNetworkProcedureCatalogue = {
       canDo(catalogueItem: CatalogueItem) {
         return catalogueItem === CatalogueItem.BOUND_WITNESS || catalogueItem === CatalogueItem.GIVE_ORIGIN_CHAIN;
       },

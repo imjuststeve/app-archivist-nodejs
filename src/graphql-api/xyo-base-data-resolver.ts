@@ -1,7 +1,7 @@
-import { XyoPacker, XyoHashProvider, XyoBase, XyoObject } from "@xyo-network/sdk-core-nodejs";
+import { XyoPacker, IXyoHashProvider, XyoBase, XyoObject } from "@xyo-network/sdk-core-nodejs";
 
 export abstract class XyoBaseDataResolver extends XyoBase {
-  constructor (protected readonly xyoPacker: XyoPacker, protected readonly hashProvider: XyoHashProvider) {
+  constructor (protected readonly xyoPacker: XyoPacker, protected readonly hashProvider: IXyoHashProvider) {
     super();
   }
 

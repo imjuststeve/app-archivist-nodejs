@@ -1,4 +1,4 @@
-import { XyoPacker, XyoHashProvider, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
+import { XyoPacker, IXyoHashProvider, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
 import { XyoArchivistRepository } from "../../xyo-archivist-repository";
 import { XyoDataResolver } from "..";
 import { XyoBaseDataResolver } from "../xyo-base-data-resolver";
@@ -8,7 +8,7 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
   constructor(
     private readonly archivistRepository: XyoArchivistRepository,
     protected readonly xyoPacker: XyoPacker,
-    protected readonly hashProvider: XyoHashProvider
+    protected readonly hashProvider: IXyoHashProvider
   ) {
     super(xyoPacker, hashProvider);
   }

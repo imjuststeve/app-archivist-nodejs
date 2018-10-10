@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: get-blocks-by-public-key-resolver.1.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 2nd October 2018 2:21:40 pm
+ * @Last modified time: Wednesday, 10th October 2018 2:19:19 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoPacker, XyoHashProvider, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
+import { XyoPacker, IXyoHashProvider, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
 import { XyoArchivistRepository } from "../../xyo-archivist-repository";
 import { XyoDataResolver } from "..";
 import { XyoBaseDataResolver } from "../xyo-base-data-resolver";
@@ -21,7 +21,7 @@ export class GetAllBlocks extends XyoBaseDataResolver implements XyoDataResolver
   constructor(
     private readonly archivistRepository: XyoArchivistRepository,
     protected readonly xyoPacker: XyoPacker,
-    protected readonly hashProvider: XyoHashProvider
+    protected readonly hashProvider: IXyoHashProvider
   ) {
     super(xyoPacker, hashProvider);
   }
