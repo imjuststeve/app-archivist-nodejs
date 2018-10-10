@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:20:33 pm
+ * @Last modified time: Wednesday, 10th October 2018 3:31:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -20,7 +20,7 @@ import {
   XyoBoundWitnessPayloadProvider,
   XyoPacker,
   IXyoNetworkProcedureCatalogue,
-  IXyoPeerConnectionDelegateInterface,
+  IXyoPeerConnectionDelegate,
   IXyoBoundWitnessSuccessListener
 } from "@xyo-network/sdk-core-nodejs";
 
@@ -30,7 +30,7 @@ export class XyoArchivist extends XyoNode {
   private readonly packer: XyoPacker;
   private readonly catalogue: IXyoNetworkProcedureCatalogue;
   private readonly network: XyoServerTcpNetwork;
-  private readonly delegate: IXyoPeerConnectionDelegateInterface;
+  private readonly delegate: IXyoPeerConnectionDelegate;
   private readonly boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener;
 
   constructor (
