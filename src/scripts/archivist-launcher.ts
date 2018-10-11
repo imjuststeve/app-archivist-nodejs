@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:25:28 pm
+ * @Last modified time: Thursday, 11th October 2018 1:57:13 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -27,6 +27,7 @@ import {
   IXyoOriginChainStateRepository,
   IXyoOriginBlockRepository,
   XyoError,
+  XyoErrors,
   IXyoStorageProvider
 } from '@xyo-network/sdk-core-nodejs';
 
@@ -110,15 +111,15 @@ export class XyoArchivistLauncher extends XyoBase {
     }
 
     if (!this.originChainStateRepository) {
-      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoErrors.INVALID_PARAMETERS);
     }
 
     if (!this.originBlockRepository) {
-      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoErrors.INVALID_PARAMETERS);
     }
 
     if (!this.originBlockPublicKeyStorageProvider) {
-      throw new XyoError(`Could not resolve OriginBlockPublicKeyStorage`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve OriginBlockPublicKeyStorage`, XyoErrors.INVALID_PARAMETERS);
     }
 
     if (opts.signerProvider) {

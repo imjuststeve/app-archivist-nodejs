@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:25:43 pm
+ * @Last modified time: Thursday, 11th October 2018 1:56:01 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -28,6 +28,7 @@ import {
   IXyoOriginChainStateRepository,
   IXyoOriginBlockRepository,
   XyoError,
+  XyoErrors,
   IXyoNetworkAddressProvider,
   XyoBase,
   XyoLogger
@@ -139,11 +140,11 @@ export class XyoSentinelLauncher extends XyoBase {
     }
 
     if (!this.originChainStateRepository) {
-      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve OriginChainStateRepository`, XyoErrors.INVALID_PARAMETERS);
     }
 
     if (!this.originBlockRepository) {
-      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve OriginBlockRepository`, XyoErrors.INVALID_PARAMETERS);
     }
 
     if (opts.signerProvider && (await this.originChainStateRepository.getSigners()).length === 0) {
@@ -156,7 +157,7 @@ export class XyoSentinelLauncher extends XyoBase {
     if (!this.addressProvider && opts.networkAddresses) {
       this.addressProvider = new XyoSimpleNetworkAddressProvider(opts.networkAddresses);
     } else {
-      throw new XyoError(`Could not resolve AddressProvider`, XyoError.errorType.ERR_INVALID_PARAMETERS);
+      throw new XyoError(`Could not resolve AddressProvider`, XyoErrors.INVALID_PARAMETERS);
     }
 
     this.successListener = opts.boundWitnessSuccessListener ||
