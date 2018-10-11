@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: master-simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 11th October 2018 1:57:13 pm
+ * @Last modified time: Thursday, 11th October 2018 2:33:23 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -50,9 +50,9 @@ export class XyoArchivistLauncher extends XyoBase {
   public static async main(argv: string[]) {
     program
     .version('0.1.0')
-    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt)
-    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt)
-    .option('-d, --data <s>', 'The directory of the data folder')
+    .option('-p, --port <n>', 'The TCp port to listen on for connections', parseInt, 11000)
+    .option('-g, --graphql [n]', 'The http port to listen on for graphql connections', parseInt, 11001)
+    .option('-d, --data <s>', 'The directory of the data folder', './archivist-db')
     .parse(argv);
 
     const hashProvider = new XyoSha256HashProvider();

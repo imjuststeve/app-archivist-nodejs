@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 11th October 2018 1:56:01 pm
+ * @Last modified time: Thursday, 11th October 2018 2:35:06 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -61,9 +61,11 @@ export class XyoSentinelLauncher extends XyoBase {
     program
       .version('0.1.0')
       .option(
-        '-a, --addresses <n>', 'A comma-separated list of the addresses of other nodes', (val: string) => val.split(',')
+        '-a, --addresses <n>', 'A comma-separated list of the addresses of other nodes',
+        (val: string) => val.split(','),
+        '127.0.0.1:11000'
       )
-      .option('-d, --data <s>', 'The directory of the data folder')
+      .option('-d, --data <s>', 'The directory of the data folder', './sentinel-db')
       .parse(argv);
 
     const dataPath: string = program.data;
