@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 3:32:34 pm
+ * @Last modified time: Thursday, 11th October 2018 5:37:21 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -16,7 +16,6 @@ import {
   IXyoHashProvider,
   IXyoOriginChainStateRepository,
   XyoBoundWitnessPayloadProvider,
-  XyoPacker,
   IXyoNetworkProcedureCatalogue,
   IXyoPeerConnectionDelegate,
   IXyoBoundWitnessSuccessListener,
@@ -26,7 +25,6 @@ import {
 
 export class XyoSimpleSentinel extends XyoNode {
   private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProvider;
-  private readonly packer: XyoPacker;
   private readonly catalogue: IXyoNetworkProcedureCatalogue;
   private readonly network: XyoClientTcpNetwork;
   private readonly delegate: IXyoPeerConnectionDelegate;
@@ -38,7 +36,6 @@ export class XyoSimpleSentinel extends XyoNode {
     originChainStateRepository: IXyoOriginChainStateRepository,
     originBlocksRepository: IXyoOriginBlockRepository,
     boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener,
-    packer: XyoPacker,
     catalogue: IXyoNetworkProcedureCatalogue
   ) {
 
@@ -48,7 +45,6 @@ export class XyoSimpleSentinel extends XyoNode {
     const peerConnectionDelegate = new XyoPeerConnectionProviderFactory(
       network,
       catalogue,
-      packer,
       hashingProvider,
       originChainStateRepository,
       originBlocksRepository,
@@ -62,7 +58,6 @@ export class XyoSimpleSentinel extends XyoNode {
     this.delegate = peerConnectionDelegate;
     this.network = network;
     this.catalogue = catalogue;
-    this.packer = packer;
     this.boundWitnessPayloadProvider = boundWitnessPayloadProvider;
     this.boundWitnessSuccessListener = boundWitnessSuccessListener;
   }

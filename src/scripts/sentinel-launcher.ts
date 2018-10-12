@@ -6,7 +6,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sentinel-launcher.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 11th October 2018 2:35:06 pm
+ * @Last modified time: Thursday, 11th October 2018 5:37:23 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -16,12 +16,10 @@ import path from 'path';
 import {
   XyoEcdsaSecp256k1Sha256SignerProvider,
   XyoSha256HashProvider,
-  XyoDefaultPackerProvider,
   XyoOriginChainLocalStorageRepository,
   XyoOriginBlockLocalStorageRepository,
   IXyoBoundWitnessSuccessListener,
   IXyoSignerProvider,
-  XyoPacker,
   IXyoHashProvider,
   IXyoNetworkProcedureCatalogue,
   IXyoStorageProvider,
@@ -81,9 +79,7 @@ export class XyoSentinelLauncher extends XyoBase {
 
     const hashProvider = new XyoSha256HashProvider();
     const signerProvider = new XyoEcdsaSecp256k1Sha256SignerProvider(hashProvider);
-    const packer = new XyoDefaultPackerProvider().getXyoPacker();
     const sentinelLaunch = new XyoSentinelLauncher({
-      packer,
       hashProvider,
       dataPath,
       networkAddresses,
@@ -99,7 +95,6 @@ export class XyoSentinelLauncher extends XyoBase {
   public originChainStateRepository: IXyoOriginChainStateRepository | undefined;
   public originBlockRepository: IXyoOriginBlockRepository | undefined;
   public successListener: IXyoBoundWitnessSuccessListener | undefined;
-  public packer: XyoPacker | undefined;
   public networkProcedureCatalogue: IXyoNetworkProcedureCatalogue | undefined;
   public sentinel: XyoSimpleSentinel | undefined;
 
@@ -113,21 +108,16 @@ export class XyoSentinelLauncher extends XyoBase {
     let originBlocksStorageProvider: IXyoStorageProvider;
     let originBlockNextHashStorageProvider: IXyoStorageProvider;
     this.originBlockRepository = opts.originBlockRepository;
-    this.packer = opts.packer || new XyoDefaultPackerProvider().getXyoPacker();
 
     this.hashProvider = opts.hashProvider || new XyoSha256HashProvider();
 
     if (opts.dataPath) {
       await createDirectoryIfNotExists(opts.dataPath);
       const originChainStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-chain`));
-      this.originChainStateRepository = new XyoOriginChainLocalStorageRepository(
-        originChainStorageProvider,
-        this.packer
-      );
+      this.originChainStateRepository = new XyoOriginChainLocalStorageRepository(originChainStorageProvider);
       originBlocksStorageProvider = getLevelDbStore(path.join(opts.dataPath, `origin-blocks`));
       originBlockNextHashStorageProvider = getLevelDbStore(path.join(opts.dataPath, `next-hash-index`));
       this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
-        this.packer,
         originBlocksStorageProvider,
         originBlockNextHashStorageProvider
       );
@@ -135,7 +125,6 @@ export class XyoSentinelLauncher extends XyoBase {
 
     if (opts.originBlocksStorageProvider && opts.originBlockNextHashStorageProvider) {
       this.originBlockRepository = new XyoOriginBlockLocalStorageRepository(
-        this.packer,
         opts.originBlocksStorageProvider,
         opts.originBlockNextHashStorageProvider
       );
@@ -164,7 +153,6 @@ export class XyoSentinelLauncher extends XyoBase {
 
     this.successListener = opts.boundWitnessSuccessListener ||
       new XyoSimpleBoundWitnessSuccessListener(
-        this.packer,
         this.hashProvider,
         this.originChainStateRepository,
         opts.signerProvider
@@ -176,7 +164,6 @@ export class XyoSentinelLauncher extends XyoBase {
       this.originChainStateRepository,
       this.originBlockRepository,
       this.successListener,
-      this.packer,
       this.networkProcedureCatalogue
     );
 
@@ -189,7 +176,6 @@ if (require.main === module) {
 }
 
 export interface XyoSentinelLauncherOptions {
-  packer?: XyoPacker;
   hashProvider?: IXyoHashProvider;
   dataPath?: string;
   signerProvider?: IXyoSignerProvider;

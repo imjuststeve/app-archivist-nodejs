@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:25:48 pm
+ * @Last modified time: Thursday, 11th October 2018 4:12:53 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -13,7 +13,6 @@ import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult } from ".";
 import {
   XyoHash,
   XyoBoundWitness,
-  XyoPacker,
   XyoObject,
   IXyoOriginBlockRepository,
   IXyoStorageProvider,
@@ -34,7 +33,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   constructor (
     private readonly originBlockRepository: IXyoOriginBlockRepository,
-    private readonly xyoPacker: XyoPacker,
     private readonly publicKeysIndexStorageProvider: IXyoStorageProvider
   ) {
     super();
@@ -70,13 +68,13 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
       ) as XyoPreviousHash | undefined;
 
       if (previousHash) {
-        const hashBuffer = this.xyoPacker.serialize(previousHash.hash, true);
+        const hashBuffer = previousHash.hash.serialize(true);
 
         previousBlock = await this.getOriginBlockByHash(hashBuffer);
       }
 
       const indexPublicKeys = await Promise.all(publicKeySet.array.map(async (publicKey) => {
-        const key = this.xyoPacker.serialize(publicKey, true);
+        const key = publicKey.serialize(true);
         let indexItem = await this.getPublicKeyIndexItem(publicKey);
 
         if (!indexItem) {
@@ -94,7 +92,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
               for (const signedPayloadItem of payload.signedPayload.array) {
                 if (signedPayloadItem.id.equals(Buffer.from([XyoNextPublicKey.major, XyoNextPublicKey.minor]))) {
                   const previousBlockPublicKey = (signedPayloadItem as XyoNextPublicKey).publicKey;
-                  const serializedPreviousBlockPublicKey = this.xyoPacker.serialize(previousBlockPublicKey, true);
+                  const serializedPreviousBlockPublicKey = previousBlockPublicKey.serialize(true);
 
                   if (serializedPreviousBlockPublicKey.equals(key)) {
                     previousBlockPublicKeySet = previousBlock.publicKeys[previousBlockPositionalIndex];
@@ -119,7 +117,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
                   let result = await this.getPublicKeyIndexItem(previousBlockPublicKey);
                   if (result) {
                     if (result.parentPublicKeyIndex) {
-                      const parentPublicIndexKey = this.xyoPacker.deserialize(
+                      const parentPublicIndexKey = XyoObject.deserialize(
                         Buffer.from(result.parentPublicKeyIndex, 'hex')
                       ) as IXyoPublicKey;
                       const parentResult = await this.getPublicKeyIndexItem(parentPublicIndexKey);
@@ -137,7 +135,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
               if (previousIndexItem) {
                 indexItem.parentPublicKeyIndex = previousIndexItem.index.parentPublicKeyIndex ||
-                  this.xyoPacker.serialize(previousIndexItem.key, true).toString('hex');
+                  previousIndexItem.key.serialize(true).toString('hex');
 
                 previousIndexItem.index.otherPublicKeys.push(key.toString('hex'));
 
@@ -147,7 +145,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
           }
         }
 
-        const serializedHash = this.xyoPacker.serialize(hash, true).toString('hex');
+        const serializedHash = hash.serialize(true).toString('hex');
         indexItem.hashes.push(serializedHash);
         await this.updatePublicKeyIndex(publicKey, indexItem);
       }));
@@ -189,7 +187,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
     // Add all other public keys to publicKeyMap
     const publicKeyMap: {[s: string]: boolean} = {};
-    publicKeyMap[this.xyoPacker.serialize(publicKey, true).toString('hex')] = true;
+    publicKeyMap[publicKey.serialize(true).toString('hex')] = true;
 
     await this.gatherHashesFromPublicKeyTree(indexItem, hashMap, publicKeyMap);
 
@@ -206,7 +204,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     const filteredOriginBlocks = _.chain(originBlocks).filter().value() as XyoBoundWitness[]; // remove undefined
     const publicKeySet = _.chain(publicKeyMap)
       .reduce((publicKeyCollection, val, publicKeyItem) => {
-        publicKeyCollection.push(this.xyoPacker.deserialize(Buffer.from(publicKeyItem, 'hex')));
+        publicKeyCollection.push(XyoObject.deserialize(Buffer.from(publicKeyItem, 'hex')));
         return publicKeyCollection;
       }, [] as XyoObject[])
       .value();
@@ -243,7 +241,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     }, [] as string[]);
 
     await Promise.all(downstreamPublicKeys.map(async (downstreamPublicKey) => {
-      const downstreamPublicKeyObject = this.xyoPacker.deserialize(
+      const downstreamPublicKeyObject = XyoObject.deserialize(
         Buffer.from(downstreamPublicKey, 'hex')
       ) as IXyoPublicKey;
       const downstreamIndexItem = await this.getPublicKeyIndexItem(downstreamPublicKeyObject);
@@ -259,7 +257,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
       return this.getOriginBlockByHash(hash);
     }));
 
-    const publicKeyBytes = this.xyoPacker.serialize(publicKey, true);
+    const publicKeyBytes = publicKey.serialize(true);
 
     const filteredOriginBlocks = originBlocks.filter((originBlock) => {
       if (!originBlock) {
@@ -268,7 +266,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
       return originBlock.publicKeys.filter((publicKeySet) => {
         return publicKeySet.array.filter((pk) => {
-          const serializedTypedPublicKey = this.xyoPacker.serialize(pk, true);
+          const serializedTypedPublicKey = pk.serialize(true);
           return serializedTypedPublicKey.equals(publicKeyBytes);
         })
         .length > 0;
@@ -280,7 +278,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   }
 
   private async getPublicKeyIndexItem(publicKey: IXyoPublicKey): Promise<XyoPublicKeyIndexItem | undefined> {
-    const key = this.xyoPacker.serialize(publicKey, true);
+    const key = publicKey.serialize(true);
     const hasKey = await this.publicKeysIndexStorageProvider.containsKey(key);
 
     if (hasKey) {
@@ -295,7 +293,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   }
 
   private async updatePublicKeyIndex(publicKey: IXyoPublicKey, indexItem: XyoPublicKeyIndexItem) {
-    const key = this.xyoPacker.serialize(publicKey, true);
+    const key = publicKey.serialize(true);
     const jsonValue = JSON.stringify(indexItem);
     const value = Buffer.from(jsonValue);
 

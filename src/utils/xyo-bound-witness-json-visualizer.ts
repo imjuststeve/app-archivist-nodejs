@@ -4,16 +4,15 @@
  * @Email:  developer@xyfindables.com
  * @Filename: bound-witness-json-visualizer.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:16:59 pm
+ * @Last modified time: Thursday, 11th October 2018 4:19:56 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoPacker, XyoBoundWitness, IXyoHashProvider, XyoBase } from "@xyo-network/sdk-core-nodejs";
+import { XyoBoundWitness, IXyoHashProvider, XyoBase } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoBoundWitnessJsonVisualizer extends XyoBase {
   constructor (
-    private readonly packer: XyoPacker,
     private readonly hashProvider: IXyoHashProvider,
     private readonly type: 'json' | 'summary'
   ) {
@@ -23,30 +22,30 @@ export class XyoBoundWitnessJsonVisualizer extends XyoBase {
   public async visualize(boundWitness: XyoBoundWitness) {
     const publicKeys = boundWitness.publicKeys.map((publicKeySet) => {
       return publicKeySet.array.map((publicKey) => {
-        return this.packer.serialize(publicKey, true).toString('hex');
+        return publicKey.serialize(true).toString('hex');
       });
     });
 
     const signatures = boundWitness.signatures.map((signatureSet) => {
       return signatureSet.array.map((signature) => {
-        return this.packer.serialize(signature, true).toString('hex');
+        return signature.serialize(true).toString('hex');
       });
     });
 
     const signedPayloads = boundWitness.payloads.map((payloads) => {
       return payloads.signedPayload.array.map((signedPayload) => {
-        return this.packer.serialize(signedPayload, true).toString('hex');
+        return signedPayload.serialize(true).toString('hex');
       });
     });
 
     const unsignedPayloads = boundWitness.payloads.map((payloads) => {
       return payloads.unsignedPayload.array.map((unsignedPayload) => {
-        return this.packer.serialize(unsignedPayload, true).toString('hex');
+        return unsignedPayload.serialize(true).toString('hex');
       });
     });
 
     const hash = await boundWitness.getHash(this.hashProvider);
-    const serializedHash = this.packer.serialize(hash, true).toString('hex');
+    const serializedHash = hash.serialize(true).toString('hex');
     if (this.type === 'json') {
       const json = JSON.stringify({
         publicKeys,

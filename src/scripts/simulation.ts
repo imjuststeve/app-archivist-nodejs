@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: simulation.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:18:12 pm
+ * @Last modified time: Thursday, 11th October 2018 5:37:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -12,10 +12,8 @@
 import { XyoSentinelLauncher } from "./sentinel-launcher";
 import { XyoArchivistLauncher } from "./archivist-launcher";
 import {
-  XyoDefaultPackerProvider,
   XyoSha256HashProvider,
   XyoEcdsaSecp256k1Sha256SignerProvider,
-  XyoPacker,
   IXyoHashProvider,
   IXyoSignerProvider,
   XyoLogger
@@ -30,7 +28,6 @@ if (require.main === module) {
 
 async function simulate(rootDataPath: string) {
   const sentinelPorts = [9000, 9001, 9002, 9003];
-  const packer = new XyoDefaultPackerProvider().getXyoPacker();
   const hashProvider = new XyoSha256HashProvider();
   const signerProvider = new XyoEcdsaSecp256k1Sha256SignerProvider(hashProvider);
 
@@ -39,7 +36,7 @@ async function simulate(rootDataPath: string) {
     const networkAddresses = getNetworkAddresses(sentinelPorts, sentinelPort);
     const sentinelDataPath = getSentinelDataPath(rootDataPath, sentinelPort);
     const sentinelLauncher = new XyoSentinelLauncher({
-      packer, hashProvider, dataPath: sentinelDataPath, networkAddresses, signerProvider
+      hashProvider, dataPath: sentinelDataPath, networkAddresses, signerProvider
     });
 
     const sentinel = await sentinelLauncher.start();
@@ -52,7 +49,6 @@ async function simulate(rootDataPath: string) {
       const innerSentinelDataPath = getSentinelDataPath(rootDataPath, networkAddress.port);
       const innerSentinel = await getOrCreateArchivist(
         networkAddress.port,
-        packer,
         hashProvider,
         innerSentinelDataPath,
         signerProvider
@@ -100,7 +96,6 @@ const archivistsByPort: {[s: string]: XyoArchivist} = {};
 
 async function getOrCreateArchivist(
   port: number,
-  packer: XyoPacker,
   hashProvider: IXyoHashProvider,
   innerSentinelDataPath: string,
   signerProvider: IXyoSignerProvider
@@ -112,7 +107,6 @@ async function getOrCreateArchivist(
 
   const archivistLauncher = new XyoArchivistLauncher({
     port,
-    packer,
     hashProvider,
     dataPath: innerSentinelDataPath,
     signerProvider

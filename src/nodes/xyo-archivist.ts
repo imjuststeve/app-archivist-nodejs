@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 3:31:18 pm
+ * @Last modified time: Thursday, 11th October 2018 4:28:50 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -18,7 +18,6 @@ import {
   IXyoHashProvider,
   IXyoOriginChainStateRepository,
   XyoBoundWitnessPayloadProvider,
-  XyoPacker,
   IXyoNetworkProcedureCatalogue,
   IXyoPeerConnectionDelegate,
   IXyoBoundWitnessSuccessListener
@@ -27,7 +26,6 @@ import {
 export class XyoArchivist extends XyoNode {
 
   private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProvider;
-  private readonly packer: XyoPacker;
   private readonly catalogue: IXyoNetworkProcedureCatalogue;
   private readonly network: XyoServerTcpNetwork;
   private readonly delegate: IXyoPeerConnectionDelegate;
@@ -38,8 +36,7 @@ export class XyoArchivist extends XyoNode {
     hashingProvider: IXyoHashProvider,
     originChainStateRepository: IXyoOriginChainStateRepository,
     originBlocksRepository: IXyoOriginBlockRepository,
-    boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener,
-    packer: XyoPacker
+    boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener
   ) {
     const network = new XyoServerTcpNetwork(port);
     const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProvider();
@@ -59,7 +56,6 @@ export class XyoArchivist extends XyoNode {
     const peerConnectionDelegate = new XyoPeerConnectionProviderFactory(
       network,
       catalogue,
-      packer,
       hashingProvider,
       originChainStateRepository,
       originBlocksRepository,
@@ -89,7 +85,6 @@ export class XyoArchivist extends XyoNode {
     this.delegate = peerConnectionDelegate;
     this.network = network;
     this.catalogue = catalogue;
-    this.packer = packer;
     this.boundWitnessPayloadProvider = boundWitnessPayloadProvider;
     this.boundWitnessSuccessListener = boundWitnessSuccessListener;
   }

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 4th October 2018 4:50:53 pm
+ * @Last modified time: Thursday, 11th October 2018 4:28:27 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,7 +14,6 @@ import { XyoArchivistLocalStorageRepository } from "./xyo-archivist-repository/x
 
 import {
   XyoOriginBlockLocalStorageRepository,
-  XyoDefaultPackerProvider,
   XyoSha256HashProvider
 } from "@xyo-network/sdk-core-nodejs";
 
@@ -27,9 +26,6 @@ import { XyoLevelDbStorageProvider } from "./leveldb-storage-provider/level-db-s
 import { GetAllBlocks } from "./graphql-api/resolvers/get-all-blocks-resolver";
 
 export async function startArchivist(dataDirectory: string) {
-  const packerProvider = new XyoDefaultPackerProvider();
-  const packer = packerProvider.getXyoPacker();
-
   const originBlocksStorageProvider = new XyoLevelDbStorageProvider(
     path.join(dataDirectory, `origin-blocks`)
   );
@@ -45,23 +41,21 @@ export async function startArchivist(dataDirectory: string) {
   const hashingProvider = new XyoSha256HashProvider();
 
   const originChainNavigator = new XyoOriginBlockLocalStorageRepository(
-    packer,
     originBlocksStorageProvider,
     originBlockNextHashStorageProvider
   );
 
   const archivistRepository = new XyoArchivistLocalStorageRepository(
     originChainNavigator,
-    packer,
     originBlockPublicKeyStorageProvider
   );
 
   await new GraphQLServer(
     await new GraphqlSchemaBuilder().buildSchema(),
-    new GetBlocksByPublicKeyResolver(archivistRepository, packer, hashingProvider),
-    new GetPayloadsFromBlockResolver(packer, hashingProvider),
-    new GetPublicKeysFromBlockResolver(packer, hashingProvider),
-    new GetAllBlocks(archivistRepository, packer, hashingProvider),
+    new GetBlocksByPublicKeyResolver(archivistRepository, hashingProvider),
+    new GetPayloadsFromBlockResolver(hashingProvider),
+    new GetPublicKeysFromBlockResolver(hashingProvider),
+    new GetAllBlocks(archivistRepository, hashingProvider),
     4000
   ).start();
 }

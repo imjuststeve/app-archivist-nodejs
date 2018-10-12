@@ -1,16 +1,16 @@
-import { XyoPacker, IXyoHashProvider, XyoBase, XyoObject } from "@xyo-network/sdk-core-nodejs";
+import { IXyoHashProvider, XyoBase, XyoObject } from "@xyo-network/sdk-core-nodejs";
 
 export abstract class XyoBaseDataResolver extends XyoBase {
-  constructor (protected readonly xyoPacker: XyoPacker, protected readonly hashProvider: IXyoHashProvider) {
+  constructor (protected readonly hashProvider: IXyoHashProvider) {
     super();
   }
 
   protected async getHashBytesMajorMinor(xyoObject: XyoObject) {
-    const bytes = this.xyoPacker.serialize(xyoObject, true);
+    const bytes = xyoObject.serialize(true);
     const hash = await this.hashProvider.createHash(bytes);
 
     return {
-      hash: this.xyoPacker.serialize(hash, true).toString('hex'),
+      hash: hash.serialize(true).toString('hex'),
       bytes: bytes.toString('hex'),
       major: xyoObject.major,
       minor: xyoObject.minor
