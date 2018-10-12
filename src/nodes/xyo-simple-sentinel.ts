@@ -4,51 +4,47 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-sentinel.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 9th October 2018 3:45:43 pm
+ * @Last modified time: Thursday, 11th October 2018 5:37:21 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import {
   XyoNode,
-  XyoOriginBlockRepository,
+  IXyoOriginBlockRepository,
   XyoPeerConnectionProviderFactory,
-  XyoHashProvider,
-  XyoOriginChainStateRepository,
-  XyoBoundWitnessPayloadProviderImpl,
-  XyoPacker,
-  XyoNetworkProcedureCatalogue,
-  XyoPeerConnectionDelegateInterface,
-  XyoBoundWitnessSuccessListener,
+  IXyoHashProvider,
+  IXyoOriginChainStateRepository,
+  XyoBoundWitnessPayloadProvider,
+  IXyoNetworkProcedureCatalogue,
+  IXyoPeerConnectionDelegate,
+  IXyoBoundWitnessSuccessListener,
   XyoClientTcpNetwork,
-  XyoNetworkAddressProvider
+  IXyoNetworkAddressProvider
 } from "@xyo-network/sdk-core-nodejs";
 
 export class XyoSimpleSentinel extends XyoNode {
-  private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProviderImpl;
-  private readonly packer: XyoPacker;
-  private readonly catalogue: XyoNetworkProcedureCatalogue;
+  private readonly boundWitnessPayloadProvider: XyoBoundWitnessPayloadProvider;
+  private readonly catalogue: IXyoNetworkProcedureCatalogue;
   private readonly network: XyoClientTcpNetwork;
-  private readonly delegate: XyoPeerConnectionDelegateInterface;
-  private readonly boundWitnessSuccessListener: XyoBoundWitnessSuccessListener;
+  private readonly delegate: IXyoPeerConnectionDelegate;
+  private readonly boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener;
 
   constructor (
-    networkAddressProvider: XyoNetworkAddressProvider,
-    hashingProvider: XyoHashProvider,
-    originChainStateRepository: XyoOriginChainStateRepository,
-    originBlocksRepository: XyoOriginBlockRepository,
-    boundWitnessSuccessListener: XyoBoundWitnessSuccessListener,
-    packer: XyoPacker,
-    catalogue: XyoNetworkProcedureCatalogue
+    networkAddressProvider: IXyoNetworkAddressProvider,
+    hashingProvider: IXyoHashProvider,
+    originChainStateRepository: IXyoOriginChainStateRepository,
+    originBlocksRepository: IXyoOriginBlockRepository,
+    boundWitnessSuccessListener: IXyoBoundWitnessSuccessListener,
+    catalogue: IXyoNetworkProcedureCatalogue
   ) {
 
     const network = new XyoClientTcpNetwork(networkAddressProvider);
-    const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProviderImpl();
+    const boundWitnessPayloadProvider = new XyoBoundWitnessPayloadProvider();
 
     const peerConnectionDelegate = new XyoPeerConnectionProviderFactory(
       network,
       catalogue,
-      packer,
       hashingProvider,
       originChainStateRepository,
       originBlocksRepository,
@@ -62,7 +58,6 @@ export class XyoSimpleSentinel extends XyoNode {
     this.delegate = peerConnectionDelegate;
     this.network = network;
     this.catalogue = catalogue;
-    this.packer = packer;
     this.boundWitnessPayloadProvider = boundWitnessPayloadProvider;
     this.boundWitnessSuccessListener = boundWitnessSuccessListener;
   }

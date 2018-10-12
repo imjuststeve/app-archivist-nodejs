@@ -1,9 +1,9 @@
-import { XYOStorageProvider, XyoError, XyoStoragePriority } from "@xyo-network/sdk-core-nodejs";
+import { IXyoStorageProvider, XyoError, XyoStoragePriority } from "@xyo-network/sdk-core-nodejs";
 
 import levelup, { LevelUp } from 'levelup';
 import leveldown, { LevelDown } from 'leveldown';
 
-export class XyoLevelDbStorageProvider implements XYOStorageProvider {
+export class XyoLevelDbStorageProvider implements IXyoStorageProvider {
 
   private db: LevelUp<LevelDown>;
 

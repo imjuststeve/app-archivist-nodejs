@@ -1,4 +1,4 @@
-import { XyoPacker, XyoHashProvider, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
+import { IXyoHashProvider, XyoBoundWitness, XyoObject } from "@xyo-network/sdk-core-nodejs";
 import { XyoArchivistRepository } from "../../xyo-archivist-repository";
 import { XyoDataResolver } from "..";
 import { XyoBaseDataResolver } from "../xyo-base-data-resolver";
@@ -7,10 +7,9 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
 
   constructor(
     private readonly archivistRepository: XyoArchivistRepository,
-    protected readonly xyoPacker: XyoPacker,
-    protected readonly hashProvider: XyoHashProvider
+    protected readonly hashProvider: IXyoHashProvider
   ) {
-    super(xyoPacker, hashProvider);
+    super(hashProvider);
   }
 
   public async resolve (obj: any, args: any, context: any, info: any): Promise<any> {
@@ -28,7 +27,7 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
 
   private async getBlockCollectionForPublicKey(publicKey: string) {
     const blocksByPublicKeySet = await this.archivistRepository.getOriginBlocksByPublicKey(
-      this.xyoPacker.deserialize(Buffer.from(publicKey, 'hex'))
+      XyoObject.deserialize(Buffer.from(publicKey, 'hex'))
     );
 
     const serializedBoundWitnesses = await Promise.all(blocksByPublicKeySet.boundWitnesses.map(async (block) => {
@@ -47,7 +46,7 @@ export class GetBlocksByPublicKeyResolver extends XyoBaseDataResolver implements
     return {
       blocks: serializedBoundWitnesses,
       keySet: blocksByPublicKeySet.publicKeys.map((publicKeyItem) => {
-        return this.xyoPacker.serialize(publicKeyItem, true).toString('hex');
+        return publicKeyItem.serialize(true).toString('hex');
       })
     };
   }

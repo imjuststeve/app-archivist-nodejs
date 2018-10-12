@@ -4,30 +4,29 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-simple-bound-witness-success-listener.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 8th October 2018 5:02:56 pm
+ * @Last modified time: Thursday, 11th October 2018 4:19:20 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoBase, XyoBoundWitnessSuccessListener, XyoBoundWitness, XyoPacker, XyoHashProvider, XyoOriginChainStateRepository, XyoSignerProvider } from "@xyo-network/sdk-core-nodejs";
+import { XyoBase, IXyoBoundWitnessSuccessListener, XyoBoundWitness, IXyoHashProvider, IXyoOriginChainStateRepository, IXyoSignerProvider } from "@xyo-network/sdk-core-nodejs";
 import { XyoBoundWitnessJsonVisualizer } from "./xyo-bound-witness-json-visualizer";
 
-export class XyoSimpleBoundWitnessSuccessListener extends XyoBase implements XyoBoundWitnessSuccessListener {
+export class XyoSimpleBoundWitnessSuccessListener extends XyoBase implements IXyoBoundWitnessSuccessListener {
 
   constructor (
-    private readonly packer: XyoPacker,
-    private readonly hashProvider: XyoHashProvider,
-    private readonly originChainStateRepository: XyoOriginChainStateRepository,
-    private readonly signerProvider?: XyoSignerProvider
+    private readonly hashProvider: IXyoHashProvider,
+    private readonly originChainStateRepository: IXyoOriginChainStateRepository,
+    private readonly signerProvider?: IXyoSignerProvider
   ) {
     super();
   }
 
   public async onBoundWitnessSuccess(boundWitness: XyoBoundWitness): Promise<void> {
-    await new XyoBoundWitnessJsonVisualizer(this.packer, this.hashProvider, 'summary').visualize(boundWitness);
+    await new XyoBoundWitnessJsonVisualizer(this.hashProvider, 'summary').visualize(boundWitness);
     if (this.signerProvider) {
       const nextSigner = this.signerProvider.newInstance();
-      const pubKey = this.packer.serialize(nextSigner.publicKey, true).toString('hex');
+      const pubKey = nextSigner.publicKey.serialize(true).toString('hex');
       this.logInfo(`Rotating public key to ${pubKey}`);
       await this.originChainStateRepository.addSigner(nextSigner);
       await this.originChainStateRepository.removeOldestSigner();

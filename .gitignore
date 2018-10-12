@@ -66,3 +66,5 @@ dist/
 # data
 data/
 archivistdata/
+archivist-db/
+sentinel-db/
