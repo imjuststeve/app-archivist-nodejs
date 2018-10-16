@@ -4,15 +4,30 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 10th October 2018 2:16:10 pm
+ * @Last modified time: Monday, 15th October 2018 1:43:13 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
 
+/**
+ * A persistance abstraction for an XyoArchivist. This interface powers
+ * the graphql api
+ */
 export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
+
+  /**
+   * Will return all the origin-blocks for a particular public-key
+   * and any other public-keys determined to be equivalent to the public-key passed in
+   */
   getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
+
+  /** Returns the about-me info for the archivist */
+  getAboutMe(): Promise<XyoAboutMe>;
+
+  /** Updates the about-me info for the archivist */
+  setAboutMe(aboutMe: XyoAboutMe): Promise<void>;
 }
 
 export interface XyoOriginBlockResult {
@@ -22,4 +37,12 @@ export interface XyoOriginBlockResult {
 export interface XyoOriginBlocksByPublicKeyResult {
   publicKeys: XyoObject[];
   boundWitnesses: XyoBoundWitness[];
+}
+
+export interface XyoAboutMe {
+  name: string;
+  version?: string;
+  ip?: string;
+  graphqlPort?: number;
+  nodePort?: number;
 }
