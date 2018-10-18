@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
-    "@xyo-network/sdk-core-nodejs": "0.1.92",
+    "@xyo-network/sdk-core-nodejs": "0.1.94",
     "lodash": "^4.17.11",
     "uuid": "^3.3.2"
   },
