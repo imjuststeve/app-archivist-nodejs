@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 16th October 2018 9:26:52 am
+ * @Last modified time: Thursday, 18th October 2018 4:42:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -25,7 +25,8 @@ import {
   IXyoPublicKey,
   XyoError,
   XyoErrors,
-  XyoIpService
+  XyoIpService,
+  IOriginBlockQueryResult
 } from "@xyo-network/sdk-core-nodejs";
 
 import _ from 'lodash';
@@ -164,6 +165,10 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     }));
 
     this.logInfo(`Finished adding origin block`);
+  }
+
+  public async getOriginBlocks(limit: number, offsetHash?: Buffer | undefined): Promise<IOriginBlockQueryResult> {
+    return this.originBlockRepository.getOriginBlocks(limit, offsetHash);
   }
 
   public async getAboutMe(): Promise<XyoAboutMe> {
