@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 18th October 2018 4:42:18 pm
+ * @Last modified time: Friday, 19th October 2018 12:17:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -365,8 +365,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     const key = this.getPubKeyLookupValue(publicKey);
     const jsonValue = JSON.stringify(indexItem);
     const value = Buffer.from(jsonValue);
-
-    this.logInfo(`Updating public key index for key `, key.toString('hex'), jsonValue);
 
     await this.keyValueStore.write(key, value, XyoStoragePriority.PRIORITY_MED, true, 60000);
   }
