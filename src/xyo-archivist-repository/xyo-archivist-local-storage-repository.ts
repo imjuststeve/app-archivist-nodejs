@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 19th October 2018 12:17:18 pm
+ * @Last modified time: Monday, 22nd October 2018 10:44:24 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -23,8 +23,6 @@ import {
   XyoStoragePriority,
   XyoBase,
   IXyoPublicKey,
-  XyoError,
-  XyoErrors,
   XyoIpService,
   IOriginBlockQueryResult
 } from "@xyo-network/sdk-core-nodejs";
@@ -68,6 +66,115 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
       return;
     }
 
+    this.updateRelevantPublicKeyIndexes(hash, originBlock);
+  }
+
+  public async getOriginBlocks(limit: number, offsetHash?: Buffer | undefined): Promise<IOriginBlockQueryResult> {
+    return this.originBlockRepository.getOriginBlocks(limit, offsetHash);
+  }
+
+  public async getAboutMe(): Promise<XyoAboutMe> {
+    return this.createAboutMe();
+    // const hasKey = await this.keyValueStore.containsKey(this.ABOUT_KEY);
+
+    // if (hasKey) {
+    //   const aboutValue = await this.keyValueStore.read(this.ABOUT_KEY, 60000);
+
+    //   if (!aboutValue) {
+    //     return this.createAndSaveAboutMe();
+    //   }
+
+    //   return JSON.parse(aboutValue.toString());
+    // }
+
+    // return this.createAndSaveAboutMe();
+  }
+
+  public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
+    return this.originBlockRepository.getOriginBlockByHash(hash);
+  }
+
+  public async getOriginBlocksByPublicKey(publicKey: IXyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
+    if (!this.usePublicKeysIndexStorageProvider) {
+      const scanResult = await this.getOriginBlocksByPublicKeyByScan(publicKey);
+      return {
+        publicKeys: [publicKey],
+        boundWitnesses: scanResult
+      };
+    }
+
+    const indexItem = await this.getPublicKeyIndexItem(publicKey);
+    if (!indexItem) {
+      if (this.onPublicKeysIndexMissUseScan) {
+        const result = await this.getOriginBlocksByPublicKeyByScan(publicKey);
+        return {
+          publicKeys: [publicKey],
+          boundWitnesses: result
+        };
+      }
+
+      return { publicKeys: [publicKey], boundWitnesses: [] };
+    }
+
+    // Add all hashes to hashmap
+    const hashMap: {[s: string]: boolean} = {};
+
+    // Add all other public keys to publicKeyMap
+    const publicKeyMap: {[s: string]: boolean} = {};
+    publicKeyMap[publicKey.serialize(true).toString('hex')] = true;
+
+    await this.gatherHashesFromPublicKeyTree(indexItem, hashMap, publicKeyMap);
+
+    const getOriginBlocksPromises = _.chain(hashMap)
+      .keys()
+      .map(async (hashKey) => {
+        const hash = Buffer.from(hashKey, 'hex');
+        const originBlock = await this.getOriginBlockByHash(hash);
+        return originBlock;
+      })
+      .value();
+
+    const originBlocks = await Promise.all(getOriginBlocksPromises);
+    const filteredOriginBlocks = _.chain(originBlocks).filter().value() as XyoBoundWitness[]; // remove undefined
+    const publicKeySet = _.chain(publicKeyMap)
+      .reduce((publicKeyCollection, val, publicKeyItem) => {
+        publicKeyCollection.push(XyoObject.deserialize(Buffer.from(publicKeyItem, 'hex')));
+        return publicKeyCollection;
+      }, [] as XyoObject[])
+      .value();
+
+    return {
+      publicKeys: publicKeySet,
+      boundWitnesses: filteredOriginBlocks
+    };
+  }
+
+  private async createAboutMe(): Promise<XyoAboutMe> {
+    const ip = await this.ipService.getMyIp();
+    this.name = this.name || uuid();
+    return {
+      name: this.name,
+      version: this.version,
+      ip: this.isPubliclyAddressable ? ip.public : ip.external,
+      graphqlPort: ip.graphqlPort,
+      nodePort: ip.nodePort
+    };
+  }
+
+  private async createAndSaveAboutMe(): Promise<XyoAboutMe> {
+    const aboutMe = await this.createAboutMe();
+    await this.keyValueStore.write(
+      this.ABOUT_KEY,
+      Buffer.from(JSON.stringify(aboutMe)),
+      XyoStoragePriority.PRIORITY_HIGH,
+      true,
+      60000
+    );
+
+    return aboutMe;
+  }
+
+  private async updateRelevantPublicKeyIndexes(hash: XyoHash, originBlock: XyoBoundWitness) {
     await Promise.all(originBlock.publicKeys.map(async (publicKeySet, positionalIndex) => {
       let previousBlock: XyoBoundWitness | undefined;
       const previousHash = originBlock
@@ -165,115 +272,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     }));
 
     this.logInfo(`Finished adding origin block`);
-  }
-
-  public async getOriginBlocks(limit: number, offsetHash?: Buffer | undefined): Promise<IOriginBlockQueryResult> {
-    return this.originBlockRepository.getOriginBlocks(limit, offsetHash);
-  }
-
-  public async getAboutMe(): Promise<XyoAboutMe> {
-    return this.createAboutMe();
-    // const hasKey = await this.keyValueStore.containsKey(this.ABOUT_KEY);
-
-    // if (hasKey) {
-    //   const aboutValue = await this.keyValueStore.read(this.ABOUT_KEY, 60000);
-
-    //   if (!aboutValue) {
-    //     return this.createAndSaveAboutMe();
-    //   }
-
-    //   return JSON.parse(aboutValue.toString());
-    // }
-
-    // return this.createAndSaveAboutMe();
-  }
-
-  public setAboutMe(aboutInfo: XyoAboutMe): Promise<void> {
-    throw new XyoError(`TODO: Not yet implemented`, XyoErrors.CRITICAL);
-  }
-
-  public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
-    return this.originBlockRepository.getOriginBlockByHash(hash);
-  }
-
-  public async getOriginBlocksByPublicKey(publicKey: IXyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
-    if (!this.usePublicKeysIndexStorageProvider) {
-      const scanResult = await this.getOriginBlocksByPublicKeyByScan(publicKey);
-      return {
-        publicKeys: [publicKey],
-        boundWitnesses: scanResult
-      };
-    }
-
-    const indexItem = await this.getPublicKeyIndexItem(publicKey);
-    if (!indexItem) {
-      if (this.onPublicKeysIndexMissUseScan) {
-        const result = await this.getOriginBlocksByPublicKeyByScan(publicKey);
-        return {
-          publicKeys: [publicKey],
-          boundWitnesses: result
-        };
-      }
-
-      return { publicKeys: [publicKey], boundWitnesses: [] };
-    }
-
-    // Add all hashes to hashmap
-    const hashMap: {[s: string]: boolean} = {};
-
-    // Add all other public keys to publicKeyMap
-    const publicKeyMap: {[s: string]: boolean} = {};
-    publicKeyMap[publicKey.serialize(true).toString('hex')] = true;
-
-    await this.gatherHashesFromPublicKeyTree(indexItem, hashMap, publicKeyMap);
-
-    const getOriginBlocksPromises = _.chain(hashMap)
-      .keys()
-      .map(async (hashKey) => {
-        const hash = Buffer.from(hashKey, 'hex');
-        const originBlock = await this.getOriginBlockByHash(hash);
-        return originBlock;
-      })
-      .value();
-
-    const originBlocks = await Promise.all(getOriginBlocksPromises);
-    const filteredOriginBlocks = _.chain(originBlocks).filter().value() as XyoBoundWitness[]; // remove undefined
-    const publicKeySet = _.chain(publicKeyMap)
-      .reduce((publicKeyCollection, val, publicKeyItem) => {
-        publicKeyCollection.push(XyoObject.deserialize(Buffer.from(publicKeyItem, 'hex')));
-        return publicKeyCollection;
-      }, [] as XyoObject[])
-      .value();
-
-    return {
-      publicKeys: publicKeySet,
-      boundWitnesses: filteredOriginBlocks
-    };
-  }
-
-  private async createAboutMe(): Promise<XyoAboutMe> {
-    const ip = await this.ipService.getMyIp();
-    this.name = this.name || uuid();
-    return {
-      name: this.name,
-      version: this.version,
-      ip: this.isPubliclyAddressable ? ip.public : ip.external,
-      graphqlPort: ip.graphqlPort,
-      nodePort: ip.nodePort
-    };
-  }
-
-  private async createAndSaveAboutMe(): Promise<XyoAboutMe> {
-    const aboutMe = await this.createAboutMe();
-    await this.keyValueStore.write(
-      this.ABOUT_KEY,
-      Buffer.from(JSON.stringify(aboutMe)),
-      XyoStoragePriority.PRIORITY_HIGH,
-      true,
-      60000
-    );
-
-    return aboutMe;
   }
 
   private async gatherHashesFromPublicKeyTree(

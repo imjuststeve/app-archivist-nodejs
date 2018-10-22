@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 15th October 2018 1:43:13 pm
+ * @Last modified time: Monday, 22nd October 2018 10:31:21 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -25,9 +25,6 @@ export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
 
   /** Returns the about-me info for the archivist */
   getAboutMe(): Promise<XyoAboutMe>;
-
-  /** Updates the about-me info for the archivist */
-  setAboutMe(aboutMe: XyoAboutMe): Promise<void>;
 }
 
 export interface XyoOriginBlockResult {
