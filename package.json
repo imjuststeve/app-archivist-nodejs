@@ -1,17 +1,13 @@
 {
   "name": "@xyo-network/sdk-archivist-nodejs",
-  "version": "0.1.5",
+  "version": "0.1.95",
   "description": "An archivist implementation on the xyo network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
-    "build": "tsc -p tsconfig.build.json",
-    "build-ci": "tsc",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "prepare": "yarn build",
-    "prepublishOnly": "yarn test && yarn tslint",
-    "preversion": "yarn tslint"
+    "build": "tsc",
+    "prepublishOnly": "tsc -b ."
   },
   "husky": {
     "hooks": {
@@ -34,7 +30,7 @@
   },
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
-    "@xyo-network/sdk-core-nodejs": "0.1.94",
+    "@xyo-network/sdk-core-nodejs": "0.1.95",
     "lodash": "^4.17.11",
     "uuid": "^3.3.2"
   },
