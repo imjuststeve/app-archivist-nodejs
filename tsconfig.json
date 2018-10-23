@@ -6,5 +6,6 @@
   },
   "references": [
     { "path": "../sdk-core-nodejs" }
-  ]  
+  ],
+  "include": ["src/**/*"]  
 }
