@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 22nd October 2018 10:44:24 am
+ * @Last modified time: Monday, 22nd October 2018 5:20:58 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -34,7 +34,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   private usePublicKeysIndexStorageProvider: boolean = true;
   private onPublicKeysIndexMissUseScan: boolean = true;
-  private ABOUT_KEY = Buffer.from('about');
 
   constructor (
     private readonly originBlockRepository: IXyoOriginBlockRepository,
@@ -74,20 +73,15 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   }
 
   public async getAboutMe(): Promise<XyoAboutMe> {
-    return this.createAboutMe();
-    // const hasKey = await this.keyValueStore.containsKey(this.ABOUT_KEY);
-
-    // if (hasKey) {
-    //   const aboutValue = await this.keyValueStore.read(this.ABOUT_KEY, 60000);
-
-    //   if (!aboutValue) {
-    //     return this.createAndSaveAboutMe();
-    //   }
-
-    //   return JSON.parse(aboutValue.toString());
-    // }
-
-    // return this.createAndSaveAboutMe();
+    const ip = await this.ipService.getMyIp();
+    this.name = this.name || uuid();
+    return {
+      name: this.name,
+      version: this.version,
+      ip: this.isPubliclyAddressable ? ip.public : ip.external,
+      graphqlPort: ip.graphqlPort,
+      nodePort: ip.nodePort
+    };
   }
 
   public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
@@ -147,31 +141,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
       publicKeys: publicKeySet,
       boundWitnesses: filteredOriginBlocks
     };
-  }
-
-  private async createAboutMe(): Promise<XyoAboutMe> {
-    const ip = await this.ipService.getMyIp();
-    this.name = this.name || uuid();
-    return {
-      name: this.name,
-      version: this.version,
-      ip: this.isPubliclyAddressable ? ip.public : ip.external,
-      graphqlPort: ip.graphqlPort,
-      nodePort: ip.nodePort
-    };
-  }
-
-  private async createAndSaveAboutMe(): Promise<XyoAboutMe> {
-    const aboutMe = await this.createAboutMe();
-    await this.keyValueStore.write(
-      this.ABOUT_KEY,
-      Buffer.from(JSON.stringify(aboutMe)),
-      XyoStoragePriority.PRIORITY_HIGH,
-      true,
-      60000
-    );
-
-    return aboutMe;
   }
 
   private async updateRelevantPublicKeyIndexes(hash: XyoHash, originBlock: XyoBoundWitness) {
@@ -337,7 +306,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   }
 
   private async getPublicKeyIndexItem(publicKey: IXyoPublicKey): Promise<XyoPublicKeyIndexItem | undefined> {
-    const key = this.getPubKeyLookupValue(publicKey);
+    const key = publicKey.serialize(true);
     const hasKey = await this.keyValueStore.containsKey(key);
 
     if (hasKey) {
@@ -351,16 +320,8 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     return undefined;
   }
 
-  private getPubKeyLookupValue(publicKey: IXyoPublicKey) {
-    const pk = publicKey.serialize(true);
-    return Buffer.concat([
-      Buffer.from('public-keys.'),
-      pk
-    ]);
-  }
-
   private async updatePublicKeyIndex(publicKey: IXyoPublicKey, indexItem: XyoPublicKeyIndexItem) {
-    const key = this.getPubKeyLookupValue(publicKey);
+    const key = publicKey.serialize(true);
     const jsonValue = JSON.stringify(indexItem);
     const value = Buffer.from(jsonValue);
 
