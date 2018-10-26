@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 22nd October 2018 10:31:21 am
+ * @Last modified time: Tuesday, 23rd October 2018 4:36:51 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness } from "@xyo-network/sdk-core-nodejs";
+import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness, IXyoPublicKey } from "@xyo-network/sdk-core-nodejs";
 
 /**
  * A persistance abstraction for an XyoArchivist. This interface powers
@@ -25,6 +25,8 @@ export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
 
   /** Returns the about-me info for the archivist */
   getAboutMe(): Promise<XyoAboutMe>;
+
+  getEntities(): Promise<IXyoPublicKey[]>;
 }
 
 export interface XyoOriginBlockResult {

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 22nd October 2018 5:20:58 pm
+ * @Last modified time: Friday, 26th October 2018 1:22:25 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -37,7 +37,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   constructor (
     private readonly originBlockRepository: IXyoOriginBlockRepository,
-    private readonly keyValueStore: IXyoStorageProvider,
+    private readonly publicKeyStore: IXyoStorageProvider,
     private readonly ipService: XyoIpService,
     private readonly version: string,
     private readonly isPubliclyAddressable: boolean,
@@ -75,6 +75,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
   public async getAboutMe(): Promise<XyoAboutMe> {
     const ip = await this.ipService.getMyIp();
     this.name = this.name || uuid();
+
     return {
       name: this.name,
       version: this.version,
@@ -86,6 +87,25 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {
     return this.originBlockRepository.getOriginBlockByHash(hash);
+  }
+
+  public async getEntities(): Promise<IXyoPublicKey[]> {
+    const allKeys = await this.publicKeyStore.getAllKeys();
+    const publicKeys = await Promise.all(allKeys.map(async (key) => {
+      const value = await this.publicKeyStore.read(key, 60000);
+      const indexItem = this.transformPublicKeyValueToXyoPublicKeyIndexItem(value);
+      if (!indexItem) {
+        return undefined;
+      }
+
+      if (indexItem.parentPublicKeyIndex) {
+        return undefined;
+      }
+
+      return XyoObject.deserialize<IXyoPublicKey>(key);
+    }));
+
+    return publicKeys.filter(pk => pk) as IXyoPublicKey[];
   }
 
   public async getOriginBlocksByPublicKey(publicKey: IXyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
@@ -307,14 +327,20 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   private async getPublicKeyIndexItem(publicKey: IXyoPublicKey): Promise<XyoPublicKeyIndexItem | undefined> {
     const key = publicKey.serialize(true);
-    const hasKey = await this.keyValueStore.containsKey(key);
+    const hasKey = await this.publicKeyStore.containsKey(key);
 
     if (hasKey) {
-      const value = await this.keyValueStore.read(key, 60000);
-      if (value) {
-        const strValue = value.toString();
-        return JSON.parse(strValue) as XyoPublicKeyIndexItem;
-      }
+      const value = await this.publicKeyStore.read(key, 60000);
+      return this.transformPublicKeyValueToXyoPublicKeyIndexItem(value);
+    }
+
+    return undefined;
+  }
+
+  private transformPublicKeyValueToXyoPublicKeyIndexItem(value: Buffer | undefined): XyoPublicKeyIndexItem | undefined {
+    if (value) {
+      const strValue = value.toString();
+      return JSON.parse(strValue) as XyoPublicKeyIndexItem;
     }
 
     return undefined;
@@ -325,7 +351,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     const jsonValue = JSON.stringify(indexItem);
     const value = Buffer.from(jsonValue);
 
-    await this.keyValueStore.write(key, value, XyoStoragePriority.PRIORITY_MED, true, 60000);
+    await this.publicKeyStore.write(key, value, XyoStoragePriority.PRIORITY_MED, true, 60000);
   }
 }
 
