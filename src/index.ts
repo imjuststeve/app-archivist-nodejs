@@ -4,10 +4,11 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 24th October 2018 10:14:38 am
+ * @Last modified time: Friday, 26th October 2018 2:47:48 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-export { XyoArchivistRepository, XyoAboutMe, XyoOriginBlocksByPublicKeyResult } from './xyo-archivist-repository';
+export { XyoArchivistRepository, IXyoAboutMe, XyoOriginBlocksByPublicKeyResult } from './xyo-archivist-repository';
 export { XyoArchivistLocalStorageRepository } from './xyo-archivist-repository/xyo-archivist-local-storage-repository';
+export { XyoAboutMeService } from './about-me/xyo-about-me-service';

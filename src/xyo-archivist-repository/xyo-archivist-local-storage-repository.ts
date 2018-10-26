@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 26th October 2018 1:22:25 pm
+ * @Last modified time: Friday, 26th October 2018 2:35:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult, XyoAboutMe } from ".";
+import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult } from ".";
 
 import {
   XyoHash,
@@ -23,12 +23,10 @@ import {
   XyoStoragePriority,
   XyoBase,
   IXyoPublicKey,
-  XyoIpService,
   IOriginBlockQueryResult
 } from "@xyo-network/sdk-core-nodejs";
 
 import _ from 'lodash';
-import { v4 as uuid } from 'uuid';
 
 export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoArchivistRepository {
 
@@ -37,11 +35,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   constructor (
     private readonly originBlockRepository: IXyoOriginBlockRepository,
-    private readonly publicKeyStore: IXyoStorageProvider,
-    private readonly ipService: XyoIpService,
-    private readonly version: string,
-    private readonly isPubliclyAddressable: boolean,
-    private name: string | undefined
+    private readonly publicKeyStore: IXyoStorageProvider
   ) {
     super();
   }
@@ -70,19 +64,6 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   public async getOriginBlocks(limit: number, offsetHash?: Buffer | undefined): Promise<IOriginBlockQueryResult> {
     return this.originBlockRepository.getOriginBlocks(limit, offsetHash);
-  }
-
-  public async getAboutMe(): Promise<XyoAboutMe> {
-    const ip = await this.ipService.getMyIp();
-    this.name = this.name || uuid();
-
-    return {
-      name: this.name,
-      version: this.version,
-      ip: this.isPubliclyAddressable ? ip.public : ip.external,
-      graphqlPort: ip.graphqlPort,
-      nodePort: ip.nodePort
-    };
   }
 
   public getOriginBlockByHash(hash: Buffer): Promise<XyoBoundWitness | undefined> {

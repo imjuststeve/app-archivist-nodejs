@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 23rd October 2018 4:36:51 pm
+ * @Last modified time: Friday, 26th October 2018 2:46:33 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -23,9 +23,6 @@ export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
    */
   getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
 
-  /** Returns the about-me info for the archivist */
-  getAboutMe(): Promise<XyoAboutMe>;
-
   getEntities(): Promise<IXyoPublicKey[]>;
 }
 
@@ -38,7 +35,7 @@ export interface XyoOriginBlocksByPublicKeyResult {
   boundWitnesses: XyoBoundWitness[];
 }
 
-export interface XyoAboutMe {
+export interface IXyoAboutMe {
   name: string;
   version?: string;
   ip?: string;
