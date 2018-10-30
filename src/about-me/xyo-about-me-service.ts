@@ -10,7 +10,7 @@
 */
 
 import { IXyoAboutMe } from "../xyo-archivist-repository";
-import { XyoBase, XyoIpService } from "@xyo-network/sdk-core-nodejs";
+import { XyoBase, XyoIpService, IXyoPublicKey } from "@xyo-network/sdk-core-nodejs";
 import uuid = require("uuid");
 
 export class XyoAboutMeService extends XyoBase {
@@ -20,7 +20,8 @@ export class XyoAboutMeService extends XyoBase {
     private readonly ipService: XyoIpService,
     private readonly version: string,
     private readonly isPubliclyAddressable: boolean,
-    name?: string
+    private readonly genesisPublicKey: IXyoPublicKey,
+    name?: string,
   ) {
     super();
 
@@ -38,7 +39,8 @@ export class XyoAboutMeService extends XyoBase {
       version: this.version,
       ip: this.isPubliclyAddressable ? ip.public : ip.external,
       graphqlPort: ip.graphqlPort,
-      nodePort: ip.nodePort
+      nodePort: ip.nodePort,
+      address: this.genesisPublicKey.serialize(true).toString('hex')
     };
   }
 }

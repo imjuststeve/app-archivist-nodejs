@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 26th October 2018 2:46:33 pm
+ * @Last modified time: Tuesday, 30th October 2018 4:03:26 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -41,4 +41,5 @@ export interface IXyoAboutMe {
   ip?: string;
   graphqlPort?: number;
   nodePort?: number;
+  address?: string;
 }
