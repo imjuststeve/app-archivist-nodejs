@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/sdk-archivist-nodejs",
-  "version": "0.1.95",
+  "version": "0.1.96",
   "description": "An archivist implementation on the xyo network",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
   "dependencies": {
-    "@xyo-network/sdk-core-nodejs": "0.1.95",
+    "@xyo-network/sdk-core-nodejs": "0.1.96",
     "lodash": "^4.17.11",
     "uuid": "^3.3.2"
   },
