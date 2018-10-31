@@ -14,30 +14,32 @@ import { XyoBase, XyoIpService, IXyoPublicKey } from "@xyo-network/sdk-core-node
 import uuid = require("uuid");
 
 export class XyoAboutMeService extends XyoBase {
-  private name?: string;
+  private readonly name: string;
+  private readonly ipOverride?: string;
 
   constructor (
     private readonly ipService: XyoIpService,
     private readonly version: string,
     private readonly isPubliclyAddressable: boolean,
     private readonly genesisPublicKey: IXyoPublicKey,
-    name?: string,
+    options?: {
+      name?: string,
+      publicIpOverride?: string
+    }
   ) {
     super();
 
-    if (name) {
-      this.name = name;
-    }
+    this.name = (options && options.name) || uuid();
+    this.ipOverride = (options && options.publicIpOverride) || undefined;
   }
 
   public async getAboutMe(): Promise<IXyoAboutMe> {
     const ip = await this.ipService.getMyIp();
-    this.name = this.name || uuid();
 
     return {
       name: this.name,
       version: this.version,
-      ip: this.isPubliclyAddressable ? ip.public : ip.external,
+      ip: this.ipOverride || (this.isPubliclyAddressable ? ip.public : ip.external),
       graphqlPort: ip.graphqlPort,
       nodePort: ip.nodePort,
       address: this.genesisPublicKey.serialize(true).toString('hex')
