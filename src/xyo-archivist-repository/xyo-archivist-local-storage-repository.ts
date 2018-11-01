@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 26th October 2018 2:35:18 pm
+ * @Last modified time: Thursday, 1st November 2018 11:24:08 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -329,7 +329,7 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
 
   private async updatePublicKeyIndex(publicKey: IXyoPublicKey, indexItem: XyoPublicKeyIndexItem) {
     const key = publicKey.serialize(true);
-    const jsonValue = JSON.stringify(indexItem);
+    const jsonValue = XyoBase.stringify(indexItem);
     const value = Buffer.from(jsonValue);
 
     await this.publicKeyStore.write(key, value, XyoStoragePriority.PRIORITY_MED, true, 60000);
