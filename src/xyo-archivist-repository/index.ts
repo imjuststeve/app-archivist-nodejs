@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 1st November 2018 4:13:29 pm
+ * @Last modified time: Tuesday, 6th November 2018 9:23:09 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -23,7 +23,29 @@ export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
    */
   getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
 
-  getEntities(): Promise<IXyoPublicKey[]>;
+  getEntities(limit: number, cursor: Buffer | undefined): Promise<XyoEntitiesList>;
+}
+
+export interface XyoEntityType {
+  sentinel: boolean;
+  bridge: boolean;
+  archivist: boolean;
+  diviner: boolean;
+}
+
+export interface XyoEntity {
+  firstKnownPublicKey: string;
+  allPublicKeys?: string[];
+  type: XyoEntityType;
+  mostRecentIndex?: number;
+  mostRecentBlockHash?: string;
+  mostRecentPublicKeys?: string[];
+}
+
+export interface XyoEntitiesList {
+  totalSize: number;
+  hasNextPage: boolean;
+  list: XyoEntity[];
 }
 
 export interface XyoOriginBlockResult {

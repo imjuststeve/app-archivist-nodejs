@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 1st November 2018 11:24:08 am
+ * @Last modified time: Monday, 5th November 2018 3:26:54 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult } from ".";
+import { XyoArchivistRepository, XyoOriginBlocksByPublicKeyResult, XyoEntitiesList } from ".";
 
 import {
   XyoHash,
@@ -23,7 +23,9 @@ import {
   XyoStoragePriority,
   XyoBase,
   IXyoPublicKey,
-  IOriginBlockQueryResult
+  IOriginBlockQueryResult,
+  XyoError,
+  XyoErrors
 } from "@xyo-network/sdk-core-nodejs";
 
 import _ from 'lodash';
@@ -70,23 +72,26 @@ export class XyoArchivistLocalStorageRepository extends XyoBase implements XyoAr
     return this.originBlockRepository.getOriginBlockByHash(hash);
   }
 
-  public async getEntities(): Promise<IXyoPublicKey[]> {
-    const allKeys = await this.publicKeyStore.getAllKeys();
-    const publicKeys = await Promise.all(allKeys.map(async (key) => {
-      const value = await this.publicKeyStore.read(key, 60000);
-      const indexItem = this.transformPublicKeyValueToXyoPublicKeyIndexItem(value);
-      if (!indexItem) {
-        return undefined;
-      }
+  public async getEntities(): Promise<XyoEntitiesList> {
+    throw new XyoError(`Not yet implemented`, XyoErrors.CRITICAL);
+    // Below is the deprecated implementation
+    //
+    // const allKeys = await this.publicKeyStore.getAllKeys();
+    // const publicKeys = await Promise.all(allKeys.map(async (key) => {
+    //   const value = await this.publicKeyStore.read(key, 60000);
+    //   const indexItem = this.transformPublicKeyValueToXyoPublicKeyIndexItem(value);
+    //   if (!indexItem) {
+    //     return undefined;
+    //   }
 
-      if (indexItem.parentPublicKeyIndex) {
-        return undefined;
-      }
+    //   if (indexItem.parentPublicKeyIndex) {
+    //     return undefined;
+    //   }
 
-      return XyoObject.deserialize<IXyoPublicKey>(key);
-    }));
+    //   return XyoObject.deserialize<IXyoPublicKey>(key);
+    // }));
 
-    return publicKeys.filter(pk => pk) as IXyoPublicKey[];
+    // return publicKeys.filter(pk => pk) as IXyoPublicKey[];
   }
 
   public async getOriginBlocksByPublicKey(publicKey: IXyoPublicKey): Promise<XyoOriginBlocksByPublicKeyResult> {
