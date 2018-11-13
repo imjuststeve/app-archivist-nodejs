@@ -7,3 +7,10 @@ coverage
 .vscode
 .circleci
 tslint.json
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.travis.yml
+jest.config.js
