@@ -4,7 +4,7 @@
 
 # ARCHIVIST SDK (sdk-archivist-nodejs)
 
-An archivist to run on the XYO network
+An archivist to run on the XYO network.
 
 ## Branches
 
