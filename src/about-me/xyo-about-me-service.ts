@@ -10,7 +10,7 @@
 */
 
 import { IXyoAboutMe } from "../xyo-archivist-repository";
-import { XyoBase, XyoIpService, IXyoPublicKey, XyoPeerDiscoveryService, IPeerDescriptionWithPeers } from "@xyo-network/sdk-core-nodejs";
+import { XyoBase, XyoIpService, IXyoPublicKey, XyoPeerDiscoveryService, IPeerDescriptionWithPeers } from '@xyo-network/sdk-core-nodejs';
 import uuid = require("uuid");
 
 export class XyoAboutMeService extends XyoBase {

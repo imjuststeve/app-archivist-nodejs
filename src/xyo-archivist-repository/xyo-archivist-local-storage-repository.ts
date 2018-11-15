@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-archivist-local-storage-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 5th November 2018 3:26:54 pm
+ * @Last modified time: Wednesday, 14th November 2018 12:23:50 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -26,7 +26,7 @@ import {
   IOriginBlockQueryResult,
   XyoError,
   XyoErrors
-} from "@xyo-network/sdk-core-nodejs";
+} from '@xyo-network/sdk-core-nodejs';
 
 import _ from 'lodash';
 

@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 6th November 2018 2:58:27 pm
+ * @Last modified time: Wednesday, 14th November 2018 12:23:50 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness, IXyoPublicKey } from "@xyo-network/sdk-core-nodejs";
+import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness, IXyoPublicKey } from '@xyo-network/sdk-core-nodejs';
 
 /**
  * A persistance abstraction for an XyoArchivist. This interface powers
