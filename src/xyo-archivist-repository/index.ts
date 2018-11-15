@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 14th November 2018 12:23:50 pm
+ * @Last modified time: Wednesday, 14th November 2018 5:27:46 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoOriginBlockRepository, XyoObject, XyoBoundWitness, IXyoPublicKey } from '@xyo-network/sdk-core-nodejs';
+import { IXyoOriginBlockRepository, IXyoObject, XyoBoundWitness } from '@xyo-network/sdk-core-nodejs';
 
 /**
  * A persistance abstraction for an XyoArchivist. This interface powers
@@ -21,7 +21,7 @@ export interface XyoArchivistRepository extends IXyoOriginBlockRepository {
    * Will return all the origin-blocks for a particular public-key
    * and any other public-keys determined to be equivalent to the public-key passed in
    */
-  getOriginBlocksByPublicKey(publicKey: XyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
+  getOriginBlocksByPublicKey(publicKey: IXyoObject): Promise<XyoOriginBlocksByPublicKeyResult>;
 
   getEntities(limit: number, cursor: string | undefined): Promise<XyoEntitiesList>;
 }
@@ -50,11 +50,11 @@ export interface XyoEntitiesList {
 }
 
 export interface XyoOriginBlockResult {
-  publicKeys: XyoObject[];
+  publicKeys: IXyoObject[];
 }
 
 export interface XyoOriginBlocksByPublicKeyResult {
-  publicKeys: XyoObject[];
+  publicKeys: IXyoObject[];
   boundWitnesses: XyoBoundWitness[];
 }
 
