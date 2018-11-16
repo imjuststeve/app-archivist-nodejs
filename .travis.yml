@@ -12,11 +12,7 @@ addons:
 sudo: required
 
 env:
-  - SQL__HOST=localhost
-  - SQL__USER=root
-  - SQL__PASSWORD=""
-  - SQL__DATABASE=Xyo
-  - SQL__PORT=3306
+  - SQL__HOST=localhost SQL__USER=root SQL__PASSWORD="" SQL__DATABASE=Xyo SQL__PORT=3306
 before_install:
   - mysql -u root < packages/db-archivist-sql/resources/schema.sql
 install: 
