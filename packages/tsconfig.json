@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+      { "path": "sdk-archivist-nodejs" },
+      { "path": "api-archivist-graphql" },
+      { "path": "app-archivist-nodejs" },
+      { "path": "db-archivist-sql" }
+  ]
+}
