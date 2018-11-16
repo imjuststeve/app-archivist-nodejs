@@ -1,52 +1,24 @@
 {
-  "name": "@xyo-network/sdk-archivist-nodejs",
+  "name": "xyo",
   "version": "0.1.106",
-  "description": "An archivist implementation on the xyo network",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
-    "build": "tsc",
-    "prepublishOnly": "tsc -b .",
-    "tslint": "tslint -c tslint.json -p tsconfig.json"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "echo \"Build must pass before committing\" && yarn build && yarn tslint"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs.git"
-  },
-  "keywords": [
-    "xyo",
-    "xyo-core",
-    "xyo-nodejs"
-  ],
+  "description": "A workspace to aggregated nodejs XYO projects",
+  "main": "index.js",
   "author": "Ryan Pillsbury",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs/issues"
-  },
-  "homepage": "https://github.com/XYOracleNetwork/sdk-archivist-nodejs#readme",
-  "dependencies": {
-    "@xyo-network/sdk-core-nodejs": "^0.1.106",
-    "lodash": "^4.17.11",
-    "uuid": "^3.3.2"
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "docker-image": "./scripts/docker-image.sh",
+    "docker-image-local": "./scripts/docker-image-local.sh",
+    "start": "node --inspect=8081 ./packages/app-archivist-nodejs/bin/xyo-archivist",
+    "start-sql": "NODE_ENV=develop node ./packages/app-archivist-nodejs/bin/xyo-archivist",
+    "clean": "./scripts/clean.sh",
+    "build": "tsc -b packages"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.1",
-    "@types/lodash": "^4.14.116",
-    "@types/node": "^10.7.1",
-    "@types/uuid": "^3.4.4",
-    "husky": "^1.1.1",
-    "jest": "^23.6.0",
-    "ts-jest": "^23.1.3",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-airbnb": "^5.9.2",
+    "lerna": "3.4.3",
     "typescript": "^3.1.6"
   },
-  "gitHead": "5326ed67182f211129f77581f0bd61d252702721"
+  "workspaces": [
+    "packages/*"
+  ]
 }

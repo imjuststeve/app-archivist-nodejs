@@ -1,0 +1,9 @@
+{
+  "cSpell.words": [
+    "deserialize"
+  ],
+  "files.exclude": {
+    "node_modules": true,
+    ".git": true
+  }
+}

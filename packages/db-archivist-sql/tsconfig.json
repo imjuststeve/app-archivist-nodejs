@@ -22,6 +22,6 @@
   ],
   "include": ["src/**/*"],
   "references": [
-    { "path": "../sdk-core-nodejs" }
+    { "path": "../sdk-archivist-nodejs"}
   ]
 }
