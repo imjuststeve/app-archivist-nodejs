@@ -1,7 +1,18 @@
 language: node_js
 node_js:
   - "10"
-cache:
-  yarn: true
-  directories:
-    - node_modules
+services:
+  - mysql
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+sudo: required
+
+before_install:
+  - mysql -u root < packages/db-archivist-sql/resources/schema.sql
+install: 
+  - yarn install
+  - yarn build
