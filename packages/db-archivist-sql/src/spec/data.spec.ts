@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: data.spec.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 16th November 2018 3:07:27 pm
+ * @Last modified time: Friday, 16th November 2018 3:53:44 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -35,7 +35,7 @@ describe(`SQL Archivist`, () => {
     const sqlCredentials = {
       host: process.env.SQL__HOST || '127.0.0.1',
       user: process.env.SQL__USER || 'ryan',
-      password: process.env.SQL__PASSWORD || 'password',
+      password: process.env.SQL__PASSWORD !== undefined ? process.env.SQL__PASSWORD : 'password',
       database: process.env.SQL__DATABASE || 'Xyo',
       port: process.env.SQL__PORT && parseInt(process.env.SQL__PORT, 10) || 3306,
     };
