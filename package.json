@@ -11,8 +11,9 @@
     "docker-image-local": "./scripts/docker-image-local.sh",
     "start": "node --inspect=8081 ./packages/app-archivist-nodejs/bin/xyo-archivist",
     "start-sql": "NODE_ENV=develop node ./packages/app-archivist-nodejs/bin/xyo-archivist",
-    "clean": "./scripts/clean.sh",
-    "build": "tsc -b packages"
+    "clean": "bash -e ./scripts/clean.sh",
+    "build": "tsc -b packages",
+    "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles"
   },
   "devDependencies": {
     "lerna": "3.4.3",

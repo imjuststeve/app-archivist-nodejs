@@ -1,5 +1,18 @@
 {
   "files": [],
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "composite": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node"
+  },  
   "references": [
       { "path": "sdk-archivist-nodejs" },
       { "path": "api-archivist-graphql" },

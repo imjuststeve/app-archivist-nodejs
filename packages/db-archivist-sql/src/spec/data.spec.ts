@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: data.spec.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 15th November 2018 11:21:06 am
+ * @Last modified time: Friday, 16th November 2018 3:07:27 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -32,17 +32,17 @@ jest.setTimeout(100000);
 describe(`SQL Archivist`, () => {
   it(`Should persist data`, async () => {
     const hashProvider = getHashingProvider('sha256');
-    const sqlService = new SqlService({
-      host: process.env.SQL__HOST || 'localhost',
+    const sqlCredentials = {
+      host: process.env.SQL__HOST || '127.0.0.1',
       user: process.env.SQL__USER || 'ryan',
       password: process.env.SQL__PASSWORD || 'password',
       database: process.env.SQL__DATABASE || 'Xyo',
       port: process.env.SQL__PORT && parseInt(process.env.SQL__PORT, 10) || 3306,
-    });
+    };
 
-    const transaction = await sqlService.startTransaction();
+    const sqlService = new SqlService(sqlCredentials);
 
-    const sqlArchivist = new XyoArchivistSqlRepository(transaction.sqlService);
+    const sqlArchivist = new XyoArchivistSqlRepository(sqlService);
     const signerProvider = new XyoRsaSha256SignerProvider();
     const bobEntitySigner = signerProvider.newInstance();
     const aliceEntitySigner = signerProvider.newInstance();
@@ -81,16 +81,11 @@ describe(`SQL Archivist`, () => {
       { signers: aliceSigners, index: 2, rssi: -14, previousHash: result2.hash, nextSigner: aliceNextSigner }
     );
 
-    try {
-      const startTime = new Date().valueOf();
-      await sqlArchivist.addOriginBlock(result.hash, result.originBlock);
-      await sqlArchivist.addOriginBlock(result3.hash, result3.originBlock);
-      await sqlArchivist.addOriginBlock(result2.hash, result2.originBlock);
-      await transaction.commit();
-      const endTime = new Date().valueOf();
-    } catch (err) {
-      await transaction.rollback();
-    }
+    const startTime = new Date().valueOf();
+    await sqlArchivist.addOriginBlock(result.hash, result.originBlock);
+    await sqlArchivist.addOriginBlock(result3.hash, result3.originBlock);
+    await sqlArchivist.addOriginBlock(result2.hash, result2.originBlock);
+    const endTime = new Date().valueOf();
 
     const query = await sqlArchivist.getOriginBlocksByPublicKey(bobSigners[0].publicKey);
     expect(query.publicKeys.length).toBe(3);
