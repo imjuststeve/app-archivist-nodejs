@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/api-archivist-graphql",
-  "version": "0.1.109",
+  "version": "0.1.110",
   "description": "An GraphQL API bindings for an XYO Archivist",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/XYOracleNetwork/app-archivist-nodejs#readme",
   "dependencies": {
     "@xyo-network/api-originchain-graphql": "^0.1.106",
-    "@xyo-network/sdk-archivist-nodejs": "^0.1.108",
+    "@xyo-network/sdk-archivist-nodejs": "^0.1.110",
     "@xyo-network/sdk-core-nodejs": "^0.1.106",
     "apollo-server": "^2.1.0",
     "graphql": "^14.0.2",

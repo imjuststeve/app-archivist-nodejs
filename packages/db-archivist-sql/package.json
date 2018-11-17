@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/db-archivist-sql",
-  "version": "0.1.108",
+  "version": "0.1.110",
   "description": "SQL bindings to power the Archivist data store",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
   "author": "Ryan Pillsbury",
   "license": "MIT",
   "dependencies": {
-    "@xyo-network/sdk-archivist-nodejs": "^0.1.108",
+    "@xyo-network/sdk-archivist-nodejs": "^0.1.110",
     "@xyo-network/sdk-core-nodejs": "^0.1.106",
     "lodash": "^4.17.11",
     "mysql": "^2.16.0"
