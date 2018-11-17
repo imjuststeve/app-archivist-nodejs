@@ -12,7 +12,8 @@
     "promisify",
     "rssi",
     "ryanxyo",
-    "xyfindables"
+    "xyfindables",
+    "deserialize"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.exclude": {
@@ -24,6 +25,8 @@
     "**/*.lock": true,
     "**/dist": true,
     "**/node_modules": true,
-    "**/packages": true
+    "logs": true,
+    "archivist-db": true,
+    "coverage": true
   }
 }
