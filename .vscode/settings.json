@@ -25,8 +25,8 @@
     "**/*.lock": true,
     "**/dist": true,
     "**/node_modules": true,
-    "logs": true,
-    "archivist-db": true,
-    "coverage": true
+    "**/logs": true,
+    "**/archivist-db": true,
+    "**/coverage": true
   }
 }
