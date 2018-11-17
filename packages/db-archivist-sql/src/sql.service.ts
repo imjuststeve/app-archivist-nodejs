@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sql.service.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 13th November 2018 1:46:41 pm
+ * @Last modified time: Friday, 16th November 2018 4:11:18 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -28,18 +28,7 @@ export class SqlService extends XyoBase {
 
   public async query<T>(q: string, substitutions?: any[]): Promise<T> {
     const c = await this.getOrCreateConnection();
-    return new Promise((resolve, reject) => {
-      const callback = (error: MysqlError | null, results: T) => {
-        if (error) {
-          return reject(error);
-        }
-
-        return resolve(results);
-      };
-
-      const query = substitutions ? c.query(q, substitutions, callback) : c.query(q, callback);
-      this.logInfo(query.sql);
-    }) as Promise<T>;
+    return this.queryConnection<T>(c, q, substitutions);
   }
 
   public async startTransaction(): Promise<ISqlTransaction> {
@@ -92,7 +81,7 @@ export class SqlService extends XyoBase {
     this.logInfo(`Trying to get connection. Try number ${tryNumber} of ${maxTries}`);
     const c = mysql.createConnection(this.options);
 
-    return new Promise((resolve, reject) => {
+    const createdConnection = await (new Promise((resolve, reject) => {
       c.connect((err: Error | undefined) => {
         if (err) {
           this.logInfo(`Failed get connection. Try number ${tryNumber} of ${maxTries}`);
@@ -108,7 +97,25 @@ export class SqlService extends XyoBase {
         this.connection = c;
         return resolve(this.connection);
       });
-    }) as Promise<Connection>;
+    }) as Promise<Connection>);
+
+    await this.queryConnection(createdConnection, `SET SQL_MODE="NO_ENGINE_SUBSTITUTION";`);
+    return createdConnection;
+  }
+
+  private async queryConnection<T>(c: Connection, q: string, substitutions?: any[]): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const callback = (error: MysqlError | null, results: T) => {
+        if (error) {
+          return reject(error);
+        }
+
+        return resolve(results);
+      };
+
+      const query = substitutions ? c.query(q, substitutions, callback) : c.query(q, callback);
+      this.logInfo(query.sql);
+    }) as Promise<T>;
   }
 
   private async endConnection(): Promise<void> {
