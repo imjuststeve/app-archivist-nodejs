@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-entities-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:20:02 pm
+ * @Last modified time: Thursday, 13th December 2018 12:31:38 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -35,8 +35,8 @@ export class GetEntitiesResolver implements IXyoDataResolver<any, any, any, any>
       },
       items: result.list.map((listItem) => {
         return {
-          firstKnownPublicKey: listItem.firstKnownPublicKey.getRawPublicKey().toString('hex'),
-          allPublicKeys: (listItem.allPublicKeys || []).map(pk => pk.getRawPublicKey().toString('hex')),
+          firstKnownPublicKey: listItem.firstKnownPublicKey.serializeHex(),
+          allPublicKeys: (listItem.allPublicKeys || []).map(pk => pk.serializeHex()),
           type: listItem.type,
           mostRecentIndex: listItem.mostRecentIndex
         }

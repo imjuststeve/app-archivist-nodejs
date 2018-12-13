@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-block-list-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:52:28 pm
+ * @Last modified time: Thursday, 13th December 2018 12:29:57 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -47,9 +47,7 @@ export class XyoGetBlockList implements IXyoDataResolver<any, any, any, any> {
             return {
               array: keyset.keys.map((key) => {
                 return {
-                  bytes: key.serializeHex(),
-                  rawPublicKey: key.getRawPublicKey().toString('hex'),
-                  schemaName: key.getReadableName()
+                  value: key.serializeHex()
                 }
               })
             }
@@ -58,9 +56,7 @@ export class XyoGetBlockList implements IXyoDataResolver<any, any, any, any> {
             return {
               array: sigSet.signatures.map((sig) => {
                 return {
-                  bytes: sig.serializeHex(),
-                  rawSignature: sig.encodedSignature.toString('hex'),
-                  schemaName: sig.getReadableName()
+                  value: sig.serializeHex()
                 }
               })
             }
@@ -69,9 +65,7 @@ export class XyoGetBlockList implements IXyoDataResolver<any, any, any, any> {
             return {
               array: heuristicSet.map((heuristic) => {
                 return {
-                  bytes: heuristic.serializeHex(),
-                  schemaName: heuristic.getReadableName(),
-                  value: JSON.stringify(heuristic.getReadableValue())
+                  value: heuristic.serializeHex()
                 }
               })
             }

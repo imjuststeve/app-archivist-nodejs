@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:41:38 pm
+ * @Last modified time: Thursday, 13th December 2018 1:31:32 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -31,14 +31,14 @@ import { IXyoSerializationService } from "@xyo-network/serialization"
  * @param {IXyoHashProvider} hashProvider Provides hashing services
  */
 
-export default async function initialize(
+export default async function createGraphqlServer(
   port: number,
   aboutMeService: XyoAboutMeService,
   archivistRepository: IXyoArchivistRepository,
   hashProvider: IXyoHashProvider,
   serializationService: IXyoSerializationService
 ) {
-  const server = new GraphQLServer(
+  return new GraphQLServer(
     await new GraphqlSchemaBuilder().buildSchema(),
     port,
     {
@@ -53,6 +53,4 @@ export default async function initialize(
       )
     }
   )
-
-  server.start()
 }

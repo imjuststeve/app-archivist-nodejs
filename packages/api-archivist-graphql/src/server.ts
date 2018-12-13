@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:40:23 pm
+ * @Last modified time: Thursday, 13th December 2018 1:36:46 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -27,10 +27,16 @@ export class GraphQLServer extends XyoBase {
     this.server = new ApolloServer({ typeDefs, resolvers })
   }
 
-  public start (): Promise<void> {
-    return this.server.listen({ port: this.port }).then(({ url }) => {
-      this.logInfo(`Graphql server ready at url: ${url}`)
-    })
+  public async start (): Promise<void> {
+    this.logInfo(`Starting Graphql server`)
+    const { url } = await this.server.listen({ port: this.port })
+    this.logInfo(`Graphql server ready at url: ${url}`)
+  }
+
+  public async stop (): Promise<void> {
+    this.logInfo(`Stopping Graphql server`)
+    await this.server.stop()
+    this.logInfo(`Stopped Graphql server`)
   }
 
   private initialize () {

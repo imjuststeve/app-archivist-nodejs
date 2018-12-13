@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-blocks-by-public-key-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:40:50 pm
+ * @Last modified time: Thursday, 13th December 2018 12:31:03 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -55,9 +55,7 @@ export class XyoGetBlocksByPublicKeyResolver extends XyoBase implements IXyoData
             return {
               array: keyset.keys.map((key) => {
                 return {
-                  bytes: key.serializeHex(),
-                  rawPublicKey: key.getRawPublicKey().toString('hex'),
-                  schemaName: key.getReadableName()
+                  value: key.serializeHex()
                 }
               })
             }
@@ -66,9 +64,7 @@ export class XyoGetBlocksByPublicKeyResolver extends XyoBase implements IXyoData
             return {
               array: sigSet.signatures.map((sig) => {
                 return {
-                  bytes: sig.serializeHex(),
-                  rawSignature: sig.encodedSignature.toString('hex'),
-                  schemaName: sig.getReadableName()
+                  value: sig.serializeHex()
                 }
               })
             }
@@ -77,9 +73,7 @@ export class XyoGetBlocksByPublicKeyResolver extends XyoBase implements IXyoData
             return {
               array: heuristicSet.map((heuristic) => {
                 return {
-                  bytes: heuristic.serializeHex(),
-                  schemaName: heuristic.getReadableName(),
-                  value: JSON.stringify(heuristic.getReadableValue())
+                  value: heuristic.serializeHex()
                 }
               })
             }
@@ -91,7 +85,7 @@ export class XyoGetBlocksByPublicKeyResolver extends XyoBase implements IXyoData
       return {
         blocks: serializedBoundWitnesses,
         keySet: blocksByPublicKeySet.publicKeys.map((publicKeyItem) => {
-          return publicKeyItem.getRawPublicKey().toString('hex')
+          return publicKeyItem.serializeHex()
         })
       }
 

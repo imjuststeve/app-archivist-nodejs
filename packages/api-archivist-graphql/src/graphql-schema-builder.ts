@@ -24,8 +24,6 @@ export class GraphqlSchemaBuilder extends XyoBase {
           }
 
           type XyoObject {
-            schemaName: String!
-            bytes: String!
             value: String!
           }
 
@@ -34,15 +32,11 @@ export class GraphqlSchemaBuilder extends XyoBase {
           }
 
           type XyoSignature {
-            schemaName: String!
-            bytes: String!
-            rawSignature: String!
+            value: String!
           }
 
           type XyoPublicKey {
-            schemaName: String!
-            bytes: String!
-            rawPublicKey: String!
+            value: String!
           }
 
           type XyoHeuristicSet {
