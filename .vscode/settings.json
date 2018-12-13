@@ -1,19 +1,30 @@
 {
   "cSpell.words": [
+    "Deserializer",
+    "Deserializers",
     "Findables",
     "IXyo",
-    "Secp",
+    "Serializables",
     "Truthy",
+    "blockchain",
+    "cryptographically",
+    "deserializable",
+    "deserialization",
     "deserialize",
+    "deserialized",
+    "deserializing",
+    "ecdsa",
     "hasher",
-    "leveldb",
-    "leveldown",
-    "originchain",
+    "pojo",
     "promisify",
     "rssi",
     "ryanxyo",
-    "xyfindables",
-    "deserialize"
+    "secp",
+    "serializable",
+    "serializer",
+    "serializers",
+    "transpiles",
+    "xyfindables"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.exclude": {
@@ -22,11 +33,8 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/*.lock": true,
     "**/dist": true,
     "**/node_modules": true,
-    "**/logs": true,
-    "**/archivist-db": true,
-    "**/coverage": true
+    "**/.gitignore": true,
   }
 }

@@ -22,6 +22,8 @@
   ],
   "include": ["src/**/*"],
   "references": [
+    {"path": "../archivist-repository.sql"},
     {"path": "../archivist-repository"},
+    {"path": "../api-archivist-graphql"}
   ]
 }

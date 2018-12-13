@@ -22,6 +22,6 @@
   ],
   "include": ["src/**/*"],
   "references": [
-    {"path": "../archivist-repository"},
+    { "path": "../archivist-repository"}
   ]
 }

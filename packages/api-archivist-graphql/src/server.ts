@@ -4,33 +4,33 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 16th November 2018 9:50:47 am
+ * @Last modified time: Wednesday, 12th December 2018 5:40:23 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { ApolloServer, gql, IResolvers, IResolverObject } from 'apollo-server';
-import { XyoBase } from '@xyo-network/sdk-core-nodejs';
-import { XyoDataResolver } from './@types';
+import { ApolloServer, gql, IResolvers } from 'apollo-server'
+import { XyoBase } from '@xyo-network/base'
+import { IXyoDataResolver } from './@types'
 
 export class GraphQLServer extends XyoBase {
-  private readonly server: ApolloServer;
+  private readonly server: ApolloServer
 
   constructor(
     private readonly schema: string,
     private readonly port: number,
     private readonly graphqlResolvers: IGraphQLResolvers
   ) {
-    super();
+    super()
 
-    const { typeDefs, resolvers } = this.initialize();
-    this.server = new ApolloServer({ typeDefs, resolvers });
+    const { typeDefs, resolvers } = this.initialize()
+    this.server = new ApolloServer({ typeDefs, resolvers })
   }
 
   public start (): Promise<void> {
     return this.server.listen({ port: this.port }).then(({ url }) => {
-      this.logInfo(`Graphql server ready at url: ${url}`);
-    });
+      this.logInfo(`Graphql server ready at url: ${url}`)
+    })
   }
 
   private initialize () {
@@ -39,25 +39,25 @@ export class GraphQLServer extends XyoBase {
       // @ts-ignore
       router[route] = (obj: any, args: any, context: any, info: any) => {
         // @ts-ignore
-        return (this.graphqlResolvers[route] as XyoDataResolver).resolve(obj, args, context, info);
-      };
-      return router;
-    }, {});
+        return (this.graphqlResolvers[route] as IXyoDataResolver).resolve(obj, args, context, info)
+      }
+      return router
+    }, {})
 
     const resolvers: IResolvers = {
       Query: compiledRouter
-    };
+    }
 
-    const typeDefs = gql(this.schema);
-    return { typeDefs, resolvers };
+    const typeDefs = gql(this.schema)
+    return { typeDefs, resolvers }
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface IGraphQLResolvers {
-  blocksByPublicKey: XyoDataResolver<any, any, any, any>;
-  blocks: XyoDataResolver<any, any, any, any>;
-  blockByHash: XyoDataResolver<any, any, any, any>;
-  about: XyoDataResolver<any, any, any, any>;
-  blockList: XyoDataResolver<any, any, any, any>;
-  entities: XyoDataResolver<any, any, any, any>;
+  blocksByPublicKey: IXyoDataResolver<any, any, any, any>
+  blockByHash: IXyoDataResolver<any, any, any, any>
+  about: IXyoDataResolver<any, any, any, any>
+  blockList: IXyoDataResolver<any, any, any, any>
+  entities: IXyoDataResolver<any, any, any, any>
 }
