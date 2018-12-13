@@ -4,21 +4,22 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 15th November 2018 11:44:45 am
+ * @Last modified time: Thursday, 13th December 2018 1:31:32 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { GraphQLServer } from "./server";
-import { GraphqlSchemaBuilder } from "./graphql-schema-builder";
-import { XyoArchivistRepository, XyoAboutMeService } from "@xyo-network/sdk-archivist-nodejs";
-import { GetBlocksByPublicKeyResolver } from "./resolvers/get-blocks-by-public-key-resolver";
-import { GetAboutMeResolver } from "./resolvers/get-about-me-resolver";
-import { GetAllBlocks } from "./resolvers/get-all-blocks-resolver";
-import { IXyoHashProvider } from '@xyo-network/sdk-core-nodejs';
-import { GetBlockByHash } from "./resolvers/get-block-by-hash-resolver";
-import { GetBlockList } from "./resolvers/get-block-list-resolver";
-import { GetEntitiesResolver } from "./resolvers/get-entities.resolver";
+import { GraphQLServer } from "./server"
+import { GraphqlSchemaBuilder } from "./graphql-schema-builder"
+import { IXyoArchivistRepository } from "@xyo-network/archivist-repository"
+import { IXyoHashProvider } from '@xyo-network/hashing'
+import { XyoAboutMeService } from '@xyo-network/about-me'
+import { XyoAboutMeResolver } from "./resolvers/xyo-about-me-resolver"
+import { XyoGetBlockByHashResolver } from "./resolvers/xyo-get-block-by-hash-resolver"
+import { GetEntitiesResolver } from "./resolvers/xyo-get-entities-resolver"
+import { XyoGetBlockList } from "./resolvers/xyo-get-block-list-resolver"
+import { XyoGetBlocksByPublicKeyResolver } from "./resolvers/xyo-get-blocks-by-public-key-resolver"
+import { IXyoSerializationService } from "@xyo-network/serialization"
 
 /**
  * Initializes and starts a GraphQL service
@@ -30,24 +31,26 @@ import { GetEntitiesResolver } from "./resolvers/get-entities.resolver";
  * @param {IXyoHashProvider} hashProvider Provides hashing services
  */
 
-export default async function initialize(
+export default async function createGraphqlServer(
   port: number,
   aboutMeService: XyoAboutMeService,
-  archivistRepository: XyoArchivistRepository,
-  hashProvider: IXyoHashProvider
+  archivistRepository: IXyoArchivistRepository,
+  hashProvider: IXyoHashProvider,
+  serializationService: IXyoSerializationService
 ) {
-  const server = new GraphQLServer(
+  return new GraphQLServer(
     await new GraphqlSchemaBuilder().buildSchema(),
     port,
     {
-      blocksByPublicKey: new GetBlocksByPublicKeyResolver(archivistRepository, hashProvider),
-      about: new GetAboutMeResolver(aboutMeService, hashProvider),
-      blocks: new GetAllBlocks(archivistRepository, hashProvider),
-      blockByHash: new GetBlockByHash(archivistRepository, hashProvider),
-      blockList: new GetBlockList(archivistRepository, hashProvider),
-      entities: new GetEntitiesResolver(archivistRepository, hashProvider)
+      about: new XyoAboutMeResolver(aboutMeService),
+      blockByHash: new XyoGetBlockByHashResolver(archivistRepository, hashProvider),
+      entities: new GetEntitiesResolver(archivistRepository, hashProvider),
+      blockList: new XyoGetBlockList(archivistRepository, hashProvider),
+      blocksByPublicKey: new XyoGetBlocksByPublicKeyResolver(
+        archivistRepository,
+        hashProvider,
+        serializationService
+      )
     }
-  );
-
-  server.start();
+  )
 }

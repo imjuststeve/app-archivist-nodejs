@@ -4,19 +4,25 @@
     "target": "es6",
     "module": "commonjs",
     "lib": ["esnext"],
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
     "strict": true,
-    "composite": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "dist"
   },  
   "references": [
-      { "path": "sdk-archivist-nodejs" },
-      { "path": "api-archivist-graphql" },
-      { "path": "app-archivist-nodejs" },
-      { "path": "db-archivist-sql" }
+    { "path": "archivist-repository" },
+    { "path": "archivist-repository.sql" },
+    { "path": "app-archivist" },
+    { "path": "api-archivist-graphql" }
+  ],
+  "include": [
+    "archivist-repository/src/**/*.ts",
+    "archivist-repository.sql/src/**/*.ts",
+    "api-archivist-graphql/src/**/*.ts",
+    "app-archivist/src/**/*.ts"
   ]
 }

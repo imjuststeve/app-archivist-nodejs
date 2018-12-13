@@ -1,23 +1,29 @@
 {
-  "name": "xyo",
-  "version": "0.1.106",
+  "name": "xyo-core",
+  "version": "0.2.0",
   "description": "A workspace to aggregated nodejs XYO projects",
   "main": "index.js",
   "author": "Ryan Pillsbury",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "docker-image": "./scripts/docker-image.sh",
-    "docker-image-local": "./scripts/docker-image-local.sh",
-    "start": "node --inspect=8081 ./packages/app-archivist-nodejs/bin/xyo-archivist",
-    "start-sql": "NODE_ENV=develop node ./packages/app-archivist-nodejs/bin/xyo-archivist",
-    "clean": "bash -e ./scripts/clean.sh",
     "build": "tsc -b packages",
-    "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles"
+    "release": "lerna publish",
+    "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
+    "tslint": "tslint -c tslint.json -p packages/tsconfig.json",
+    "clean": "node scripts/clean.js"
   },
   "devDependencies": {
-    "lerna": "3.4.3",
+    "@xyo-network/config-tslint": "^0.1.6",
+    "husky": "^1.1.1",
+    "lerna": "^3.4.3",
+    "tslint": "^5.1.0",
     "typescript": "^3.1.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo \"Build must pass before committing\" && yarn build && yarn tslint"
+    }
   },
   "workspaces": [
     "packages/*"
