@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/app-archivist",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "An archivist node",
   "types": "dist/index.d.ts",
   "author": "Ryan Pillsbury",
