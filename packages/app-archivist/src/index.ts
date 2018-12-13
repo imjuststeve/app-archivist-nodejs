@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 1:37:36 pm
+ * @Last modified time: Thursday, 13th December 2018 2:06:03 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -159,8 +159,12 @@ export class XyoArchivistNode extends XyoBaseNode {
   }
 }
 
-if (require.main === module) {
+export function main() {
   const archivistNode = new XyoArchivistNode()
   const processManager = new ProcessManager(archivistNode)
   processManager.manage(process)
+}
+
+if (require.main === module) {
+  main()
 }

@@ -2,10 +2,12 @@
   "name": "@xyo-network/app-archivist",
   "version": "0.10.0",
   "description": "An archivist node",
-  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Ryan Pillsbury",
   "license": "MIT",
+  "bin": {
+    "xyo-archivist": "bin/xyo-archivist"
+  },
   "dependencies": {
     "@xyo-network/about-me": "^0.9.0",
     "@xyo-network/api-archivist-graphql": "^0.10.0",
