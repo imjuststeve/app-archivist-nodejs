@@ -4,15 +4,18 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sql-service.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Friday, 7th December 2018 11:50:52 am
+ * @Last modified time: Thursday, 13th December 2018 5:28:04 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { default as mysql, Connection, MysqlError } from 'mysql'
 import { XyoBase } from '@xyo-network/base'
+import fs from 'fs'
+import { ISqlConnectionDetails } from './@types'
 
 export class SqlService extends XyoBase {
+  public static tryCreateSqlService = tryCreateSqlService
   private connection: Connection | undefined
 
   constructor(private readonly options: {
@@ -21,7 +24,8 @@ export class SqlService extends XyoBase {
     password?: string,
     database?: string,
     port?: number,
-    connection?: any
+    connection?: any,
+    multipleStatements?: boolean
   }) {
     super()
   }
@@ -140,4 +144,41 @@ interface ISqlTransaction {
 
   commit(): Promise<void>
   rollback(): Promise<void>
+}
+
+async function tryCreateSqlService(
+  connectionDetails: ISqlConnectionDetails,
+  schemaPath?: string
+) {
+  const sqlService = new SqlService(connectionDetails)
+  try {
+
+    // This will timeout if it does not exist with a `ER_BAD_DB_ERROR`
+    await sqlService.query<any[]>(
+      `SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`,
+      [connectionDetails.database]
+    )
+
+    return sqlService
+  } catch (err) {
+    if (err.code === 'ER_BAD_DB_ERROR' && schemaPath) {
+      const tmpSqlService = new SqlService({
+        host: connectionDetails.host,
+        user: connectionDetails.user,
+        password: connectionDetails.password,
+        port: connectionDetails.port,
+        multipleStatements: true
+      })
+      const schema = fs.readFileSync(schemaPath)
+      await tmpSqlService.query(`
+        CREATE SCHEMA IF NOT EXISTS \`${connectionDetails.database}\` DEFAULT CHARACTER SET utf8 ;
+        USE \`${connectionDetails.database}\`;
+        ${schema}
+      `, [])
+      return sqlService
+    }
+
+    XyoBase.logger.error(`There was an error creating the sql service`, err)
+    throw err
+  }
 }

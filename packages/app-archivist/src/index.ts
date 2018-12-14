@@ -4,14 +4,14 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 2:06:03 pm
+ * @Last modified time: Thursday, 13th December 2018 5:19:40 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { XyoBaseNode } from '@xyo-network/base-node'
 import { createArchivistSqlRepository } from '@xyo-network/archivist-repository.sql'
-import createGraphqlServer from '@xyo-network/api-archivist-graphql'
+import { default as createGraphqlServer, GraphQLServer } from '@xyo-network/api-archivist-graphql'
 import { XyoAboutMeService } from '@xyo-network/about-me'
 import { XyoIpService } from '@xyo-network/ip-service'
 import { IXyoArchivistRepository } from '@xyo-network/archivist-repository'
@@ -23,15 +23,16 @@ import { XyoLevelDbStorageProvider } from '@xyo-network/storage.leveldb'
 import configuration from './configuration'
 import { XyoError, XyoErrors } from '@xyo-network/errors'
 import { ProcessManager } from './process-manager'
-import { GraphQLServer } from '../../api-archivist-graphql/dist/server'
 
 export class XyoArchivistNode extends XyoBaseNode {
   private readonly config = configuration
   private server: GraphQLServer | undefined
+  private archivistRepository: IXyoArchivistRepository | undefined
 
   public async start() {
     super.start()
     const serializationService = this.getSerializationService()
+    await this.initializeArchivistRepo()
     await createDirectoryIfNotExists(this.config.data)
     await this.configureOriginChainStateRepository()
     const aboutMeService = await this.getAboutMeService()
@@ -48,6 +49,20 @@ export class XyoArchivistNode extends XyoBaseNode {
     )
 
     this.server.start()
+  }
+
+  public async initializeArchivistRepo() {
+    if (!this.config.sql) {
+      throw new XyoError(`SQL configuration required`, XyoErrors.CRITICAL)
+    }
+
+    this.archivistRepository = await createArchivistSqlRepository({
+      host: this.config.sql.host,
+      database: this.config.sql.database,
+      password: this.config.sql.password,
+      user: this.config.sql.user,
+      port: this.config.sql.port
+    }, this.getSerializationService())
   }
 
   public async stop() {
@@ -103,17 +118,11 @@ export class XyoArchivistNode extends XyoBaseNode {
 
   protected getOriginBlockRepository(): IXyoArchivistRepository {
     return this.getOrCreate('IXyoOriginBlockRepository', () => {
-      if (!this.config.sql) {
-        throw new XyoError(`SQL configuration required`, XyoErrors.CRITICAL)
+      if (!this.archivistRepository) {
+        throw new XyoError(`Archivist repository is not initialized`, XyoErrors.CRITICAL)
       }
 
-      return createArchivistSqlRepository({
-        host: this.config.sql.host,
-        database: this.config.sql.database,
-        password: this.config.sql.password,
-        user: this.config.sql.user,
-        port: this.config.sql.port
-      }, this.getSerializationService())
+      return this.archivistRepository
     })
   }
 
