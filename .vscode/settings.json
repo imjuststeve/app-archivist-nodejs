@@ -15,6 +15,7 @@
     "deserializing",
     "ecdsa",
     "hasher",
+    "lerna",
     "leveldb",
     "pojo",
     "promisify",
