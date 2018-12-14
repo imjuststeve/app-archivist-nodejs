@@ -2,11 +2,9 @@
 
 ![logo]
 
-[![Build Status](https://travis-ci.com/XYOracleNetwork/app-archivist-nodejs.svg?branch=develop)](https://travis-ci.com/XYOracleNetwork/app-archivist-nodejs)
-
 # Archivist
 
-A command line interface application to run an XYO Archivist node.
+This repository generally serves to aggregate archivist-related NodeJS modules in the XYO network. It is structured as a [Lerna](https://lernajs.io/) mono-repo wherein the packages inside the `packages` directory are modules in themselves and are distributed as such through `npm`.
 
 An archivist in the XYO network serves as the data-layer component between the bridge and the diviner.
 It accepts and aggregates data from bridges and makes that data available to Diviners via a GraphQL API.
@@ -17,6 +15,72 @@ backs the archivist repository, LevelDb to persist origin-chain data specific to
 layer for doing bound-witness interactions between the Archivist and other Bridges.
 
 # Getting Started
+
+## Docker
+
+Perhaps the easiest way to get up and going is with docker.
+
+First, satisfy the MySQL requirement:
+
+```sh
+  docker run \
+  -d \
+  -p 3306:3306 \
+  -e MYSQL_USER={user} \
+  -e MYSQL_PASSWORD={password} \
+  -e MYSQL_DATABASE={database} \
+  -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+  mysql:5.7.24 --sql_mode=NO_ENGINE_SUBSTITUTION
+
+```
+
+**NOTE** Please substitute variable `{user}` `{password}` and `{database}` with your own values.
+
+When the docker command is executed it will return a docker-container id. To get the ip address of the docker container you can run:
+
+```sh
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {docker-container-id}
+```
+
+Take note of the ip address as this will be required configure the Archivist application.
+
+```sh
+  docker run \
+  -d \
+  -p 11000:11000 \
+  -p 11001:11001 \
+  -v {path-to-logs-folder}:/workspace/logs \
+  -v {path-to-private-data-folder}:/workspace/archivist-db \
+  -e NODE_NAME={archivist-name} \
+  -e IP_OVERRIDE={publicly-accessible-ip} \
+  -e SQL__HOST={ip-address-of-mysql-service} \
+  -e SQL__USER={user-of-mysql-service} \
+  -e SQL__PASSWORD={name-of-user-on-mysql-service} \
+  -e SQL__DATABASE={name-of-database-on-mysql-service} \
+  -e SQL__PORT={port-of-database-on-mysql-service} \
+  xyonetwork/app-archivist:latest
+```
+
+List of parameters:
+
+- `-d` run docker as daemon
+
+- `-p 11000:11000` bind port 11000 from docker container to local network
+
+- `-p 11001:11001` bind port 11001 from docker container to local network
+
+- `-v {path-to-logs-folder}:/workspace/logs` Mount **logs** folder from local disk to docker container
+
+- `-v {path-to-private-data-folder}:/workspace/archivist-db` Mount **private-data** folder from local disk to docker container
+
+- `-e NODE_NAME={archivist-name}` The name of the archivist
+
+- `-e IP_OVERRIDE={publicly-accessible-ip}` The publicly addressable ip address of this Archivist
+
+- `-e SQL__*` SQL configuration settings
+
+- `xyonetwork/app-archivist:latest` Run the latest archivist image from docker-hub.
+
 
 ## Install
 
@@ -29,19 +93,19 @@ Before downloading the application, there are number of System requirements that
 Download as a global npm package. We
 
 ```sh
-  npm install -g @xyo-network/app-archivist-nodejs
+  npm install -g @xyo-network/app-archivist
 ```
 
 If this command fails you may need to use the `sudo` modifier.
 
 ```sh
-  sudo npm install -g @xyo-network/app-archivist-nodejs
+  sudo npm install -g @xyo-network/app-archivist
 ```
 
 If this fails again it it likely because the LevelDB dependency is being built from source in protected user-space on the System OS. To get around this the npm option of `--unsafe-perm=true` may be used.
 
 ```sh
-  sudo npm install -g @xyo-network/app-archivist-nodejs --unsafe-perm=true
+  sudo npm install -g @xyo-network/app-archivist --unsafe-perm=true
 ```
 
 Assuming one of the above 3 commands succeed, you now have a downloaded version of the archivist on your system. To confirm run
@@ -53,8 +117,6 @@ which xyo-archivist
 It should print something that approximates `/usr/local/bin/xyo-archivist`. If nothing is printed out you may have to close and reopen your terminal window.
 
 ## Running the Application
-
-Now that the software is installed we need to make sure that our SQL service is in the correct state for the application. Please refer to the documentation in [db-archivist-sql](https://github.com/XYOracleNetwork/db-archivist-sql/tree/develop) to get your MySQL service set up.
 
 Once the MySQL service is available with the correct schema please note the values for your MySQL service.
 

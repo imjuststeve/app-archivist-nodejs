@@ -7,6 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "docker-image": "./scripts/docker-image.sh",
     "build": "tsc -b packages",
     "release": "lerna publish",
     "test": "export NODE_ENV=test && jest --no-cache --forceExit --coverage --verbose --detectOpenHandles",
