@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 17th December 2018 11:30:46 am
+ * @Last modified time: Monday, 17th December 2018 12:09:43 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -29,33 +29,53 @@ import { rssiSerializationProvider } from '@xyo-network/heuristics-common'
 import { IXyoHash, getHashingProvider } from '@xyo-network/hashing'
 import { XyoIndex, XyoPreviousHash } from '@xyo-network/origin-chain'
 import { createArchivistSqlRepository } from '@xyo-network/archivist-repository.sql'
+import { serializer } from '@xyo-network/serializer'
 
 const dataSet: IXyoInteraction[] = [
   {
-    party1: 1,
-    party2: 2,
+    party1Id: 1,
+    party2Id: 2,
     party1Heuristics: {
       rssi: -10
     },
     party2Heuristics: {
       rssi: -15
     }
+  },
+  {
+    party1Id: 2,
+    party2Id: 3,
+    party1Heuristics: {
+      rssi: -12
+    },
+    party2Heuristics: {
+      rssi: -17
+    }
+  },
+  {
+    party1Id: 1,
+    party2Id: 3,
+    party1Heuristics: {
+      rssi: -15
+    },
+    party2Heuristics: {
+      rssi: -20
+    }
   }
 ]
 
 async function main(args: Arguments) {
-  const numberOfPublicKeys = args.numberOfPublicKeys
-  const entitiesById = createPublicKeys(numberOfPublicKeys)
+  const entitiesById = createPublicKeys(dataSet)
   const hashingProvider = getHashingProvider('sha256')
 
   const boundWitnesses = await dataSet.reduce(async (interactionsPromise, interaction, index) => {
     const interactions = await interactionsPromise
-    const serverEntity = entitiesById[interaction.party1]
+    const serverEntity = entitiesById[interaction.party1Id]
     if (!serverEntity) {
       throw new XyoError(`Could not get signers for party index ${index}`, XyoErrors.CRITICAL)
     }
 
-    const clientEntity = entitiesById[interaction.party2]
+    const clientEntity = entitiesById[interaction.party2Id]
     if (!clientEntity) {
       throw new XyoError(`Could not get signers for party index ${index}`, XyoErrors.CRITICAL)
     }
@@ -64,14 +84,14 @@ async function main(args: Arguments) {
     const clientKeySet = new XyoKeySet([clientEntity.signer.publicKey])
     const serverHeuristics = tryBuildHeuristics(
       interaction.party1Heuristics,
-      serverEntity.index,
+      serverEntity.index || 0,
       serverEntity.previousHash
     )
 
     const clientHeuristics = tryBuildHeuristics(
       interaction.party2Heuristics,
-      serverEntity.index,
-      serverEntity.previousHash
+      clientEntity.index || 0,
+      clientEntity.previousHash
     )
     const serverFetter = new XyoFetter(serverKeySet, serverHeuristics)
     const clientFetter = new XyoFetter(clientKeySet, clientHeuristics)
@@ -80,8 +100,8 @@ async function main(args: Arguments) {
       clientFetter.serialize(),
     ])
 
-    const serverSignature = await entitiesById[interaction.party1].signer.signData(signingData)
-    const clientSignature = await entitiesById[interaction.party2].signer.signData(signingData)
+    const serverSignature = await entitiesById[interaction.party1Id].signer.signData(signingData)
+    const clientSignature = await entitiesById[interaction.party2Id].signer.signData(signingData)
     const serverWitness = new XyoWitness(new XyoSignatureSet([serverSignature]), [])
     const clientWitness = new XyoWitness(new XyoSignatureSet([clientSignature]), [])
     const boundWitness = new XyoBoundWitness([serverFetter, clientFetter, clientWitness, serverWitness])
@@ -101,25 +121,28 @@ async function main(args: Arguments) {
     return interactions
   }, Promise.resolve([]) as Promise<IXyoBoundWitness[]>)
 
-  const repo = createArchivistSqlRepository({
-    host: args.host,
-    user: args.user,
-    password: args.password
-    database: args.database,
-    port: args.port
-  })
+  const repo = await createArchivistSqlRepository({
+    host: args.host as string,
+    user: args.user as string,
+    password: args.password as string,
+    database: args.database as string,
+    port: args.port as number
+  }, serializer)
+
+  await boundWitnesses.reduce(async (memo, boundWitness) => {
+    await memo
+    const hash = await hashingProvider.createHash(boundWitness.getSigningData())
+    return repo.addOriginBlock(hash, boundWitness)
+  }, Promise.resolve())
 }
 
 function tryBuildHeuristics(
   heuristics: IXyoHeuristics,
-  index?: number,
+  index: number,
   previousHash?: IXyoHash
 ): IXyoSerializableObject[] {
   const heuristicsCollection: IXyoSerializableObject[] = []
-  if (index !== undefined) {
-    heuristicsCollection.push(new XyoIndex(index))
-  }
-
+  heuristicsCollection.push(new XyoIndex(index))
   if (previousHash !== undefined) {
     heuristicsCollection.push(new XyoPreviousHash(previousHash))
   }
@@ -142,16 +165,19 @@ function tryBuildHeuristics(
     }, heuristicsCollection)
 }
 
-function createPublicKeys(numberOfPublicKeys: number): IXyoEntityById {
-  const signerProvider = getSignerProvider('secp256k1-sha256')
-  const signersById: {[s: string]: { signer: IXyoSigner}} = {}
-  let i = 0
-  while (i < numberOfPublicKeys) {
-    signersById[i] = { signer: signerProvider.newInstance() }
-    i += 1
-  }
+function createPublicKeys(data: IXyoInteraction[]): IXyoEntityById {
+  const uniqueKeyCounts = data.reduce((memo: {[s: string]: number}, item) => {
+    memo[item.party1Id] = (memo[item.party1Id] || 0) + 1
+    memo[item.party2Id] = (memo[item.party2Id] || 0) + 1
+    return memo
+  }, {})
 
-  return signersById
+  const signerProvider = getSignerProvider('secp256k1-sha256')
+  return Object.keys(uniqueKeyCounts)
+    .reduce((memo: {[s: string]: { signer: IXyoSigner}}, key) => {
+      memo[key] = { signer: signerProvider.newInstance() }
+      return memo
+    }, {})
 }
 
 if (require.main === module) {
@@ -172,8 +198,8 @@ interface IEntity {
 interface IXyoHeuristics {[s: string]: any}
 
 interface IXyoInteraction {
-  party1: number
-  party2: number
+  party1Id: number
+  party2Id: number
   party1Heuristics: IXyoHeuristics,
   party2Heuristics: IXyoHeuristics
 }
