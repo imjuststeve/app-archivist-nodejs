@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: server.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 1:36:46 pm
+ * @Last modified time: Tuesday, 18th December 2018 1:00:26 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -65,5 +65,6 @@ export interface IGraphQLResolvers {
   blockByHash: IXyoDataResolver<any, any, any, any>
   about: IXyoDataResolver<any, any, any, any>
   blockList: IXyoDataResolver<any, any, any, any>
-  entities: IXyoDataResolver<any, any, any, any>
+  entities: IXyoDataResolver<any, any, any, any>,
+  intersections: IXyoDataResolver<any, any, any, any>
 }

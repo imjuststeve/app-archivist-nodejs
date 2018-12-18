@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-sql-archivist-repository.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 4:34:19 pm
+ * @Last modified time: Tuesday, 18th December 2018 1:05:02 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -14,7 +14,8 @@
 import {
   IXyoArchivistRepository,
   IXyoOriginBlocksByPublicKeyResult,
-  IXyoEntitiesList
+  IXyoEntitiesList,
+  IXyoIntersectionsList
 } from '@xyo-network/archivist-repository'
 
 import { SqlService } from './sql-service'
@@ -81,6 +82,88 @@ export class XyoArchivistSqlRepository extends XyoBase implements IXyoArchivistR
     return {
       publicKeys: _.chain(reducedValue.publicKeys).values().value(),
       boundWitnesses: reducedValue.originBlocks
+    }
+  }
+
+  public async getIntersections(
+    publicKeyA: string,
+    publicKeyB: string,
+    limit: number,
+    cursor: string | undefined
+  ): Promise<IXyoIntersectionsList> {
+    type QResult = Array<{signedHash: string, blockIndex: number}>
+    let getIntersectionsQuery: Promise<QResult>
+
+    if (!cursor) {
+      getIntersectionsQuery = this.sqlService.query<QResult>(`
+        SELECT
+        ob1.signedHash as signedHash,
+        obp1.blockIndex as blockIndex
+        FROM PublicKeys pk1
+          JOIN PublicKeys pk1Others on pk1.publicKeyGroupId = pk1Others.publicKeyGroupId
+          JOIN KeySignatures ks1 on ks1.publicKeyId = pk1Others.id
+          JOIN OriginBlockParties obp1 on obp1.id = ks1.originBlockPartyId
+          JOIN OriginBlockParties obp2 on obp2.originBlockId = obp1.originBlockId AND obp2.id != obp1.id
+          JOIN KeySignatures ks2 on ks2.originBlockPartyId = obp2.id
+          JOIN PublicKeys pk2 on pk2.id = ks2.publicKeyId
+          JOIN PublicKeys pk2Others on pk2.publicKeyGroupId = pk2Others.publicKeyGroupId
+          JOIN OriginBlocks ob1 on ob1.id = obp1.originBlockId
+        WHERE pk1.key = ? AND pk2Others.key = ?
+        ORDER BY obp1.blockIndex
+        LIMIT ?
+      `, [publicKeyA, publicKeyB, limit + 1])
+    } else {
+      getIntersectionsQuery = this.sqlService.query<QResult>(`
+        SELECT
+          ob1.signedHash as signedHash,
+          obp1.blockIndex as blockIndex
+        FROM PublicKeys pk1
+          JOIN PublicKeys pk1Others on pk1.publicKeyGroupId = pk1Others.publicKeyGroupId
+          JOIN KeySignatures ks1 on ks1.publicKeyId = pk1Others.id
+          JOIN OriginBlockParties obp1 on obp1.id = ks1.originBlockPartyId
+          JOIN OriginBlockParties obp2 on obp2.originBlockId = obp1.originBlockId AND obp2.id != obp1.id
+          JOIN KeySignatures ks2 on ks2.originBlockPartyId = obp2.id
+          JOIN PublicKeys pk2 on pk2.id = ks2.publicKeyId
+          JOIN PublicKeys pk2Others on pk2.publicKeyGroupId = pk2Others.publicKeyGroupId
+          JOIN OriginBlocks ob1 on ob1.id = obp1.originBlockId
+        WHERE pk1.key = ? AND pk2Others.key = ? AND obp1.blockIndex > ?
+        ORDER BY obp1.blockIndex
+        LIMIT ?
+      `, [publicKeyA, publicKeyB, parseInt(cursor, 10), limit + 1])
+    }
+    const totalSizeQuery = this.sqlService.query<Array<{totalSize: number}>>(`
+      SELECT
+        COUNT(ob1.id) as totalSize
+      FROM PublicKeys pk1
+        JOIN PublicKeys pk1Others on pk1.publicKeyGroupId = pk1Others.publicKeyGroupId
+        JOIN KeySignatures ks1 on ks1.publicKeyId = pk1Others.id
+        JOIN OriginBlockParties obp1 on obp1.id = ks1.originBlockPartyId
+        JOIN OriginBlockParties obp2 on obp2.originBlockId = obp1.originBlockId AND obp2.id != obp1.id
+        JOIN KeySignatures ks2 on ks2.originBlockPartyId = obp2.id
+        JOIN PublicKeys pk2 on pk2.id = ks2.publicKeyId
+        JOIN PublicKeys pk2Others on pk2.publicKeyGroupId = pk2Others.publicKeyGroupId
+        JOIN OriginBlocks ob1 on ob1.id = obp1.originBlockId
+      WHERE pk1.key = ? AND pk2Others.key = ?
+      ORDER BY obp1.blockIndex
+    `, [publicKeyA, publicKeyB])
+
+    const [intersectionResults, totalSizeResults] = await Promise.all([getIntersectionsQuery, totalSizeQuery])
+    const totalSize = _.chain(totalSizeResults).first().get('totalSize').value() as number
+    const hasNextPage = intersectionResults.length === (limit + 1)
+    if (hasNextPage) {
+      intersectionResults.pop()
+    }
+
+    const list = _.chain(intersectionResults)
+      .map(result => result.signedHash)
+      .value()
+
+    const cursorId = _.chain(intersectionResults).last().get('blockIndex').value() as number | undefined
+    return {
+      list,
+      hasNextPage,
+      totalSize,
+      cursor: cursorId ? String(cursorId) : undefined
     }
   }
 

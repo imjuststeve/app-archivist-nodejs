@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 5:19:40 pm
+ * @Last modified time: Monday, 17th December 2018 3:16:19 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -23,6 +23,8 @@ import { XyoLevelDbStorageProvider } from '@xyo-network/storage.leveldb'
 import configuration from './configuration'
 import { XyoError, XyoErrors } from '@xyo-network/errors'
 import { ProcessManager } from './process-manager'
+import { XyoPeerInteractionRouter } from '@xyo-network/peer-interaction-router'
+import { CatalogueItem } from '@xyo-network/network'
 
 export class XyoArchivistNode extends XyoBaseNode {
   private readonly config = configuration
@@ -97,6 +99,43 @@ export class XyoArchivistNode extends XyoBaseNode {
           publicIpOverride: this.config.publicIpOverride
         }
       )
+    })
+  }
+
+  protected getPeerInteractionRouter(): XyoPeerInteractionRouter {
+    return this.getOrCreate('XyoPeerInteractionRouter', () => {
+      const peerInteractionRouter = new XyoPeerInteractionRouter({
+        resolveCategory: (catalogueItems: CatalogueItem[]): CatalogueItem | undefined => {
+          if (!catalogueItems || catalogueItems.length < 1) {
+            return undefined
+          }
+          const wantsToGiveOriginChain = Boolean(catalogueItems.find(item => item === CatalogueItem.GIVE_ORIGIN_CHAIN))
+          if (wantsToGiveOriginChain) {
+            return CatalogueItem.TAKE_ORIGIN_CHAIN
+          }
+
+          if (catalogueItems && catalogueItems.length) {
+            return catalogueItems[catalogueItems.length - 1]
+          }
+          return undefined
+        }
+      })
+
+      // Routes
+      peerInteractionRouter.use(
+        CatalogueItem.BOUND_WITNESS,
+        () => {
+          return this.getStandardBoundWitnessHandlerProvider()
+        }
+      )
+
+      peerInteractionRouter.use(
+        CatalogueItem.TAKE_ORIGIN_CHAIN,
+        () => {
+          return this.getTakeOriginChainBoundWitnessHandlerProvider()
+        }
+      )
+      return peerInteractionRouter
     })
   }
 

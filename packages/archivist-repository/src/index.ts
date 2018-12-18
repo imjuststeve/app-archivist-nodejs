@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 3rd December 2018 1:22:56 pm
+ * @Last modified time: Tuesday, 18th December 2018 12:37:45 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -15,5 +15,6 @@ export {
   IXyoEntity,
   IXyoEntityType,
   IXyoOriginBlockResult,
-  IXyoOriginBlocksByPublicKeyResult
+  IXyoOriginBlocksByPublicKeyResult,
+  IXyoIntersectionsList
 } from './@types'

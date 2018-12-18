@@ -1,6 +1,6 @@
 {
   "name": "xyo-archivist",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "A workspace to aggregated nodejs XYO projects",
   "main": "index.js",
   "author": "Ryan Pillsbury",

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 5:19:15 pm
+ * @Last modified time: Tuesday, 18th December 2018 12:37:25 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -39,6 +39,20 @@ export interface IXyoArchivistRepository extends IXyoOriginBlockRepository {
    * @memberof IXyoArchivistRepository
    */
   getEntities(limit: number, cursor: string | undefined): Promise<IXyoEntitiesList>
+
+  getIntersections(
+    publicKeyA: string,
+    publicKeyB: string,
+    limit: number,
+    cursor: string | undefined
+  ): Promise<IXyoIntersectionsList>
+}
+
+export interface IXyoIntersectionsList {
+  totalSize: number
+  hasNextPage: boolean
+  list: string[]
+  cursor: string | undefined
 }
 
 export interface IXyoEntityType {

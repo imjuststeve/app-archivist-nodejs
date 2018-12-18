@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 17th December 2018 12:09:43 pm
+ * @Last modified time: Monday, 17th December 2018 2:03:09 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -36,30 +36,60 @@ const dataSet: IXyoInteraction[] = [
     party1Id: 1,
     party2Id: 2,
     party1Heuristics: {
-      rssi: -10
+      rssi: -22
     },
     party2Heuristics: {
-      rssi: -15
+      rssi: -22
     }
   },
   {
     party1Id: 2,
     party2Id: 3,
     party1Heuristics: {
-      rssi: -12
+      rssi: -22
     },
     party2Heuristics: {
-      rssi: -17
+      rssi: -22
     }
   },
   {
     party1Id: 1,
     party2Id: 3,
     party1Heuristics: {
-      rssi: -15
+      rssi: -33
     },
     party2Heuristics: {
-      rssi: -20
+      rssi: -33
+    }
+  },
+  {
+    party1Id: 4,
+    party2Id: 3,
+    party1Heuristics: {
+      rssi: -14
+    },
+    party2Heuristics: {
+      rssi: -14
+    }
+  },
+  {
+    party1Id: 4,
+    party2Id: 1,
+    party1Heuristics: {
+      rssi: -40
+    },
+    party2Heuristics: {
+      rssi: -40
+    }
+  },
+  {
+    party1Id: 4,
+    party2Id: 2,
+    party1Heuristics: {
+      rssi: -36
+    },
+    party2Heuristics: {
+      rssi: -36
     }
   }
 ]
@@ -67,6 +97,26 @@ const dataSet: IXyoInteraction[] = [
 async function main(args: Arguments) {
   const entitiesById = createPublicKeys(dataSet)
   const hashingProvider = getHashingProvider('sha256')
+
+  const genesisBlocks = await Object.keys(entitiesById).reduce(async (genesisBlocksPromise, id) => {
+    const blocks = await genesisBlocksPromise
+    const entity = entitiesById[id]
+    const keySet = new XyoKeySet([entity.signer.publicKey])
+    const heuristics = tryBuildHeuristics({}, 0)
+    const fetter = new XyoFetter(keySet, heuristics)
+    const signingData = fetter.serialize()
+    const signature = await entity.signer.signData(signingData)
+    const witness = new XyoWitness(new XyoSignatureSet([signature]), [])
+    const boundWitness = new XyoBoundWitness([fetter, witness])
+    blocks.push(boundWitness)
+    entity.index = (entity.index || 0) + 1
+    const hash = await hashingProvider.createHash(signingData)
+    entity.previousHash = hash
+
+    entity.originChain = entity.originChain || []
+    entity.originChain.push(boundWitness)
+    return blocks
+  }, Promise.resolve([]) as Promise<IXyoBoundWitness[]>)
 
   const boundWitnesses = await dataSet.reduce(async (interactionsPromise, interaction, index) => {
     const interactions = await interactionsPromise
@@ -119,7 +169,7 @@ async function main(args: Arguments) {
     clientEntity.originChain = clientEntity.originChain || []
     clientEntity.originChain.push(boundWitness)
     return interactions
-  }, Promise.resolve([]) as Promise<IXyoBoundWitness[]>)
+  }, Promise.resolve(genesisBlocks) as Promise<IXyoBoundWitness[]>)
 
   const repo = await createArchivistSqlRepository({
     host: args.host as string,
