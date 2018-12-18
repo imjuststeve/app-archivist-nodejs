@@ -813,9 +813,9 @@
     uuid "^3.3.2"
 
 "@xyo-network/base-node@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/base-node/-/base-node-0.10.0.tgz#31b27a8928d939f190cb42fbb6a646d9eb4f789a"
-  integrity sha512-YuwCRPkCXZxcqsjrHp4QGdi0m9NcYAjETcucOOsc4pqV+jAaNcejiuxfCbQN1WO6fWW5hKHbXHuP9iu6WYjWLw==
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@xyo-network/base-node/-/base-node-0.10.2.tgz#aa5bfe35109400e0caef7d6895f4203285ef0ed9"
+  integrity sha512-/VYuiBp+jjuY1iOS5jY7rnHx49+Jd0eqjUhKuvo8ZoeB9DGy212fB/R75evgFe1v+IG3Zpb4/nfZtoGzSrsmXQ==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/bound-witness" "^0.10.0"
@@ -823,17 +823,17 @@
     "@xyo-network/hashing" "^0.10.0"
     "@xyo-network/heuristics-common" "^0.10.0"
     "@xyo-network/network" "^0.10.0"
-    "@xyo-network/network.tcp" "^0.10.0"
+    "@xyo-network/network.tcp" "^0.10.2"
     "@xyo-network/node-runner" "^0.10.0"
     "@xyo-network/origin-block-repository" "^0.10.0"
-    "@xyo-network/origin-chain" "^0.10.0"
+    "@xyo-network/origin-chain" "^0.10.1"
     "@xyo-network/peer-connections" "^0.10.0"
-    "@xyo-network/peer-interaction" "^0.10.0"
-    "@xyo-network/peer-interaction-handlers" "^0.10.0"
-    "@xyo-network/peer-interaction-router" "^0.10.0"
+    "@xyo-network/peer-interaction" "^0.10.1"
+    "@xyo-network/peer-interaction-handlers" "^0.10.1"
+    "@xyo-network/peer-interaction-router" "^0.10.1"
     "@xyo-network/serialization" "^0.10.0"
     "@xyo-network/serialization-schema" "^0.10.0"
-    "@xyo-network/serializer" "^0.10.0"
+    "@xyo-network/serializer" "^0.10.1"
     "@xyo-network/signing" "^0.10.0"
     "@xyo-network/signing.ecdsa" "^0.10.0"
     "@xyo-network/signing.rsa" "^0.10.0"
@@ -930,10 +930,10 @@
     winston "^3.1.0"
     winston-daily-rotate-file "^3.4.1"
 
-"@xyo-network/network.tcp@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/network.tcp/-/network.tcp-0.10.0.tgz#524aed927be637f03fb093bd51a18bc72c81514b"
-  integrity sha512-JrbZrv7IBI6P3BEL8T2aOaAwbN4gTWgjkZ5Ye79+OXy0iZbgKW46bftdDVFEqGKVZdULpjUwfl2VgvxjqN9vvQ==
+"@xyo-network/network.tcp@^0.10.0", "@xyo-network/network.tcp@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@xyo-network/network.tcp/-/network.tcp-0.10.2.tgz#35b023d7b9c8681717cb5d74f3a623a09da24eb5"
+  integrity sha512-fPYzwahwQi4oI+1KJO7fGXeLxEkkUEt43UzQfR7sKpSQgCqm8tbqacLYXBOtGLl1Ulr5oGiePKNOlmZxJsreoA==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/buffer-utils" "^0.10.0"
@@ -964,10 +964,10 @@
     "@xyo-network/serialization" "^0.10.0"
     "@xyo-network/storage" "^0.10.0"
 
-"@xyo-network/origin-chain@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/origin-chain/-/origin-chain-0.10.0.tgz#3c25fe1e9082b5ed364e21d1f0ccf31f5547b237"
-  integrity sha512-oeaxeAJzni5/6cmjiTeFKACVAcRAGaX2yTZPGKH3t6QUSK3m6OJfSZILIWDHnKVIDLsPWg6FD4wkvSv6eUCW8g==
+"@xyo-network/origin-chain@^0.10.0", "@xyo-network/origin-chain@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/origin-chain/-/origin-chain-0.10.1.tgz#5435b1a68b0a529373f7972d32f23bf4ad4836bf"
+  integrity sha512-LdVjCh1M4MjtDNyeIcOAKwezhjOW5MmW3idsVA+aU6T6zC2ZbXAHZH1yGlEoTTPWi+xHHhSmSL+oQqKLO7Y0Dg==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/bound-witness" "^0.10.0"
@@ -995,35 +995,35 @@
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/errors" "^0.10.0"
 
-"@xyo-network/peer-interaction-handlers@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction-handlers/-/peer-interaction-handlers-0.10.0.tgz#7161245e01aa473d090e3d2da3166c0bd0949225"
-  integrity sha512-9oFY5qpCXzhy6LVdySCduwyr1gKOy/PsURzRjsGvAU7cSNZXWVW3Hk6kdDNNVOgxPZYPMILo5fEP333CX0fMxA==
+"@xyo-network/peer-interaction-handlers@^0.10.0", "@xyo-network/peer-interaction-handlers@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction-handlers/-/peer-interaction-handlers-0.10.1.tgz#c5173441e61ad39992fad6fc50ececcf1fcc2aad"
+  integrity sha512-d8FWExXo9L2TfmORmEDW/1+WKxHC2VISBS3d56mfm7toWWZoFyldKvxi0JFel9ScjAM5+OBoepKwKmZRYv7zMQ==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/bound-witness" "^0.10.0"
     "@xyo-network/errors" "^0.10.0"
     "@xyo-network/network" "^0.10.0"
-    "@xyo-network/peer-interaction" "^0.10.0"
+    "@xyo-network/peer-interaction" "^0.10.1"
     "@xyo-network/serialization" "^0.10.0"
     "@xyo-network/serialization-schema" "^0.10.0"
     "@xyo-network/signing" "^0.10.0"
 
-"@xyo-network/peer-interaction-router@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction-router/-/peer-interaction-router-0.10.0.tgz#d5393218d059cb84e2836d9a813892dd6bd81bed"
-  integrity sha512-iTsE9sEmpvbE5e4AdRHuzi0XDkM5FMa+smsSolaaAejkebXjGVtvAYETEyfK9BEDJc8LMwUIU8l7X77Km0Up5A==
+"@xyo-network/peer-interaction-router@^0.10.0", "@xyo-network/peer-interaction-router@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction-router/-/peer-interaction-router-0.10.1.tgz#15a967f1a66be15b67da88a45f9f6b4dde9e4fa7"
+  integrity sha512-eY6Nl4FtecuctxyIIFwX+GDJEwZf+NmjizvQEpcxH5+NeAO/0K+QFYxUJtL0ZBzL9Iye1mM2WCB6SBE8x/F74w==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/network" "^0.10.0"
     "@xyo-network/peer-connections" "^0.10.0"
-    "@xyo-network/peer-interaction" "^0.10.0"
-    "@xyo-network/peer-interaction-handlers" "^0.10.0"
+    "@xyo-network/peer-interaction" "^0.10.1"
+    "@xyo-network/peer-interaction-handlers" "^0.10.1"
 
-"@xyo-network/peer-interaction@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction/-/peer-interaction-0.10.0.tgz#bacbc0bd5091417e157cbb4484113ac357599bce"
-  integrity sha512-yDyo8FBbGHk9vfmoWIaudZ4G1jDCCXRVfn92DCvsfvKvmZ50yygs5sFj+O1sw1XjQBdtTAidsqXjEzmg+Aj4AQ==
+"@xyo-network/peer-interaction@^0.10.0", "@xyo-network/peer-interaction@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/peer-interaction/-/peer-interaction-0.10.1.tgz#a912729d4751e26b4d166be8ad4da93e19647de9"
+  integrity sha512-L91+1l814Ue5oq6l50C8ZofsLl4EmTQNLF4zKY2No1B3LmpXI+S4AZPk6lscODbndbEcSH/54rcj1h56mTO6gg==
   dependencies:
     "@xyo-network/base" "^0.10.0"
     "@xyo-network/bound-witness" "^0.10.0"
@@ -1031,7 +1031,7 @@
     "@xyo-network/hashing" "^0.10.0"
     "@xyo-network/network" "^0.10.0"
     "@xyo-network/origin-block-repository" "^0.10.0"
-    "@xyo-network/origin-chain" "^0.10.0"
+    "@xyo-network/origin-chain" "^0.10.1"
     "@xyo-network/serialization" "^0.10.0"
     "@xyo-network/serialization-schema" "^0.10.0"
     "@xyo-network/signing" "^0.10.0"
@@ -1052,15 +1052,15 @@
     "@xyo-network/errors" "^0.10.0"
     bn.js "^4.11.8"
 
-"@xyo-network/serializer@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@xyo-network/serializer/-/serializer-0.10.0.tgz#8b7408622c9d0068cc56fc197f155f3fa11c887f"
-  integrity sha512-5SgRSq9QrLukHt2/lhzD/fgtiVpylgozHUqW8Qv8HEEm5kr6lxII8mXcAlb9GkNwqoFkfUdpNsw/+FIbCwEDcg==
+"@xyo-network/serializer@^0.10.0", "@xyo-network/serializer@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@xyo-network/serializer/-/serializer-0.10.1.tgz#8416ff36c93a8eefd25c067aa45c42d9c74b5ab0"
+  integrity sha512-YdCq7ATmRE2Sho5+vC657K2RTpe4bzVrqkxIe0BVAoXk3x1BqlQkAzUpG+Gc7v0UFpNN5OrUx5ALECQcZd81Ug==
   dependencies:
     "@xyo-network/bound-witness" "^0.10.0"
     "@xyo-network/hashing" "^0.10.0"
     "@xyo-network/heuristics-common" "^0.10.0"
-    "@xyo-network/origin-chain" "^0.10.0"
+    "@xyo-network/origin-chain" "^0.10.1"
     "@xyo-network/serialization" "^0.10.0"
     "@xyo-network/serialization-schema" "^0.10.0"
     "@xyo-network/signing" "^0.10.0"
