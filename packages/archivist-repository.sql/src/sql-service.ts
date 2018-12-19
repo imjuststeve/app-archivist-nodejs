@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: sql-service.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 5:28:04 pm
+ * @Last modified time: Tuesday, 18th December 2018 5:06:43 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -149,8 +149,9 @@ interface ISqlTransaction {
 async function tryCreateSqlService(
   connectionDetails: ISqlConnectionDetails,
   schemaPath?: string
-) {
+): Promise<SqlService> {
   const sqlService = new SqlService(connectionDetails)
+  const schema = schemaPath ? fs.readFileSync(schemaPath) : undefined
   try {
 
     // This will timeout if it does not exist with a `ER_BAD_DB_ERROR`
@@ -158,27 +159,47 @@ async function tryCreateSqlService(
       `SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`,
       [connectionDetails.database]
     )
-
-    return sqlService
   } catch (err) {
-    if (err.code === 'ER_BAD_DB_ERROR' && schemaPath) {
-      const tmpSqlService = new SqlService({
-        host: connectionDetails.host,
-        user: connectionDetails.user,
-        password: connectionDetails.password,
-        port: connectionDetails.port,
-        multipleStatements: true
-      })
-      const schema = fs.readFileSync(schemaPath)
-      await tmpSqlService.query(`
-        CREATE SCHEMA IF NOT EXISTS \`${connectionDetails.database}\` DEFAULT CHARACTER SET utf8 ;
-        USE \`${connectionDetails.database}\`;
-        ${schema}
-      `, [])
-      return sqlService
+    if (err.code === 'ER_BAD_DB_ERROR') {
+      if (schema) {
+        XyoBase.logger.info(`Database ${connectionDetails.database} does not exist. Will try to create`)
+        await createDatabaseWithSchema(connectionDetails, `${schema}`)
+      } else {
+        XyoBase.logger.error(`Bad database error, could not resolve without schema`)
+        throw err
+      }
+    } else {
+      XyoBase.logger.error(`An unknown error occurred connecting to the database`, err)
+      throw err
     }
-
-    XyoBase.logger.error(`There was an error creating the sql service`, err)
-    throw err
   }
+
+  const result = await sqlService.query<any[]>(`SHOW TABLES;`)
+
+  if (result.length === 0) {
+    if (schema) {
+      await createDatabaseWithSchema(connectionDetails, `${schema}`)
+    } else {
+      XyoBase.logger.error(`Bad schema error, could not resolve without schema`)
+      throw new Error(`Could not initialize database schema`)
+    }
+  }
+
+  return sqlService
+}
+
+async function createDatabaseWithSchema(connectionDetails: ISqlConnectionDetails, schema: string) {
+  const tmpSqlService = new SqlService({
+    host: connectionDetails.host,
+    user: connectionDetails.user,
+    password: connectionDetails.password,
+    port: connectionDetails.port,
+    multipleStatements: true
+  })
+
+  await tmpSqlService.query(`
+    CREATE SCHEMA IF NOT EXISTS \`${connectionDetails.database}\` DEFAULT CHARACTER SET utf8 ;
+    USE \`${connectionDetails.database}\`;
+    ${schema}
+  `, [])
 }

@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 17th December 2018 3:16:19 pm
+ * @Last modified time: Tuesday, 18th December 2018 5:14:52 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -32,7 +32,6 @@ export class XyoArchivistNode extends XyoBaseNode {
   private archivistRepository: IXyoArchivistRepository | undefined
 
   public async start() {
-    super.start()
     const serializationService = this.getSerializationService()
     await this.initializeArchivistRepo()
     await createDirectoryIfNotExists(this.config.data)
@@ -51,6 +50,7 @@ export class XyoArchivistNode extends XyoBaseNode {
     )
 
     this.server.start()
+    super.start()
   }
 
   public async initializeArchivistRepo() {
