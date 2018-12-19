@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 5:19:05 pm
+ * @Last modified time: Tuesday, 18th December 2018 1:00:32 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -20,6 +20,7 @@ import { GetEntitiesResolver } from "./resolvers/xyo-get-entities-resolver"
 import { XyoGetBlockList } from "./resolvers/xyo-get-block-list-resolver"
 import { XyoGetBlocksByPublicKeyResolver } from "./resolvers/xyo-get-blocks-by-public-key-resolver"
 import { IXyoSerializationService } from "@xyo-network/serialization"
+import { XyoGetIntersectionsResolver } from "./resolvers/xyo-get-intersections-resolver"
 
 /**
  * Initializes and starts a GraphQL service
@@ -50,7 +51,8 @@ export default async function createGraphqlServer(
         archivistRepository,
         hashProvider,
         serializationService
-      )
+      ),
+      intersections: new XyoGetIntersectionsResolver(archivistRepository)
     }
   )
 }

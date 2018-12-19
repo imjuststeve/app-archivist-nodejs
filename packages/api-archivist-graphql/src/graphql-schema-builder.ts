@@ -4,108 +4,114 @@ export class GraphqlSchemaBuilder extends XyoBase {
 
   public async buildSchema() {
     const compiledSchema = `
-          type Query {
-            blocksByPublicKey(publicKeys: [String!]): [XyoBlockCollection],
-            blockList(limit: Int!, cursor: String): XyoBlockList!,
-            about(aboutYou: XyoAboutYou): XyoAboutMe,
-            blockByHash(hash: String!): XyoBlock,
-            entities(limit: Int!, cursor: String): XyoEntitiesList!
-          }
+      type Query {
+        blocksByPublicKey(publicKeys: [String!]): [XyoBlockCollection],
+        blockList(limit: Int!, cursor: String): XyoBlockList!,
+        about(aboutYou: XyoAboutYou): XyoAboutMe,
+        blockByHash(hash: String!): XyoBlock,
+        entities(limit: Int!, cursor: String): XyoEntitiesList!
+        intersections(publicKeyA: String!, publicKeyB: String!, limit: Int!, cursor: String): XyoIntersectionList!
+      }
 
-          type XyoBlock {
-            publicKeys: [XyoKeySet!]
-            signatures: [XyoSignatureSet!]
-            heuristics: [XyoHeuristicSet!]
-            signedHash: String!
-          }
+      type XyoIntersectionList implements List {
+        meta: ListMeta!
+        items: [String!]!
+      }
 
-          type XyoKeySet {
-            array: [XyoPublicKey!]
-          }
+      type XyoBlock {
+        publicKeys: [XyoKeySet!]
+        signatures: [XyoSignatureSet!]
+        heuristics: [XyoHeuristicSet!]
+        signedHash: String!
+      }
 
-          type XyoObject {
-            value: String!
-          }
+      type XyoKeySet {
+        array: [XyoPublicKey!]
+      }
 
-          type XyoSignatureSet {
-            array: [XyoSignature!]
-          }
+      type XyoObject {
+        value: String!
+      }
 
-          type XyoSignature {
-            value: String!
-          }
+      type XyoSignatureSet {
+        array: [XyoSignature!]
+      }
 
-          type XyoPublicKey {
-            value: String!
-          }
+      type XyoSignature {
+        value: String!
+      }
 
-          type XyoHeuristicSet {
-            array: [XyoObject!]
-          }
+      type XyoPublicKey {
+        value: String!
+      }
 
-          type XyoBlockCollection {
-            publicKey: String!
-            blocks: [XyoBlock!]!
-            publicKeySet: [String!]!
-          }
+      type XyoHeuristicSet {
+        array: [XyoObject!]
+      }
 
-          type BlocksByPublicKey {
-            blocks(publicKeys: [String!]): [XyoBlockCollection!]
-          }
+      type XyoBlockCollection {
+        publicKey: String!
+        blocks: [XyoBlock!]!
+        publicKeySet: [String!]!
+      }
 
-          type XyoAboutMe {
-            name: String,
-            version: String,
-            ip: String,
-            graphqlPort: Int,
-            nodePort: Int,
-            address: String,
-            peers: [XyoAboutMe]
-          }
+      type BlocksByPublicKey {
+        blocks(publicKeys: [String!]): [XyoBlockCollection!]
+      }
 
-          interface List {
-            meta: ListMeta!
-          }
+      type XyoAboutMe {
+        name: String,
+        version: String,
+        ip: String,
+        graphqlPort: Int,
+        nodePort: Int,
+        address: String,
+        peers: [XyoAboutMe]
+      }
 
-          type ListMeta {
-            totalCount: Int!,
-            endCursor: String,
-            hasNextPage: Boolean!
-          }
+      interface List {
+        meta: ListMeta!
+      }
 
-          type XyoBlockList implements List {
-            meta: ListMeta!
-            items: [XyoBlock!]!
-          }
+      type ListMeta {
+        totalCount: Int!,
+        endCursor: String,
+        hasNextPage: Boolean!
+      }
 
-          type XyoEntityType {
-            sentinel: Boolean!,
-            bridge: Boolean!,
-            archivist: Boolean!,
-            diviner: Boolean!
-          }
+      type XyoBlockList implements List {
+        meta: ListMeta!
+        items: [XyoBlock!]!
+      }
 
-          type XyoEntity {
-            firstKnownPublicKey: String!
-            allPublicKeys: [String!]!
-            type: XyoEntityType!
-            mostRecentIndex: Int!
-          }
+      type XyoEntityType {
+        sentinel: Boolean!,
+        bridge: Boolean!,
+        archivist: Boolean!,
+        diviner: Boolean!
+      }
 
-          type XyoEntitiesList implements List {
-            meta: ListMeta!
-            items: [XyoEntity!]!
-          }
+      type XyoEntity {
+        firstKnownPublicKey: String!
+        allPublicKeys: [String!]!
+        type: XyoEntityType!
+        mostRecentIndex: Int!
+      }
 
-          input XyoAboutYou {
-            name: String,
-            version: String,
-            ip: String,
-            graphqlPort: Int,
-            nodePort: Int,
-            address: String,
-            peers: [XyoAboutYou]
-          }
+      type XyoEntitiesList implements List {
+        meta: ListMeta!
+        items: [XyoEntity!]!
+      }
+
+      input XyoAboutYou {
+        name: String,
+        version: String,
+        ip: String,
+        graphqlPort: Int,
+        nodePort: Int,
+        address: String,
+        peers: [XyoAboutYou]
+      }
     `
 
     return compiledSchema
