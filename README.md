@@ -156,6 +156,61 @@ A number of things should happen at this point. You should see a number of logs 
 
 ** Happy Archiving **
 
+## Contributing
+
+If you'd like to contribute to the project as a developer or just run the project from source the directions below should help you get started.
+
+First, clone the repository. And set the branch to the develop branch
+
+```sh
+  git clone -b develop https://github.com/XYOracleNetwork/app-archivist-nodejs.git
+```
+
+Then change working directory to that of the repository
+
+```sh
+  cd app-archivist-nodejs
+```
+
+Download dependencies
+
+```sh
+  yarn install
+```
+
+The source code is written in TypeScript and needs to be transpiled into JavaScript.
+
+```sh
+  yarn build
+```
+
+Assuming the MySQL service dependency has been satisfied you can now run
+
+```sh
+  yarn start
+```
+
+If you are having trouble connecting to the MySQL instance it is likely because the set of credentials do not match that of the application.
+
+You can optionally override the MySQL connection parameters with environments variables:
+
+- host: SQL__HOST
+- port: SQL__PORT
+- user: SQL__USER
+- password: SQL__PASSWORD
+- database: SQL__DATABASE
+
+For example,
+
+```sh
+  export SQL__HOST=127.0.0.1 && \
+  export SQL__PORT=3306 && \
+  export SQL__USER=pizza-mind && \
+  export SQL__PASSWORD=super-duper-secret-password && \
+  export SQL__DATABASE=db && \
+  yarn start
+```
+
 ## Developer Guide
 
 Developers should conform to git flow workflow. Additionally, we should try to make sure
