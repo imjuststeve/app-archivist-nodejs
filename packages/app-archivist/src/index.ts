@@ -4,14 +4,16 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Tuesday, 18th December 2018 5:14:52 pm
+ * @Last modified time: Wednesday, 19th December 2018 11:49:32 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { XyoBaseNode } from '@xyo-network/base-node'
 import { createArchivistSqlRepository } from '@xyo-network/archivist-repository.sql'
-import { default as createGraphqlServer, GraphQLServer } from '@xyo-network/api-archivist-graphql'
+import createGraphqlServer from '@xyo-network/api-archivist-graphql'
+import { XyoGraphQLServer } from '@xyo-network/graphql-server'
+
 import { XyoAboutMeService } from '@xyo-network/about-me'
 import { XyoIpService } from '@xyo-network/ip-service'
 import { IXyoArchivistRepository } from '@xyo-network/archivist-repository'
@@ -28,7 +30,7 @@ import { CatalogueItem } from '@xyo-network/network'
 
 export class XyoArchivistNode extends XyoBaseNode {
   private readonly config = configuration
-  private server: GraphQLServer | undefined
+  private server: XyoGraphQLServer | undefined
   private archivistRepository: IXyoArchivistRepository | undefined
 
   public async start() {

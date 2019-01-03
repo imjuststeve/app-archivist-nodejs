@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Monday, 17th December 2018 2:03:09 pm
+ * @Last modified time: Friday, 21st December 2018 2:55:31 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -94,7 +94,7 @@ const dataSet: IXyoInteraction[] = [
   }
 ]
 
-async function main(args: Arguments) {
+async function main(args: Arguments<any>) {
   const entitiesById = createPublicKeys(dataSet)
   const hashingProvider = getHashingProvider('sha256')
 

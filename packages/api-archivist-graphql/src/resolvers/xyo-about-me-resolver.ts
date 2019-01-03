@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-about-me-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 12th December 2018 4:43:32 pm
+ * @Last modified time: Wednesday, 19th December 2018 11:47:16 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoDataResolver } from "../@types"
+import { IXyoDataResolver } from "@xyo-network/graphql-server"
 import { XyoAboutMeService } from "@xyo-network/about-me"
 import { GraphQLResolveInfo } from "graphql"
 

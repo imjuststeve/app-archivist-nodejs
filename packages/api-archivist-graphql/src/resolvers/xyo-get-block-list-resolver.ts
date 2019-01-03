@@ -4,12 +4,12 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-block-list-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 12:29:57 pm
+ * @Last modified time: Wednesday, 19th December 2018 11:47:21 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoDataResolver } from "../@types"
+import { IXyoDataResolver } from "@xyo-network/graphql-server"
 import { GraphQLResolveInfo } from "graphql"
 import { IXyoHashProvider } from '@xyo-network/hashing'
 import { IXyoArchivistRepository } from "@xyo-network/archivist-repository"

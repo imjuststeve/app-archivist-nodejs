@@ -4,13 +4,13 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-blocks-by-public-key-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 12:31:03 pm
+ * @Last modified time: Wednesday, 19th December 2018 11:46:39 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
 import { IXyoHashProvider } from '@xyo-network/hashing'
-import { IXyoDataResolver } from "../@types"
+import { IXyoDataResolver } from "@xyo-network/graphql-server"
 import { IXyoArchivistRepository } from '@xyo-network/archivist-repository'
 import { IXyoSerializationService } from '@xyo-network/serialization'
 import { IXyoPublicKey } from '@xyo-network/signing'

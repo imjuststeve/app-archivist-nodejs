@@ -4,22 +4,18 @@
  * @Email:  developer@xyfindables.com
  * @Filename: xyo-get-entities-resolver.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Thursday, 13th December 2018 12:31:38 pm
+ * @Last modified time: Wednesday, 19th December 2018 11:47:29 am
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
 
-import { IXyoDataResolver } from "../@types"
+import { IXyoDataResolver } from "@xyo-network/graphql-server"
 import { IXyoArchivistRepository } from "@xyo-network/archivist-repository"
-import { IXyoHashProvider } from "@xyo-network/hashing"
 import { GraphQLResolveInfo } from "graphql"
 
 export class GetEntitiesResolver implements IXyoDataResolver<any, any, any, any> {
 
-  constructor (
-    private readonly archivistRepository: IXyoArchivistRepository,
-    protected readonly hashProvider: IXyoHashProvider
-  ) {}
+  constructor (private readonly archivistRepository: IXyoArchivistRepository) {}
 
   public async resolve(obj: any, args: any, context: any, info: GraphQLResolveInfo): Promise<any> {
     const result = await this.archivistRepository.getEntities(
