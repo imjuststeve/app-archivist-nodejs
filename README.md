@@ -82,6 +82,14 @@ List of parameters:
 
 - `xyonetwork/app-archivist:latest` Run the latest archivist image from docker-hub.
 
+After running with the configuration you should see this at the tail of your log: 
+
+```sh
+GraphQLServer: Graphql server ready at url: http://localhost:11001/
+```
+You can now use that URL to start working in the GraphQL playground. For more info on GraphQL, check out the intro and learn page [here](https://graphql.org/learn/).
+
+When you are interacting with the playground, you can search the schema for data available to the Archivist. 
 
 ## Running Locally 
 
