@@ -83,9 +83,9 @@ List of parameters:
 - `xyonetwork/app-archivist:latest` Run the latest archivist image from docker-hub.
 
 
-## Install
+## Running Locally 
 
-If you want to run the archivist locally, follow these steps: 
+If you want to run the archivist locally, follow these steps to install: 
 
 Before downloading the application, there are number of System requirements that will need to be satisfied.
 
