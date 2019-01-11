@@ -18,9 +18,9 @@ layer for doing bound-witness interactions between the Archivist and other Bridg
 
 ## Docker
 
-Perhaps the easiest way to get up and going is with docker.
+A quick and accessible way to get up and running is with Docker. Make sure that you are logged into Docker. More info on installation and setup for Docker [here](https://www.docker.com/get-started). For terminal commands on checking containers you can use `docker` the base command for the Docker CLI, see `docker --help` for commands. Also, if you are using VSCode, you will be able to check your container status and logs through the VSCode in-house terminal.
 
-First, satisfy the MySQL requirement:
+First, satisfy the MySQL requirement, this will create a new container running a mySQL Database:
 
 ```sh
   docker run \
@@ -36,13 +36,14 @@ First, satisfy the MySQL requirement:
 
 **NOTE** Please substitute variable `{user}` `{password}` and `{database}` with your own values.
 
-When the docker command is executed it will return a docker-container id. To get the ip address of the docker container you can run:
+When the docker command is executed it will return a docker-container id, copy that id. 
+To get the ip address of the docker container you can run:
 
 ```sh
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' {docker-container-id}
 ```
 
-Take note of the ip address as this will be required configure the Archivist application.
+Take note of the ip address as this will be required configure the Archivist application (use the ip as your SQL__HOST). Make sure that you have the path set for logs and private data as seen in the configuration below where you can actively access:
 
 ```sh
   docker run \
@@ -65,15 +66,15 @@ List of parameters:
 
 - `-d` run docker as daemon
 
-- `-p 11000:11000` bind port 11000 from docker container to local network
+- `-p 11000:11000` bind port 11000 from docker container to local network, this is the node port.
 
-- `-p 11001:11001` bind port 11001 from docker container to local network
+- `-p 11001:11001` bind port 11001 from docker container to local network, this is the graphQL port. Later you can use this on localhost to query in graphQL playground.
 
 - `-v {path-to-logs-folder}:/workspace/logs` Mount **logs** folder from local disk to docker container
 
 - `-v {path-to-private-data-folder}:/workspace/archivist-db` Mount **private-data** folder from local disk to docker container
 
-- `-e NODE_NAME={archivist-name}` The name of the archivist
+- `-e NODE_NAME={archivist-name}` The name of the Archivist
 
 - `-e IP_OVERRIDE={publicly-accessible-ip}` The publicly addressable ip address of this Archivist
 
@@ -83,6 +84,8 @@ List of parameters:
 
 
 ## Install
+
+If you want to run the archivist locally, follow these steps: 
 
 Before downloading the application, there are number of System requirements that will need to be satisfied.
 
