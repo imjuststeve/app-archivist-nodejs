@@ -99,9 +99,9 @@ Before downloading the application, there are number of System requirements that
 
 - [NodeJS](https://nodejs.org/en/) The application is built using NodeJS. Internally we've tested against version 10.13.0. Consider using [nvm](https://github.com/creationix/nvm) to satisfy this dependency. Among other benefits, it may save you the trouble of using `sudo` in upcoming commands.
 
-- [MySQL](https://dev.mysql.com/downloads/mysql/5.7.html#downloads) A MySQL service is currently require to meet the Archivist feature set. This will likely change in the future and there will be support for a number of different database providers. At the moment though a MySQL service dependency will need to be satisfied for the archivist to run properly. Internally we've tested against version 5.7.24
+- [MySQL](https://dev.mysql.com/downloads/mysql/5.7.html#downloads) A MySQL service is currently required to meet the Archivist feature set. This will likely change in the future and there will be support for a number of different database providers. At the moment though a MySQL service dependency will need to be satisfied for the archivist to run properly. Internally we've tested against version 5.7.24
 
-Download as a global npm package. We
+Download as a global npm package.
 
 ```sh
   npm install -g @xyo-network/app-archivist
