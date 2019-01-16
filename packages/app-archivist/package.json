@@ -1,6 +1,6 @@
 {
   "name": "@xyo-network/app-archivist",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "description": "An archivist node",
   "types": "dist/index.d.ts",
   "author": "Ryan Pillsbury",
@@ -10,12 +10,13 @@
   },
   "dependencies": {
     "@xyo-network/about-me": "^0.13.0",
-    "@xyo-network/api-archivist-graphql": "^0.12.0",
-    "@xyo-network/archivist-repository": "^0.12.0",
-    "@xyo-network/archivist-repository.sql": "^0.12.1",
+    "@xyo-network/api-archivist-graphql": "^0.13.0",
+    "@xyo-network/archivist-repository": "^0.13.0",
+    "@xyo-network/archivist-repository.sql": "^0.13.0",
     "@xyo-network/base-node": "^0.13.0",
     "@xyo-network/bound-witness": "^0.13.0",
     "@xyo-network/errors": "^0.13.0",
+    "@xyo-network/graphql-server": "^0.13.0",
     "@xyo-network/ip-service": "^0.13.0",
     "@xyo-network/network": "^0.13.0",
     "@xyo-network/origin-block-repository": "^0.13.0",
@@ -24,7 +25,6 @@
     "@xyo-network/peer-interaction-router": "^0.13.0",
     "@xyo-network/storage": "^0.13.0",
     "@xyo-network/storage.leveldb": "^0.13.0",
-    "@xyo-network/graphql-server": "^0.13.0",
     "config": "^2.0.1",
     "js-yaml": "^3.12.0"
   },
