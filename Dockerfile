@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:10.14.2
+FROM mhart/alpine-node:10.15
 RUN apk update && apk upgrade && apk add --no-cache bash  openssh python make g++
 RUN yarn global add @xyo-network/app-archivist
 RUN mkdir workspace
