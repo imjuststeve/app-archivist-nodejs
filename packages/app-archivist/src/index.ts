@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 19th December 2018 11:49:32 am
+ * @Last modified time: Wednesday, 16th January 2019 5:40:20 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -18,8 +18,7 @@ import { XyoAboutMeService } from '@xyo-network/about-me'
 import { XyoIpService } from '@xyo-network/ip-service'
 import { IXyoArchivistRepository } from '@xyo-network/archivist-repository'
 import { XyoPeerDiscoveryService } from '@xyo-network/peer-discovery'
-import { XyoBoundWitness, XyoFetter, XyoWitness, XyoKeySet, XyoSignatureSet } from '@xyo-network/bound-witness'
-import { XyoIndex, XyoOriginChainLocalStorageRepository, IXyoOriginChainRepository } from '@xyo-network/origin-chain'
+import { XyoOriginChainLocalStorageRepository, IXyoOriginChainRepository } from '@xyo-network/origin-chain'
 import { createDirectoryIfNotExists } from './utils'
 import { XyoLevelDbStorageProvider } from '@xyo-network/storage.leveldb'
 import configuration from './configuration'
@@ -34,25 +33,32 @@ export class XyoArchivistNode extends XyoBaseNode {
   private archivistRepository: IXyoArchivistRepository | undefined
 
   public async start() {
-    const serializationService = this.getSerializationService()
+    // Set up
+    const serializationService = await this.getSerializationService()
     await this.initializeArchivistRepo()
     await createDirectoryIfNotExists(this.config.data)
-    await this.configureOriginChainStateRepository()
+
+    // Call into super implementation
+    await super.start()
+
+    // Mount additional archivist functionality
     const aboutMeService = await this.getAboutMeService()
     if (this.config.discovery.enable) {
       aboutMeService.startDiscoveringPeers()
     }
 
+    const originBlockRepository = await this.getOriginBlockRepository()
+    const hashingProvider = await this.getHashingProvider()
+
     this.server = await createGraphqlServer(
-      11001,
+      this.config.graphql,
       aboutMeService,
-      this.getOriginBlockRepository(),
-      this.getHashingProvider(),
+      originBlockRepository,
+      hashingProvider,
       serializationService
     )
 
     this.server.start()
-    super.start()
   }
 
   public async initializeArchivistRepo() {
@@ -60,13 +66,15 @@ export class XyoArchivistNode extends XyoBaseNode {
       throw new XyoError(`SQL configuration required`, XyoErrors.CRITICAL)
     }
 
+    const serializationService = await this.getSerializationService()
+
     this.archivistRepository = await createArchivistSqlRepository({
       host: this.config.sql.host,
       database: this.config.sql.database,
       password: this.config.sql.password,
       user: this.config.sql.user,
       port: this.config.sql.port
-    }, this.getSerializationService())
+    }, serializationService)
   }
 
   public async stop() {
@@ -80,11 +88,13 @@ export class XyoArchivistNode extends XyoBaseNode {
   }
 
   protected getNodePort(): number {
-    return this.config.port || 11000
+    return this.config.port
   }
 
   protected async getAboutMeService(): Promise<XyoAboutMeService> {
-    const genesisSigner = await this.getOriginStateRepository().getGenesisSigner()
+    const originStateRepository = await this.getOriginStateRepository()
+    const genesisSigner = await originStateRepository.getGenesisSigner()
+
     if (!genesisSigner) {
       throw new XyoError(`Could not start about-me service without genesis signer`, XyoErrors.CRITICAL)
     }
@@ -104,8 +114,10 @@ export class XyoArchivistNode extends XyoBaseNode {
     })
   }
 
-  protected getPeerInteractionRouter(): XyoPeerInteractionRouter {
-    return this.getOrCreate('XyoPeerInteractionRouter', () => {
+  protected async getPeerInteractionRouter(): Promise<XyoPeerInteractionRouter> {
+    return this.getOrCreate('XyoPeerInteractionRouter', async () => {
+      const standardBoundWitnessHandlerProvider = await this.getStandardBoundWitnessHandlerProvider()
+      const takeOriginChainBoundWitnessHandlerProvider = await this.getTakeOriginChainBoundWitnessHandlerProvider()
       const peerInteractionRouter = new XyoPeerInteractionRouter({
         resolveCategory: (catalogueItems: CatalogueItem[]): CatalogueItem | undefined => {
           if (!catalogueItems || catalogueItems.length < 1) {
@@ -127,14 +139,14 @@ export class XyoArchivistNode extends XyoBaseNode {
       peerInteractionRouter.use(
         CatalogueItem.BOUND_WITNESS,
         () => {
-          return this.getStandardBoundWitnessHandlerProvider()
+          return standardBoundWitnessHandlerProvider
         }
       )
 
       peerInteractionRouter.use(
         CatalogueItem.TAKE_ORIGIN_CHAIN,
         () => {
-          return this.getTakeOriginChainBoundWitnessHandlerProvider()
+          return takeOriginChainBoundWitnessHandlerProvider
         }
       )
       return peerInteractionRouter
@@ -157,8 +169,8 @@ export class XyoArchivistNode extends XyoBaseNode {
     })
   }
 
-  protected getOriginBlockRepository(): IXyoArchivistRepository {
-    return this.getOrCreate('IXyoOriginBlockRepository', () => {
+  protected async getOriginBlockRepository(): Promise<IXyoArchivistRepository> {
+    return this.getOrCreate('IXyoOriginBlockRepository', async () => {
       if (!this.archivistRepository) {
         throw new XyoError(`Archivist repository is not initialized`, XyoErrors.CRITICAL)
       }
@@ -167,45 +179,16 @@ export class XyoArchivistNode extends XyoBaseNode {
     })
   }
 
-  protected getBoundWitnessValidatorSettings() {
+  protected async getBoundWitnessValidatorSettings() {
     return this.config.validation
   }
 
-  protected getOriginStateRepository(): IXyoOriginChainRepository {
-    return this.getOrCreate('IXyoOriginChainRepository', () => {
+  protected async getOriginStateRepository(): Promise<IXyoOriginChainRepository> {
+    return this.getOrCreate('IXyoOriginChainRepository', async () => {
       const db = XyoLevelDbStorageProvider.createStore(this.config.data)
-      return new XyoOriginChainLocalStorageRepository(db, this.getSerializationService())
+      const serializationService = await this.getSerializationService()
+      return new XyoOriginChainLocalStorageRepository(db, serializationService)
     })
-  }
-
-  private async configureOriginChainStateRepository() {
-    const originChainStateRepository = this.getOriginStateRepository()
-
-    if ((await originChainStateRepository.getSigners()).length === 0) {
-      const signers = this.getSigners()
-      await originChainStateRepository.setCurrentSigners(signers)
-    }
-
-    const currentIndex = await originChainStateRepository.getIndex()
-
-    if (currentIndex === 0) { // create genesis block
-      this.logInfo(`Creating genesis block`)
-      const signers = await originChainStateRepository.getSigners()
-
-      const fetter = new XyoFetter(new XyoKeySet(signers.map(signer => signer.publicKey)), [new XyoIndex(0)])
-      const signingData = fetter.serialize()
-      const signatures = await Promise.all(signers.map(signer => signer.signData(signingData)))
-      const genesisBlock = new XyoBoundWitness([
-        fetter,
-        new XyoWitness(new XyoSignatureSet(signatures), [])
-      ])
-
-      const hash = await this.getHashingProvider().createHash(signingData)
-      await this.getOriginBlockRepository().addOriginBlock(hash, genesisBlock)
-      await this.getOriginStateRepository().updateOriginChainState(hash)
-
-      this.logInfo(`Add genesis block with hash ${hash.serializeHex()}`)
-    }
   }
 }
 

@@ -7,6 +7,6 @@ ipOverride: 127.0.0.1
 sql:
   host: 127.0.0.1
   port: 3306
-  user: ryan
+  user: admin
   password: password
   database: Xyo
