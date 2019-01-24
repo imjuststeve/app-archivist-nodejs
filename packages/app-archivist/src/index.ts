@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 16th January 2019 5:40:20 pm
+ * @Last modified time: Wednesday, 23rd January 2019 5:08:50 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -187,7 +187,8 @@ export class XyoArchivistNode extends XyoBaseNode {
     return this.getOrCreate('IXyoOriginChainRepository', async () => {
       const db = XyoLevelDbStorageProvider.createStore(this.config.data)
       const serializationService = await this.getSerializationService()
-      return new XyoOriginChainLocalStorageRepository(db, serializationService)
+      const originBlockRepository = await this.getOriginBlockRepository()
+      return new XyoOriginChainLocalStorageRepository(db, originBlockRepository, serializationService)
     })
   }
 }
