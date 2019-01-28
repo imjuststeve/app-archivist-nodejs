@@ -1,13 +1,13 @@
 {
   "name": "@xyo-network/archivist-repository.sql",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "A data-layer abstraction for archivist responsibilities using SQL",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Ryan Pillsbury",
   "license": "MIT",
   "dependencies": {
-    "@xyo-network/archivist-repository": "^0.15.0",
+    "@xyo-network/archivist-repository": "^0.15.1",
     "@xyo-network/base": "^0.17.1",
     "@xyo-network/bound-witness": "^0.17.1",
     "@xyo-network/hashing": "^0.17.1",
