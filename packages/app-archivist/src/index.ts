@@ -4,7 +4,7 @@
  * @Email:  developer@xyfindables.com
  * @Filename: index.ts
  * @Last modified by: ryanxyo
- * @Last modified time: Wednesday, 23rd January 2019 5:08:50 pm
+ * @Last modified time: Tuesday, 29th January 2019 5:43:54 pm
  * @License: All Rights Reserved
  * @Copyright: Copyright XY | The Findables Company
  */
@@ -26,6 +26,7 @@ import { XyoError, XyoErrors } from '@xyo-network/errors'
 import { ProcessManager } from './process-manager'
 import { XyoPeerInteractionRouter } from '@xyo-network/peer-interaction-router'
 import { CatalogueItem } from '@xyo-network/network'
+import { IXyoComponentFeatureResponse } from '@xyo-network/node-network'
 
 export class XyoArchivistNode extends XyoBaseNode {
   private readonly config = configuration
@@ -89,6 +90,24 @@ export class XyoArchivistNode extends XyoBaseNode {
 
   protected getNodePort(): number {
     return this.config.port
+  }
+
+  protected async getNodeFeatures(): Promise<IXyoComponentFeatureResponse> {
+    return this.getOrCreate('IXyoComponentFeatureResponse', async () => {
+      this.logInfo(`Node features support for archivist functionality `)
+      return {
+        archivist: {
+          featureType: 'archivist',
+          supportsFeature: true,
+          featureOptions: {
+            graphqlHost: this.config.publicIpOverride!,
+            graphqlPort: this.config.graphql!,
+            boundWitnessHost: this.config.publicIpOverride!,
+            boundWitnessPort: this.config.port
+          }
+        }
+      }
+    })
   }
 
   protected async getAboutMeService(): Promise<XyoAboutMeService> {
