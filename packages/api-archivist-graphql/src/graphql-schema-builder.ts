@@ -19,6 +19,7 @@ export class GraphqlSchemaBuilder extends XyoBase {
       }
 
       type XyoBlock {
+        bytes: String!
         publicKeys: [XyoKeySet!]
         signatures: [XyoSignatureSet!]
         heuristics: [XyoHeuristicSet!]
